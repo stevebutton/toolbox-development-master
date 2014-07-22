@@ -1,0 +1,1360 @@
+/* this is the custom css for enfold-child. Specific to faitesduyoga;com. all mods stevebutton -needs organizing*/
+
+/* General Custom CSS */
+
+
+
+
+/*
+Desktop Styles
+================================================== */
+/* Note: Add new css to the media query below that you want to only effect the desktop view of your site */
+Template: enfold
+@media only screen and (min-width: 768px) {
+  /* Add your Desktop Styles here */
+}
+
+
+
+/*
+Mobile Styles test this
+================================================== */
+/* Note: Add new css to the media query below that you want to only effect the Mobile and Tablet Portrait view */
+/* iPads (landscape) ----------- */
+@media only screen 
+and (min-device-width : 768px) 
+and (max-device-width : 1024px) 
+and (orientation : landscape) {
+/* //test matching sprite 
+*/.spritewatch {
+width: 30%;
+height: 0;
+cursor: pointer;
+padding-bottom: 25%;
+background-image: url("/gfx/sprite_watch.png");
+background-position: 0 0;
+background-size: 200%;
+float:right;
+display:inline-block;
+}
+}
+@media only screen and (max-width: 767px) {
+  /* Add your Mobile Styles here */
+ 
+
+
+}
+/* Note: woocommerce mods */
+#header .mega_menu_title {
+margin-bottom: 8px;
+font-size: 14px;
+line-height: 1.1em;
+font-weight: 600;
+display: block;
+}
+#top #header .mega_menu_title a {
+font-size: 14px;
+line-height: 1.1em;
+padding: 0;
+margin: 0;
+background: transparent;
+border: none;
+}
+#top #header .avia_mega_div > .sub-menu {
+display: table;
+padding-top: 15px;
+padding-right: 15px;
+padding-bottom: 20px;
+padding-left: 15px;
+border-top-style: solid;
+border-top-width: 2px;
+}
+#top .woocommerce-tabs h2 {
+font-size: 16px;
+display: none;
+}
+
+div .product-sorting {
+width: 100%;
+float: left;
+padding-bottom: 30px;
+position: relative;
+z-index: 9999;
+display: none;
+}
+.shop_table my_account_subscriptions my_account_orders{
+display: none;
+}
+
+.template-shop .product_meta {
+clear: both;
+font-size: 11px;
+position: relative;
+top: 8px;
+display: none;
+}
+
+.avia_cart_buttons {
+opacity: 0.2;
+border-top-width: 1px;
+border-top-style: solid;
+padding: 10px;
+overflow: hidden;
+-webkit-transition: all 0.3s ease;
+-moz-transition: all 0.3s ease-in-out;
+transition: all 0.3s ease-in-out;
+display: none;
+}
+
+.products .product h3, .products .product h4, .products .product h5, .products .product h6 {
+padding-top: 5px;
+font-size: 18px;
+line-height: 18px;
+text-align:center;
+/* font-weight: normal; */
+margin: 0;
+}
+
+.title_container .main-title {
+margin: 0;
+font-size: 28px;
+position: relative;
+z-index: 2;
+min-height: 36px;
+line-height: 2.3em;
+top: 0;
+font-weight: 400;
+}
+/* Note: End woocommerce mods */
+
+.single .big-preview.single-big {
+display: none;
+}
+div.entry-content>div.av_one_full p {
+text-align: justify;
+}
+div.entry-content>div.av_one_full {
+background-color: #EFEFEF;
+padding: 0px 10px 0px 10px;
+border-radius: 10px;
+margin-top: 10px;
+margin-bottom: 50px;
+}
+div.entry-content>div.av_one_full h3 {
+margin-top: 15px;
+}
+#mc_embed_signup{background:none; clear:left; font:14px Helvetica,Arial,sans-serif; }
+#mc_embed_signup .button {clear:both; background-color: #96CC00; border: 0 none; border-radius:4px; color: #FFFFFF; cursor: pointer; display: inline-block; font-size:15px; font-weight: bold; height: 42px; line-height: 32px; margin: 0 5px 10px 0; padding: 0 42px; text-align: center; text-decoration: none; vertical-align: top; white-space: nowrap; width: auto;}
+#mc_embed_signup .button:hover {background-color:#BCDA4F;}
+#top .title_container .container {
+padding-top: 70px;
+padding-bottom: 10px;
+
+min-height: 56px;
+}
+.fixed_header.social_header #main {
+padding-top: 75px;
+}
+/*
+Test for floating menu
+================================================== */
+/* Note: Add new css to the media query below that you want to only effect the Mobile and Tablet Portrait view */
+.fixed_header.social_header #main {
+padding-top: 85px;
+}
+
+header with social icons: 
+.social_header #header_main .container, .social_header .main_menu ul:first-child > li a { height: 100px; line-height: 100px; }
+
+#socket .copyright {
+float: left;
+display: none;
+}
+.content .entry-content-wrapper {
+padding-right: 50px;
+/*padding-top: 50px;
+*/}
+.widgettitle {
+font-weight: 600;
+text-transform: lowercase;
+letter-spacing: 1px;
+font-size: 14px;
+padding-top: 8px;
+}
+#footer {
+padding-top: 0px;
+padding-right: 0px;
+padding-bottom: 30px;
+padding-left: 0px;
+z-index: 1;
+height: 600px;
+background-image:url('/gfx/imageforfooter.jpg');
+
+}
+#footerback {
+position: relative;
+width: auto;
+height: 60px;
+z-index: 1000;
+top: 0px;
+left: 0px;
+border-top-style: solid;
+border-top-width: 0px;
+}
+
+.alternate_color .heading-color, .alternate_color a.iconbox_icon:hover, .alternate_color h1, .alternate_color h2, .alternate_color h3, .alternate_color h4, .alternate_color h5, .alternate_color h6, .alternate_color .sidebar .current_page_item>a, .alternate_color .sidebar .current-menu-item>a, .alternate_color .pagination .current, .alternate_color .pagination a:hover, .alternate_color strong.avia-testimonial-name, .alternate_color .heading, .alternate_color .toggle_content strong, .alternate_color .toggle_content strong a, .alternate_color .tab_content strong, .alternate_color .tab_content strong a, .alternate_color .asc_count, .alternate_color .avia-testimonial-content strong, .alternate_color div .news-headline {
+color: #ffffff;
+}
+
+.avia_desktop .av-hover-overlay-active .av-masonry-image-container {
+opacity: 0.9;
+}
+/* Note: responsive sprite test */
+#spritecontainermaster {
+width: 100%;
+height: 0;
+padding-bottom: 40%;
+}
+#spritecontainer1 {
+	border:dotted;
+width: 100%;
+height: 0;
+padding-bottom: 40%;
+float:left;
+}
+#spritecontainer2 {
+	border:dotted;
+width: 100%;
+height: 0;
+padding-bottom: 40%;
+float:right;
+}
+
+
+.sprite1 {
+width: 30%;
+height: 0;
+cursor: pointer;
+padding-bottom: 10%;
+background-image: url("/gfx/btnvid1.png");
+background-position: 0 0;
+background-size: 200%;
+float:left;
+display:inline-block;
+}
+.sprite1:hover {
+	
+background-position: 100% 0; /* Use ONLY percents here */
+}
+.sprite2 {
+width: 30%;
+height: 0;
+cursor: pointer;
+padding-bottom: 10%;
+background-image: url("/gfx/btnvid2.png");
+background-position: 0 0;
+background-size: 200%;
+float:left;
+display:inline-block;
+}
+.sprite2:hover {
+	
+background-position: 100% 0; /* Use ONLY percents here */
+}
+.sprite3 {
+width: 30%;
+height: 0;
+cursor: pointer;
+padding-bottom: 10%;
+background-image: url("/gfx/btnvid3.png");
+background-position: 0 0;
+background-size: 200%;
+float:left;
+display:inline-block;
+}
+.sprite3:hover {
+	
+background-position: 100% 0; /* Use ONLY percents here */
+}
+
+.sprite4 {
+width: 30%;
+height: 0;
+cursor: pointer;
+padding-bottom: 28%;
+background-image: url("/gfx/btn_kap.png");
+background-position: 0 0;
+background-size: 200%;
+float:left;
+display:inline-block;
+}
+.sprite4:hover {
+	
+background-position: 100% 0; /* Use ONLY percents here */
+}
+.sprite5 {
+width: 30%;
+height: 0;
+cursor: pointer;
+padding-bottom: 28%;
+background-image: url("/gfx/btn_pad.png");
+background-position: 0 0;
+background-size: 200%;
+float:left;
+display:inline-block;
+}
+.sprite5:hover {
+	
+background-position: 100% 0; /* Use ONLY percents here */
+}
+.sprite6 {
+width: 30%;
+height: 0;
+cursor: pointer;
+padding-bottom: 28%;
+background-image: url("/gfx/btn_uddi.png");
+background-position: 0 0;
+background-size: 200%;
+float:left;
+display:inline-block;
+}
+.sprite6:hover {
+	
+background-position: 100% 0; /* Use ONLY percents here */
+}
+#essayezbutton {
+	border:dotted;
+width: 100%;
+height: 0;
+padding-bottom: 40%;
+float:left;
+}
+
+.spriteessayez {
+width: 40%;
+height: 0;
+cursor: pointer;
+padding-bottom: 38%;
+background-image: url("/gfx/sprite_essayez.png");
+background-position: 0 0;
+background-size: 200%;
+float:left;
+display:inline-block;
+}
+.spriteessayez:hover {
+	
+background-position: 100% 0; /* Use ONLY percents here */
+}
+
+.spriteessayezblack {
+width: 30%;
+height: 0;
+cursor: pointer;
+padding-bottom: 30%;
+background-image: url("/gfx/sprite_essayezblack.png");
+background-position: 0 0;
+background-size: 200%;
+float:left;
+display:inline-block;
+}
+.spriteessayezblack:hover {
+	
+background-position: 100% 0; /* Use ONLY percents here */
+}
+.spritesuivez {
+width: 40%;
+height: 0;
+cursor: pointer;
+padding-bottom: 35%;
+background-image: url("/gfx/sprite_suivez.png");
+background-position: 0 0;
+background-size: 200%;
+float:left;
+display:inline-block;
+}
+.spritesuivez:hover {
+	
+background-position: 100% 0; /* Use ONLY percents here */
+}
+
+.spritesuivezblack {
+width: 30%;
+height: 0;
+cursor: pointer;
+padding-bottom: 30%;
+background-image: url("/gfx/sprite_suivezblack.png");
+background-position: 0 0;
+background-size: 200%;
+/*float:right;
+*/display:inline-block;
+}
+.spritesuivezblack:hover {
+	
+background-position: 100% 0; /* Use ONLY percents here */
+}
+.spritehome {
+width: 30%;
+height: 0;
+cursor: pointer;
+padding-bottom: 30%;
+background-image: url("/gfx/sprite_home.png");
+background-position: 0 0;
+background-size: 200%;
+/*float:right;
+*/display:inline-block;
+}
+.spritehome:hover {
+	
+background-position: 100% 0; /* Use ONLY percents here */
+}
+.spritehome2 {
+width: 30%;
+height: 0;
+cursor: pointer;
+padding-bottom: 30%;
+background-image: url("/gfx/sprite_home.png");
+background-position: 0 0;
+background-size: 200%;
+float:left;
+display:inline-block;
+}
+.spritehome2:hover {
+	
+background-position: 100% 0; /* Use ONLY percents here */
+}
+.spritefacebook {
+width: 30%;
+height: 0;
+cursor: pointer;
+padding-bottom: 30%;
+background-image: url("/gfx/sprite_facebook.png");
+background-position: 0 0;
+background-size: 200%;
+float:left;
+display:inline-block;
+}
+.spritefacebook:hover {
+	
+background-position: 100% 0; /* Use ONLY percents here */
+}
+
+.spritewatch {
+width: 30%;
+height: 0;
+cursor: pointer;
+padding-bottom: 25%;
+background-image: url("/gfx/sprite_watch.png");
+background-position: 0 0;
+background-size: 200%;
+float:right;
+display:inline-block;
+}
+.spritewatch:hover {
+	
+background-position: 100% 0; /* Use ONLY percents here */
+}
+
+.spritewatchuddi {
+width: 30%;
+height: 0;
+cursor: pointer;
+padding-bottom: 30%;
+background-image: url("/gfx/newuddslice.png");
+background-position: 0 0;
+background-size: 200%;
+float:right;
+display:inline-block;
+}
+.spritewatchuddi:hover {
+	
+background-position: 100% 0; /* Use ONLY percents here */
+}
+
+.spritewatchpada {
+width: 30%;
+height: 0;
+cursor: pointer;
+padding-bottom: 30%;
+background-image: url("/gfx/newpadslice.png");
+background-position: 0 0;
+background-size: 200%;
+float:right;
+display:inline-block;
+}
+.spritewatchpada:hover {
+	
+background-position: 100% 0; /* Use ONLY percents here */
+}
+
+
+.spritewatchkapa {
+width: 30%;
+height: 0;
+cursor: pointer;
+padding-bottom: 30%;
+background-image: url("/gfx/newkapslice.png");
+background-position: 0 0;
+background-size: 200%;
+float:right;
+display:inline-block;
+}
+.spritewatchkapa:hover {
+	
+background-position: 100% 0; /* Use ONLY percents here */
+}
+.spriteinvisible {
+width: 30%;
+height: 0;
+cursor: pointer;
+padding-bottom: 25%;
+background-image: url("/gfx/sprite_invisible.png");
+background-position: 0 0;
+background-size: 200%;
+float:right;
+display:inline-block;
+}
+.spriteinvisible:hover {
+	
+background-position: 100% 0; /* Use ONLY percents here */
+}
+
+.spriteprets {
+width: 30%;
+height: 0;
+cursor: pointer;
+padding-bottom: 25%;
+background-image: url("/gfx/sprite_prets.png");
+background-position: 0 0;
+background-size: 200%;
+float:right;
+display:inline-block;
+}
+.spriteprets:hover {
+	
+background-position: 100% 0; /* Use ONLY percents here */
+}
+
+.spritepratique {
+width: 30%;
+height: 0;
+cursor: pointer;
+padding-bottom: 25%;
+background-image: url("/gfx/sprite_pratiques.png");
+background-position: 0 0;
+background-size: 200%;
+float:right;
+display:inline-block;
+}
+.spritepratique:hover {
+	
+background-position: 100% 0; /* Use ONLY percents here */
+}
+
+.spriteessairight {
+width: 30%;
+height: 0;
+cursor: pointer;
+padding-bottom: 28%;
+background-image: url("/gfx/sprite_essairight.png");
+background-position: 0 0;
+background-size: 200%;
+/*float:right;
+*/display:inline-block;
+}
+.spriteessairight:hover {
+	
+background-position: 100% 0; /* Use ONLY percents here */
+}
+
+.spritemodleft {
+width: 30%;
+height: 0;
+cursor: pointer;
+padding-bottom: 29%;
+background-image: url("/gfx/sprite_modleft.png");
+background-position: 0 0;
+background-size: 200%;
+/*float:right;
+*/display:inline-block;
+}
+.spritemodleft:hover {
+	
+background-position: 100% 0; /* Use ONLY percents here */
+}
+.spritesavplus1 {
+width: 30%;
+height: 0;
+cursor: pointer;
+padding-bottom: 28%;
+background-image: url("/gfx/spriteensav1.png");
+background-position: 0 0;
+background-size: 200%;
+float:left;
+display:inline-block;
+}
+.spritesavplus1:hover {
+	
+background-position: 100% 0; /* Use ONLY percents here */
+}
+#watch {
+width: 30%;
+height: 0;
+cursor: pointer;
+padding-bottom: 28%;
+background-image: url("/gfx/spriteensav1.png");
+background-position: 0 0;
+background-size: 200%;
+float:left;
+display:inline-block;
+}
+#savplus1:hover {
+	
+background-position: 100% 0; /* Use ONLY percents here */
+}
+.spritesavplus2 {
+width: 30%;
+height: 0;
+cursor: pointer;
+padding-bottom: 28%;
+background-image: url("/gfx/spriteensav2.png");
+background-position: 0 0;
+background-size: 200%;
+float:left;
+display:inline-block;
+}
+.spritesavplus2:hover {
+	
+background-position: 100% 0; /* Use ONLY percents here */
+}
+#savplus2 {
+width: 30%;
+height: 0;
+cursor: pointer;
+padding-bottom: 28%;
+background-image: url("/gfx/spriteensav2.png");
+background-position: 0 0;
+background-size: 200%;
+float:left;
+display:inline-block;
+}
+#savplus2:hover {
+	
+background-position: 100% 0; /* Use ONLY percents here */
+}
+.spritesavplus3 {
+width: 30%;
+height: 0;
+cursor: pointer;
+padding-bottom: 28%;
+background-image: url("/gfx/spriteensav3.png");
+background-position: 0 0;
+background-size: 200%;
+float:left;
+display:inline-block;
+}
+.spritesavplus3:hover {
+	
+background-position: 100% 0; /* Use ONLY percents here */
+}
+#savplus3 {
+width: 30%;
+height: 0;
+cursor: pointer;
+padding-bottom: 28%;
+background-image: url("/gfx/spriteensav3.png");
+background-position: 0 0;
+background-size: 200%;
+float:left;
+display:inline-block;
+}
+#savplus3:hover {
+	
+background-position: 100% 0; /* Use ONLY percents here */
+}
+
+.spritesavpluskap {
+width: 30%;
+height: 0;
+cursor: pointer;
+padding-bottom: 28%;
+background-image: url("/gfx/btn_kapplus.png");
+background-position: 0 0;
+background-size: 200%;
+float:left;
+display:inline-block;
+}
+.spritesavpluskap:hover {
+	
+background-position: 100% 0; /* Use ONLY percents here */
+}
+
+.spritesavpluspad {
+width: 30%;
+height: 0;
+cursor: pointer;
+padding-bottom: 28%;
+background-image: url("/gfx/btn_padplus.png");
+background-position: 0 0;
+background-size: 200%;
+float:left;
+display:inline-block;
+}
+.spritesavpluspad:hover {
+	
+background-position: 100% 0; /* Use ONLY percents here */
+}
+
+.spritesavplusudd {
+width: 30%;
+height: 0;
+cursor: pointer;
+padding-bottom: 28%;
+background-image: url("/gfx/btn_uddplus.png");
+background-position: 0 0;
+background-size: 200%;
+float:left;
+display:inline-block;
+}
+.spritesavplusudd:hover {
+	
+background-position: 100% 0; /* Use ONLY percents here */
+}
+/* control appearance of tabs inside LS */
+
+div .main_color .tabcontainer .active_tab_content, div .main_color .tabcontainer .active_tab {
+background-color: #f2f2f2;
+color: #666666;
+}
+
+.tab_inner_content {
+margin: 11px 0;
+left: -200%;
+position: relative;
+line-height: .9;
+}
+.js_active .active_tab_content {
+display: block;
+visibility: visible;
+z-index: 3;
+position: relative;
+overflow: auto;
+border-style: solid;
+border-width: 0px;
+border-radius: 2px;
+left: 0;
+width: auto;
+}
+/* Note: control avia form button */
+.avia_ajax_form .button {
+margin: 0;
+padding: 16px 50px;
+border-radius: 10px;
+border-bottom-width: 1px;
+border-bottom-style: solid;
+font-weight: normal;
+font-size: 16px;
+}
+media="screen"
+p {
+margin: 0.85em 0;
+line-height: .9 !important;
+}
+/* Note: hides the default scroll to top button */
+#scroll-top-link.avia_pop_class {
+opacity: 0.7;
+visibility: hidden;
+}
+
+div.pp_default .pp_nav {
+display: none !important;
+clear: none;
+height: 30px;
+position: relative;
+width: 110px;
+}
+.pp_nav {
+clear: right;
+float: left;
+margin: 3px 10px 0 0;
+display: none;
+}
+
+/* Note: sets the green overlay button on galleries */
+.image-overlay {
+ visibility: hidden;
+ }
+.image-overlay.overlay-type-extern .image-overlay-inside:before{content:url(/gfx/btn_overlay.png)!important;}
+.image-overlay.overlay-type-video .image-overlay-inside:before{content:url(/gfx/btn_overlay.png)!important;}
+
+.portfolio-preview-title {
+display: none;
+font-size: 22px;
+}
+
+/* Note: reset for inside AJAX */
+.portfolio-preview-image {
+width: 66.6%;
+display: none;
+}
+.portfolio-preview-content {
+width: 100%;
+padding: 20px 30px 30px 30px;
+}
+
+.grid-entry-title {
+font-size: 18px;
+margin: 0;
+padding: 0;
+font-weight: 700;
+}
+
+/* Note: test CSS for button effect inside Layerslide */
+#btn_wrap{
+  width: 100%;
+  height:110px;
+  margin:auto;
+  font-size: 0;
+}
+
+#logo_stack {
+display: inline-block;
+float: right;
+position: relative;
+top: 50px;
+margin-left: 10px;
+cursor: pointer;
+width: 600px;
+height: 75px;
+background: url("/gfx/fdylogobigreverse.png") no-repeat 0 0;
+}
+
+#logo_stack_g {
+display: inline-block;
+float: right;
+position: relative;
+top: 50px;
+margin-left: 10px;
+cursor: pointer;
+width: 600px;
+height: 75px;
+background: url("/gfx/fdylogobiggreen.png") no-repeat 0 0;
+}
+#btn_home
+{
+  display: inline-block;
+  float: left;
+  position:relative;
+  top:0px;
+  cursor: pointer;
+    width: 120px;
+  height: 105px;
+  background: url("/gfx/btn_home.png") no-repeat 0 0;
+
+}
+
+#btn_home:hover
+{ 
+  background-position: 0 -105px;
+}
+
+#btn_home span
+{
+  position: absolute;
+  top: -999em;
+}
+
+
+#btn_savplus
+{
+   display: inline-block;
+  float:left;
+  cursor: pointer;
+  width: 148px;
+  height: 100px;
+  background: url("/gfx/btnsavplus.png") no-repeat 0 0;
+
+}
+#btn_essayez
+{
+   display: inline-block;
+  float:left;
+  position:relative;
+  top:0px;
+  cursor: pointer;
+  width: 160px;
+  height: 140px;
+  background: url("/gfx/btn_essayez.png") no-repeat 0 0;
+
+}
+
+#btn_essayez:hover
+{ 
+  background-position: 0 -140px;
+}
+
+#btn_essayez span
+{
+  position: absolute;
+  top: -999em;
+}
+
+#btn_essayez_b
+{
+    display: inline-block;
+  float: left;
+  position:relative;
+  top:0px;
+  width: 120px;
+  height: 105px;  background: url("/gfx/btn_essayez_b.png") no-repeat 0 0;
+
+}
+
+#btn_essayez_b:hover
+{ 
+  background-position: 0 -105px;
+}
+
+#btn_essayez_b span
+{
+  position: absolute;
+  top: -999em;
+}
+
+#btn_inscrivez
+{
+   display: inline-block;
+  float:left;
+  cursor: pointer;
+  width: 160px;
+  height: 140px;
+  background: url("/gfx/btn_inscrivez.png") no-repeat 0 0;
+
+}
+
+#btn_inscrivez:hover
+{ 
+  background-position: 0 -140px;
+}
+
+#btn_inscrivez span
+{
+  position: absolute;
+  top: -999em;
+}
+
+#btn_inscrivez_b
+{
+    display: inline-block;
+  float: left;
+  position:relative;
+  top:0px;
+  width: 120px;
+  height: 105px;
+  background: url("/gfx/btn_inscrivez_b.png") no-repeat 0 0;
+
+}
+
+#btn_inscrivez_b:hover
+{ 
+  background-position: 0 -105px;
+}
+
+#btn_inscrivez_b span
+{
+  position: absolute;
+  top: -999em;
+}
+
+#btn_fb
+{
+  display: inline-block;
+  float: left;
+  position:relative;
+  top:0px;
+  cursor: pointer;
+   width: 120px;
+  height: 105px;
+  background: url("/gfx/btn_fb.png") no-repeat 0 0;
+
+}
+
+#btn_fb:hover
+{ 
+  background-position: 0 -105px;
+}
+
+#btn_fb span
+{
+  position: absolute;
+  top: -999em;
+}
+
+#btn_1
+{
+  display: block;
+  cursor: pointer;
+  width: 160px;
+  height: 50px;
+  background: url("/gfx/btn1.png") no-repeat 0 0;
+
+}
+
+#btn_1:hover
+{ 
+  background-position: 0 -50px;
+}
+
+#btn_1 span
+{
+  position: absolute;
+  top: -999em;
+}
+
+#btn_2
+{
+  display: block;
+  cursor: pointer;
+  width: 160px;
+  height: 50px;
+  background: url("/gfx/btn2.png") no-repeat 0 0;
+
+}
+
+#btn_2:hover
+{ 
+  background-position: 0 -50px;
+}
+
+#btn_2 span
+{
+  position: absolute;
+  top: -999em;
+}
+
+#btn_3
+{
+  display: block;
+  cursor: pointer;
+  width: 160px;
+  height: 50px;
+  background: url("/gfx/btn3.png") no-repeat 0 0;
+
+}
+
+#btn_3:hover
+{ 
+  background-position: 0 -50px;
+}
+
+#btn_3 span
+{
+  position: absolute;
+  top: -999em;
+}
+/* End: test CSS for button effect inside Layerslide */
+
+#header_main {
+border-bottom-width: 0px !important;
+border-bottom-style: solid;
+z-index: 1;
+}
+#header_main .container, .main_menu ul:first-child > li a {
+height: 100px;
+line-height: 100px;
+}
+.logo img{
+padding:5px 0;
+display: block;
+width: 340px;
+height: auto;
+max-height: 100%;
+height : 100%\9; /*hack: fixes ie8 logo*/
+height: auto\9; /*hack: fixes ie8 squished logo*/
+}
+
+.content, .sidebar {
+padding-top: 0px;
+padding-bottom: 50px;
+-webkit-box-sizing: content-box;
+-moz-box-sizing: content-box;
+box-sizing: content-box;
+min-height: 1px;
+z-index: 1;
+}
+
+.container_wrap {
+clear: both;
+position: relative;
+z-index: 1;
+border-top-style: solid;
+border-top-width: 0px;
+}
+
+.content, .sidebar {
+padding-top: 10px;
+padding-bottom: 20px;
+-webkit-box-sizing: content-box;
+-moz-box-sizing: content-box;
+box-sizing: content-box;
+min-height: 1px;
+z-index: 1;
+}
+
+
+
+<!--_________________________________________________-->
+.template-page .entry-content-wrapper h1, .template-page .entry-content-wrapper h2 {
+/*text-transform: lowercase !important;
+*/letter-spacing: 1px;
+}
+media="all"
+.template-page .entry-content-wrapper h1, .template-page .entry-content-wrapper h2 {
+text-transform: none !important;
+
+letter-spacing: 1px;
+}
+h6 {
+text-transform: lowercase !important;
+font-size: 28px !important;
+line-height: 1.1em;
+margin-bottom: 14px;
+}
+
+h1 {
+text-transform: none !important;
+font-size: 28px !important;
+line-height: 1.1em;
+margin-bottom: 14px;
+}
+
+h4 {
+font-size: 17px;
+line-height: 1.6em;
+margin-bottom: 4px;
+}
+h2 {
+text-transform: lowercase !important;
+font-size: 22px;
+line-height: 1.6em;
+color: #000000 !important;
+margin-bottom: 10px !important;
+margin-top: 30px !important;
+}
+.image-overlay {
+position: absolute;
+background: none;
+z-index: 500 !important;
+}
+
+table {
+width: 100%;
+padding: 0;
+margin: 0 0 20px 0;
+font-size: 13px;
+background-color: transparent !important;
+}
+.main_color tr:nth-child(odd), .main_color .pricing-table>li:nth-child(odd), .main_color .pricing-extra {
+background: transparent !important;
+}
+table {
+border-collapse: separate;
+border-spacing: 0px;
+border-color: none;
+}
+
+.main_color .iconlist_content {
+color: #ffffff !important;
+}
+/*.avia_textblock p {
+color: #ffffff !important;
+clear: both;
+}*/
+.home #souscrire {
+z-index: 0;
+}
+.home #essai {
+z-index: 0;
+}
+.home #avdjsavplus {
+z-index: 0;
+}
+.home #andjsavplus {
+z-index: 0;
+}
+/*IMPORTANT//////CHANGE TO COLOR SECTION HEIGHTS*/
+/*IMPORTANT//////CHANGE TO CORRECT PAGE ID*/
+#av_section_1 {
+z-index: 0;
+height: 400px;
+}
+#av_section_2 {
+z-index: 0;
+height: 400px;
+}
+
+#av_section_3 {
+z-index: 0;
+height: 100px;
+}
+#av_section_4 {
+z-index: 0;
+height: 400px;
+}
+#av_section_5 {
+z-index: 0;
+height: 400px;
+}
+
+#av_section_6 {
+z-index: 0;
+height: 600px;
+}
+
+#av_section_7 {
+z-index: 0;
+/*height: 400px;
+*/}
+.page #colorsection2 {
+z-index: 0;
+height: 600px;
+}
+
+.page #colorsection3 {
+z-index: 0;
+height: 450px;
+}
+
+.page #colorsection4 {
+z-index: 0;
+height: 500px;
+}
+
+
+.homepage-version-3 #avdjsavplus {
+z-index: 0;
+}
+
+.avia-section {
+min-height: 2px;
+}
+
+/*///FLOATING NAV///////*/
+
+#scroll-top-link {
+position: fixed;
+border-radius: 2px;
+height: 70px;
+width: 50px;
+line-height: 50px;
+text-decoration: none;
+text-align: center;
+opacity: 0;
+right: 170px;
+top: 580px;
+z-index: 10000;
+/*visibility: hidden;*/
+}
+
+#scroll-essayez-link {
+position: fixed;
+border-radius: 2px;
+height: 70px;
+width: 180px;
+line-height: 50px;
+text-decoration: none;
+text-align: center;
+opacity: 0;
+right: 420px;
+top: 580px;
+z-index: 10000;
+opacity: 0.7;
+visibility: visible;
+}
+
+#scroll-inscrivez-link {
+position: fixed;
+border-radius: 2px;
+height: 70px;
+width: 180px;
+line-height: 50px;
+text-decoration: none;
+text-align: center;
+opacity: 0;
+right: 230px;
+top: 580px;
+z-index: 10000;
+opacity: 0.7;
+visibility: visible;
+}
+#scroll-top-link {
+color: #eeeeee;
+border: 1px solid #444444;
+background-color: #333333;
+}
+#scroll-essayez-link {
+color: #eeeeee;
+border: 1px solid #444444;
+background-color: #333333;
+}
+
+#scroll-inscrivez-link {
+color: #eeeeee;
+border: 1px solid #444444;
+background-color: #333333;
+}
+
+#top .ls-nav-prev {
+font-family: 'entypo-fontello';
+display: block;
+text-decoration: none;
+color: #fff;
+position: absolute;
+width: 60px;
+text-align: center;
+height: 60px;
+line-height: 62px;
+font-size: 25px;
+top: 50%;
+margin: -30px 15px 0;
+background: transparent;
+color: #fff;
+visibility: hidden;
+opacity: 0.5;
+z-index: 10000;
+left: 30px;
+}
+#top .ls-nav-next {
+font-family: 'entypo-fontello';
+display: block;
+text-decoration: none;
+color: #fff;
+position: absolute;
+width: 60px;
+text-align: center;
+height: 60px;
+line-height: 62px;
+font-size: 25px;
+top: 50%;
+margin: -30px 15px 0;
+background: transparent;
+color: #fff;
+visibility: hidden;
+opacity: 0.5;
+z-index: 10000;
+right: 30px;
+}
+
+/*this comes from base.css and controls the circular rollover icon*/
+
+.image-overlay{position: absolute; background: #CCCCCC; z-index: 500; height:100%; width:100%; opacity: 0; filter:alpha(opacity=0);}
+	.image-overlay .image-overlay-inside{height:100%; width:100%; position: absolute; left:0; top:0;}
+	.image-overlay .image-overlay-inside:before{position: absolute; border-radius: 50px; background: #000; height:80px; width:80px; line-height:80px; left:50%; top:50%; margin: -40px 0 0 -40px; z-index: 500; text-align: center; color:#fff;}
+	.image-overlay .image-overlay-inside:before{content:"\E869"; font-family: 'entypo-fontello'; font-size: 18px; font-weight: normal; }
+	.image-overlay.overlay-type-extern .image-overlay-inside:before{content:"\E832";}
+	.image-overlay.overlay-type-video .image-overlay-inside:before{content:"\E897";}
+	#top .hide-inner-overlay .image-overlay-inside{display: none;}
+	
+	
+	
+/*	//////////custom css for mailchimp embed///////////*/
+/* MailChimp Form Embed Code - Classic - 08/17/2011 */

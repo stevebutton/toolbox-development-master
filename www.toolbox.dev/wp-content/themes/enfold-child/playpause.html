@@ -1,0 +1,22 @@
+<html>
+<head>
+ <title>video</title>
+ <script type="text/javascript">
+ function videoControl() {
+    var myVideo = document.getElementById('myVideo');
+    if (myVideo.paused) {
+        myVideo.play();
+    } else {
+        myVideo.pause();
+    }
+}
+ </script>
+</head>
+<body>
+ <div id="videoContainer">
+ <video id="myVideo" src="myVideo.m4v" controls>
+ </video>
+ </div>
+ <input type="button" value="play/pause" onclick="videoControl()"></input>
+</body>
+</html>
