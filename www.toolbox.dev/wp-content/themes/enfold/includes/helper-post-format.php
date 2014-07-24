@@ -216,7 +216,7 @@ if(!function_exists('avia_link_content_filter'))
 		//retrieve the link for the post
 		$link 		= "";
 
-		$pattern1 	= '$\b(https?|ftp|file)://[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|]$i';
+		$pattern1 	= '$^\b(https?|ftp|file)://[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|]$i';
 		$pattern2 	= "!^\<a.+?<\/a>!";
 		$pattern3 	= "!\<a.+?<\/a>!";
 
@@ -227,15 +227,16 @@ if(!function_exists('avia_link_content_filter'))
 			$link = $link[0];
 			$markup = avia_markup_helper(array('context' => 'entry_title','echo'=>false));
 			$current_post['title'] = "<a href='$link' rel='bookmark' title='".__('Link to:','avia_framework')." ".the_title_attribute('echo=0')."' $markup>".get_the_title()."</a>";
-			$current_post['content'] = str_replace($link, "", $current_post['content']);
+			$current_post['content'] = preg_replace("!".$link."!", "", $current_post['content'], 1);
 		}
 		else
 		{
 			preg_match($pattern2, $current_post['content'] , $link);
 			if(!empty($link[0]))
 			{
-				$current_post['title'] = $link[0];
-				$current_post['content'] = str_replace($link, "", $current_post['content']);
+				$link = $link[0];
+				$current_post['title'] = $link;
+				$current_post['content'] = preg_replace("!".$link."!", "", $current_post['content'], 1);
 			}
 			else
 			{

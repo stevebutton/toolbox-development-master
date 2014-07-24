@@ -187,7 +187,7 @@ if ( !class_exists( 'avia_product_slider' ) )
 												'sort'		=> '',
                                                 'offset' => 0,
 		                                 		'categories'=> array()
-		                                 		), $atts);
+		                                 		), $atts, 'av_productslider');
 		}
 
 		public function html()
@@ -221,7 +221,7 @@ if ( !class_exists( 'avia_product_slider' ) )
 			}
 
 
-			$data = AviaHelper::create_data_string(array('autoplay'=>$autoplay, 'interval'=>$interval, 'animation' => $animation));
+			$data = AviaHelper::create_data_string(array('autoplay'=>$autoplay, 'interval'=>$interval, 'animation' =>$animation, 'hoverpause'=>1));
 
 				ob_start();
 
@@ -316,8 +316,9 @@ if ( !class_exists( 'avia_product_slider' ) )
 			}
 
 			$page = get_query_var( 'paged' ) ? get_query_var( 'paged' ) : get_query_var( 'page' );
-			if(!$page || $type == 'slider') $page = 1;
-
+			if(!$page || $type == 'slider' || $params['paginate'] == 'no') $page = 1;
+			
+			
 			//if we find no terms for the taxonomy fetch all taxonomy terms
 			if(empty($terms[0]) || is_null($terms[0]) || $terms[0] === "null")
 			{
@@ -371,7 +372,7 @@ if ( !class_exists( 'avia_product_slider' ) )
 			// Meta query
 			$meta_query = array();
 			$meta_query[] = $woocommerce->query->visibility_meta_query();
-		    $meta_query[] = $woocommerce->query->stock_status_meta_query();
+		    	$meta_query[] = $woocommerce->query->stock_status_meta_query();
 			$meta_query   = array_filter( $meta_query );
 
 			$ordering_args = $woocommerce->query->get_catalog_ordering_args( $orderBY, $order );
@@ -380,12 +381,12 @@ if ( !class_exists( 'avia_product_slider' ) )
 				'post_type'		=> $params['post_type'],
 				'post_status' 	=> 'publish',
 				'ignore_sticky_posts'	=> 1,
-				"paged" 			=> $page,
-                'offset'            => $params['offset'],
-                'post__not_in' => (!empty($no_duplicates)) ? $avia_config['posts_on_current_page'] : array(),
+				'paged' 		=> $page,
+                		'offset'            	=> $params['offset'],
+                		'post__not_in' => (!empty($no_duplicates)) ? $avia_config['posts_on_current_page'] : array(),
 				'posts_per_page' 	=> $params['items'],
-				'orderby' 			=> $ordering_args['orderby'],
-				'order' 			=> $ordering_args['order'],
+				'orderby' 		=> $ordering_args['orderby'],
+				'order' 		=> $ordering_args['order'],
 				'meta_query' 		=> $meta_query,
 				'tax_query' => array( 	array( 	'taxonomy' 	=> $params['taxonomy'],
 												'field' 	=> 'id',
@@ -400,6 +401,9 @@ if ( !class_exists( 'avia_product_slider' ) )
 
 
 			query_posts($query);
+			
+		    	remove_filter( 'posts_clauses', array( $woocommerce->query, 'order_by_popularity_post_clauses' ) );
+			remove_filter( 'posts_clauses', array( $woocommerce->query, 'order_by_rating_post_clauses' ) );
 
 		    // store the queried post ids in
             if( have_posts() )

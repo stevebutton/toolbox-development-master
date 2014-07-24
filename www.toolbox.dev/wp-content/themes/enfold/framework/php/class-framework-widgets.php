@@ -11,6 +11,125 @@
  */
 
 
+
+
+
+
+
+/**
+ * AVIA COMBO WIDGET
+ *
+ * Widget that retrieves, stores and displays the number of twitter and rss followers
+ *
+ * @package AviaFramework
+ * @todo replace the widget system with a dynamic one, based on config files for easier widget creation
+ */
+
+if (!class_exists('avia_fb_likebox'))
+{
+	class avia_fb_likebox extends WP_Widget {
+
+		function avia_fb_likebox() {
+			//Constructor
+			$widget_ops = array('classname' => 'avia_fb_likebox', 'description' => 'A widget that displays a facebook Likebox to a facebook page of your choice' );
+			$this->WP_Widget( 'avia_fb_likebox', THEMENAME.' Facebook Likebox', $widget_ops );
+		}
+
+		function widget($args, $instance)
+		{
+			// prints the widget
+
+			extract($args, EXTR_SKIP);
+			if(empty($instance['url'])) return;
+			$url 		= urlencode($instance['url']);
+			$height 	= $instance['height']; 
+			$border 	= $instance['border']; 
+			$profiles 	= 3000; // since the height determines the number of images loaded
+			$faces 		= "true";
+			$extraClass = "";
+			$style 		= "";
+			
+			if(strpos($height, "%") === false && strpos($height, "px") === false) $height = $height."px";
+			
+			if(strpos($height, "%") !== false)
+			{
+				$extraClass = "av_facebook_widget_wrap_positioner";
+				$style		= "style='padding-bottom:{$height}'";
+				$height		= "100%";
+			}
+			
+			
+			echo $before_widget;
+			echo "<div class='av_facebook_widget_wrap {$extraClass} av_facebook_widget_wrap_border_{$border}' {$style}>";
+			echo '<iframe class="av_facebook_widget" src="//www.facebook.com/plugins/likebox.php?href='.$url.'&amp;width&amp;height='.$profiles.'&amp;colorscheme=light&amp;show_faces='.$faces.'&amp;header=false&amp;stream=false&amp;show_border=false" scrolling="no" frameborder="0" style="border:none; overflow:hidden; height:'.$height.';" allowTransparency="true"></iframe>';
+			echo "</div>";
+			echo $after_widget;
+		}
+
+
+		function update($new_instance, $old_instance)
+		{
+			$instance = $old_instance;
+			foreach($new_instance as $key=>$value)
+			{
+				$instance[$key]	= strip_tags($new_instance[$key]);
+			}
+
+			return $instance;
+		}
+
+		function form($instance) {
+			//widgetform in backend
+
+			$instance = wp_parse_args( (array) $instance, array('url' => 'https://www.facebook.com/kriesi.at', 'height' => '258px', 'border' => 'yes') );
+			$html = new avia_htmlhelper();
+			$elementCat = array("name" 	=> "",
+								"desc" 	=> "",
+					            "id" 	=> $this->get_field_name('border'),
+					            "type" 	=> "select",
+					            "std"   => strip_tags($instance['border']),
+					            "class" => "",
+					            "no_first" => true,
+					            "subtype" => array('Yes, display border'=>'yes', 'No, do not display border'=>'no'));
+			
+	?>
+			<p>
+			<label for="<?php echo $this->get_field_id('url'); ?>">Enter the url to the Page. Please note that it needs to be a link to a <strong>facebook fanpage</strong>. Personal profiles are not allowed!
+			<input class="widefat" id="<?php echo $this->get_field_id('url'); ?>" name="<?php echo $this->get_field_name('url'); ?>" type="text" value="<?php echo esc_attr($instance['url']); ?>" /></label>
+			</p>
+			
+			
+			<p>
+			<label for="<?php echo $this->get_field_id('height'); ?>">Enter the widget height in pixel or % <br/><small>(100% would create a widget of equal height and width)</small>
+			<input class="widefat" id="<?php echo $this->get_field_id('height'); ?>" name="<?php echo $this->get_field_name('height'); ?>" type="text" value="<?php echo esc_attr($instance['height']); ?>" /></label>
+			</p>
+			
+			
+			<p><label for="<?php echo $this->get_field_id('border'); ?>">Display Border around the widget?
+			<?php echo $html->select($elementCat); ?>
+			</label></p>
+
+
+		<?php
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /**
  * AVIA TWEETBOX
  *
@@ -404,7 +523,17 @@ if (!class_exists('avia_newsbox'))
 			echo "<span class='news-thumb $nothumb'>";
 			echo $image;
 			echo "</span>";
-			if(empty($avia_config['widget_image_size']) || 'display title and excerpt' != $excerpt) { echo "<strong class='news-headline'>".get_the_title()."<span class='news-time'>".get_the_time($time_format)."</span></strong>";  }
+			if(empty($avia_config['widget_image_size']) || 'display title and excerpt' != $excerpt)
+			{
+				echo "<strong class='news-headline'>".get_the_title();
+				
+				if($time_format)
+				{
+					echo "<span class='news-time'>".get_the_time($time_format)."</span>";	
+				}
+				
+				echo "</strong>";
+			}
 			echo "</a>";
 
 			if('display title and excerpt' == $excerpt)
@@ -416,7 +545,11 @@ if (!class_exists('avia_newsbox'))
 					echo "<a class='news-link-inner' title='".get_the_title()."' href='".get_permalink()."'>";
 					echo "<strong class='news-headline'>".get_the_title()."</strong>";
 					echo "</a>";
-					echo "<span class='news-time'>".get_the_time($time_format)."</span>";
+					if($time_format)
+					{
+						echo "<span class='news-time'>".get_the_time($time_format)."</span>";	
+					}
+
 				}
 				the_excerpt();
 				echo "</div>";
@@ -942,7 +1075,11 @@ if (!function_exists('avia_get_comment_list'))
 			echo get_avatar($comment,'48', '', $gravatar_alt);
 			echo "</span>";
 			echo "<strong class='news-headline'>".avia_backend_truncate($comment->comment_content, 55," ");
-			echo "<span class='news-time'>".get_the_time($time_format, $comment->comment_post_ID)." ".__('by','avia_framework')." ".$comment->comment_author."</span>";
+			
+			if($time_format)
+			{
+				echo "<span class='news-time'>".get_the_time($time_format, $comment->comment_post_ID)." ".__('by','avia_framework')." ".$comment->comment_author."</span>";
+			}
 			echo "</strong>";
 			echo "</a>";
 			echo '</li>';
@@ -1134,7 +1271,10 @@ if (!class_exists('avia_google_maps'))
         {
             $prefix  = is_ssl() ? "https" : "http";
             wp_register_script( 'avia-google-maps-api', $prefix.'://maps.google.com/maps/api/js?sensor=false', array('jquery'), '3', true);
-            wp_enqueue_script( 'avia-google-maps-api' );
+            
+            $load_google_map_api = apply_filters('avf_load_google_map_api', true, 'avia_google_map_widget');
+            
+            if($load_google_map_api) wp_enqueue_script( 'avia-google-maps-api' );
 
             $is_widget_edit_page = in_array(basename($_SERVER['PHP_SELF']), array('widgets.php'));
             if($is_widget_edit_page)
@@ -1149,7 +1289,7 @@ if (!class_exists('avia_google_maps'))
 	                'insertaddress' 	=> __("Please insert a valid address in the fields above",'avia_framework')
 	            );
 
-	            wp_localize_script( 'avia-google-maps-api', 'AviaMapTranslation', $args );
+	            if($load_google_map_api) wp_localize_script( 'avia-google-maps-api', 'AviaMapTranslation', $args );
             }
         }
 
@@ -1249,7 +1389,7 @@ if(!function_exists('avia_printmap'))
 		  });
 		}";
 
-	$output .= apply_filters('avia_google_maps_widget_config',$avia_maps_config);
+	$output .= apply_filters('avia_google_maps_widget_config', $avia_maps_config, $lat, $lng, $directionsto, $zoom, $type, $unique, $content, $icon);
 
 	$output .= "\n}\n\n
 			jQuery(document).ready(function() {

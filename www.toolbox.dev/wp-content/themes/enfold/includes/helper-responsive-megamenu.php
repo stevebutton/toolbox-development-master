@@ -211,7 +211,7 @@ if( !class_exists( 'avia_responsive_mega_menu' ) )
 
 				$item_output .= $args->before;
 				$item_output .= '<a'. $attributes .'><span class="avia-bullet"></span>';
-				$item_output .= $args->link_before . do_shortcode(apply_filters('the_title', $item->title, $item->ID)) . $args->link_after;
+				$item_output .= $args->link_before .'<span class="avia-menu-text">'. do_shortcode(apply_filters('the_title', $item->title, $item->ID)) ."</span>". $args->link_after;
 				if($depth === 0) $item_output .= '<span class="avia-menu-fx"><span class="avia-arrow-wrap"><span class="avia-arrow"></span></span></span>';
 				$item_output .= '</a>';
 				$item_output .= $args->after;
@@ -235,6 +235,7 @@ if( !class_exists( 'avia_responsive_mega_menu' ) )
 
 			$class_names = join( ' ', apply_filters( 'nav_menu_css_class', array_filter( $classes ), $item ) );
 			if($depth === 0 && $this->mega_active) $class_names .= " menu-item-mega-parent ";
+			if($depth === 0 ) $class_names .= " menu-item-top-level ";
 			$class_names = ' class="'.$li_text_block_class. esc_attr( $class_names ) . $column_class.'"';
 
 			$output .= $indent . '<li id="menu-item-'. $item->ID . '"' . $value . $class_names .'>';

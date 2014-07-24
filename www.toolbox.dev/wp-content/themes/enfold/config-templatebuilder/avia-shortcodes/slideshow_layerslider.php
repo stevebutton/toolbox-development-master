@@ -177,12 +177,13 @@ if(!function_exists('post_has_layerslider'))
 		//script below excluded. creates to many layout errors
 		
 		//is the user tries to use the default layerslider shortcode also include the slider
-		/*
+		
 		global $post;
 		if(!empty($post->post_content) && strpos($post->post_content, "[layerslider") !== false )
 		{
 			return true;
 		}
+		/*
 		*/
 		
 		

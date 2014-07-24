@@ -25,7 +25,7 @@
 
 			<div class='container template-blog template-single-blog '>
 
-				<main class='content units <?php avia_layout_class( 'content' ); ?>' <?php avia_markup_helper(array('context' => 'content','post_type'=>'post'));?>>
+				<main class='content units <?php avia_layout_class( 'content' ); ?> <?php echo avia_blog_class_string(); ?>' <?php avia_markup_helper(array('context' => 'content','post_type'=>'post'));?>>
 
                     <?php
                     /* Run the loop to output the posts.
@@ -35,7 +35,7 @@
                     */
 
                         get_template_part( 'includes/loop', 'index' );
-
+						
                         //show related posts based on tags if there are any
                         get_template_part( 'includes/related-posts');
 

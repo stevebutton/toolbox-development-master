@@ -18,7 +18,7 @@ if ( !class_exists( 'avia_sc_hr' ) )
 			 */
 			function shortcode_insert_button()
 			{
-				$this->config['name']		= __('Horizontal Ruler', 'avia_framework' );
+				$this->config['name']		= __('Separator / Whitespace', 'avia_framework' );
 				$this->config['tab']		= __('Content Elements', 'avia_framework' );
 				$this->config['icon']		= AviaBuilder::$path['imagesURL']."sc-hr.png";
 				$this->config['order']		= 94;
@@ -117,7 +117,7 @@ if ( !class_exists( 'avia_sc_hr' ) )
 			 */
 			function shortcode_handler($atts, $content = "", $shortcodename = "", $meta = "")
 			{
-			    extract(shortcode_atts(array('class' => 'default', 'height' => '50', 'position'=>'center', 'shadow'=>'no-shadow'), $atts));
+			    extract(shortcode_atts(array('class' => 'default', 'height' => '50', 'position'=>'center', 'shadow'=>'no-shadow'), $atts, $this->config['shortcode']));
 			
         		$output  = "";
         		$style	 = "";

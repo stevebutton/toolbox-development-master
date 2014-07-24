@@ -14,6 +14,7 @@ if ( !class_exists( 'AviaHtmlHelper' ) ) {
 		static $elementValues 	= array(); //all element values in an id=>value array so we can check dependencies
 		static $elementHidden 	= array(); //all elements that didnt pass the dependency test and are hidden
 		static $imageCount      = 0; //count all image elements to assign the right attachment id
+		static $cache      		= array(); //cache for entries that are already fetched
 		
 		static function render_metabox($element)
 		{
@@ -415,6 +416,7 @@ if ( !class_exists( 'AviaHtmlHelper' ) ) {
          */
   		static function checkbox( $element )
 		{	
+			
 			$checked = "";
 			if( $element['std'] != "" ) { $checked = 'checked = "checked"'; }
 	
@@ -433,7 +435,7 @@ if ( !class_exists( 'AviaHtmlHelper' ) ) {
 		static function textarea( $element )
 		{	
 			$output  = '<textarea rows="5" cols="30" class="'.$element['class'].'" id="'.$element['id'].'" name="'.$element['id'].'">';
-			$output .= $element['std'].'</textarea>';
+			$output .= rtrim($element['std']).'</textarea>';
 			return $output;
 		}
 		
@@ -540,6 +542,10 @@ if ( !class_exists( 'AviaHtmlHelper' ) ) {
          */
 		static function linkpicker($element)
 		{	
+			//fallback for previous default input link elements: convert a http://www.link.at value to a manually entry
+			if(strpos($element['std'], 'http://') === 0) $element['std'] = 'manually,'.$element['std'];
+			
+		
 			//necessary for installations with thousands of posts
 			@ini_set("memory_limit","256M");
 			
@@ -563,7 +569,7 @@ if ( !class_exists( 'AviaHtmlHelper' ) ) {
 						$original['subtype'] = $type;
 						$html = self::select($original); 
 						
-						if( $html ) { AviaHelper::register_template($type, $html); } else { unset($pt[$key] ); }
+						if( $html ) { AviaHelper::register_template($original['id'].'-'.$type, $html); } else { unset($pt[$key] ); }
 					}
 					else
 					{
@@ -582,7 +588,7 @@ if ( !class_exists( 'AviaHtmlHelper' ) ) {
 						$original['taxonomy'] = $type;
 					
 						$html = self::select($original); 
-						if( $html ) {AviaHelper::register_template($type, $html); } else { unset($ta[$key] ); }
+						if( $html ) {AviaHelper::register_template($original['id'].'-'.$type, $html); } else { unset($ta[$key] ); }
 					}
 					else
 					{
@@ -604,7 +610,7 @@ if ( !class_exists( 'AviaHtmlHelper' ) ) {
 					
 					$original['subtype'][$value] = $key;
 					$html = self::input($element); 
-					AviaHelper::register_template($key, $html);
+					AviaHelper::register_template($original['id'].'-'.$key, $html);
 					break;
 					
 					case "single": 
@@ -675,26 +681,52 @@ if ( !class_exists( 'AviaHtmlHelper' ) ) {
 			$output = '	<a href="#" class="'.$class.'" '.$data.' title="'.esc_attr($element['title']).'">'.$element['title'].'</a>';
 			
 			if(isset($element['delete'])) $output .= '<a href="#" class="button avia-delete-gallery-button" title="'.esc_attr($element['delete']).'">'.$element['delete'].'</a>';
+				
+			$attachmentids 	= !empty($element['shortcode_data']['attachment']) ? explode(',', $element['shortcode_data']['attachment']) : array();
+			$attachmentid 	= !empty($attachmentids[self::$imageCount]) ? $attachmentids[self::$imageCount] : '';
+			$attachmentsize = !empty($element['shortcode_data']['attachment_size']) ? $element['shortcode_data']['attachment_size'] : "";		
+				
+			//get image based on id if possible
+			if(!empty($attachmentid) && !empty($attachmentsize))
+			{
+				$fake_img 	= wp_get_attachment_image( $attachmentid, $attachmentsize);
+				$url		= wp_get_attachment_image_src( $attachmentid, $attachmentsize);
+				$url		= !empty($url[0]) ? $url[0] : "";
+			}
+			else if(isset($fetch) && $fetch == "id")
+			{
+				$fake_img 	= wp_get_attachment_image( $element['std'], 'thumbnail');
+				$url		= wp_get_attachment_image_src( $element['std'], 'thumbnail');
+				$url		= !empty($url[0]) ? $url[0] : "";
+			}
+			else
+			{
+				$fake_img 	= '<img src="'.$element['std'].'" />';
+				$url		= $element['std'];
+			}
+	
 					
 			if($element['type'] != 'video')
 			{
-				$output .= self::display_image($element['std']);			
+				$output .= self::display_image($url);			
 			}
 			$output .= self::$element['data']['save_to']($element);
 			
 			//fake img for multi_image element
 			if(isset($fetch))
 			{
+			
 				$fake_img_id = str_replace ( str_replace('aviaTB','',$element['id']) ,'img_fakeArg', $element['id']);
 				$img_id_field = str_replace ( str_replace('aviaTB','',$element['id']) ,'attachment', $element['id']);
-				
-				$fake_img = $fetch == "id" ? wp_get_attachment_image( $element['std'], 'thumbnail') : '<img src="'.$element['std'].'" />';
+				$img_size_field = str_replace ( str_replace('aviaTB','',$element['id']) ,'attachment_size', $element['id']);
 
-				$attachmentids = !empty($element['shortcode_data']['attachment']) ? explode(',', $element['shortcode_data']['attachment']) : array();
-				$attachmentid = !empty($attachmentids[self::$imageCount]) ? $attachmentids[self::$imageCount] : '';
-				
 				$output .= '<input type="hidden" class="hidden-image-url '.$element['class'].'" value="'.htmlentities($fake_img, ENT_QUOTES, get_bloginfo( 'charset' )).'" id="'.$fake_img_id.'" name="'.$fake_img_id.'"/>';
-				$output .= '<input type="hidden" class="hidden-attachment-id '.$element['class'].'" value="'.$attachmentid.'" id="'.$img_id_field.'" name="'.$img_id_field.'"/>';
+				
+				if($fetch == 'url')
+				{
+					$output .= '<input type="hidden" class="hidden-attachment-id '.$element['class'].'" value="'.$attachmentid.'" id="'.$img_id_field.'" name="'.$img_id_field.'"/>';
+					$output .= '<input type="hidden" class="hidden-attachment-size '.$element['class'].'" value="'.$attachmentsize.'" id="'.$img_size_field.'" name="'.$img_size_field.'"/>';
+				}
 			}
 
 			self::$imageCount++;
@@ -817,12 +849,19 @@ if ( !class_exists( 'AviaHtmlHelper' ) ) {
 				global $wpdb;
 				$table_name = $wpdb->prefix . "posts";
 	 			$limit 		= apply_filters( 'avf_dropdown_post_number', 4000 );
-	    			
-				$prepare_sql = "SELECT distinct ID, post_title FROM {$table_name} WHERE post_status = 'publish' AND post_type = '".$element['subtype']."' ORDER BY post_title ASC LIMIT {$limit}";
-				$prepare_sql = apply_filters('avf_dropdown_post_query', $prepare_sql, $table_name, $limit, $element);
-				$entries 	= $wpdb->get_results($prepare_sql);
-	    			
-	    			//$entries 	= $wpdb->get_results( "SELECT ID, post_title FROM {$table_name} WHERE post_status = 'publish' AND post_type = '".$element['subtype']."' ORDER BY post_title ASC LIMIT {$limit}" );
+	    		
+	    		if( isset( AviaHtmlHelper::$cache['entry_'+$limit] ) && isset( AviaHtmlHelper::$cache['entry_'+$limit][$element['subtype']] ) )
+	    		{
+	    			$entries = AviaHtmlHelper::$cache['entry_'+$limit][$element['subtype']];
+	    		}
+	    		else
+	    		{	
+					$prepare_sql = "SELECT distinct ID, post_title FROM {$table_name} WHERE post_status = 'publish' AND post_type = '".$element['subtype']."' ORDER BY post_title ASC LIMIT {$limit}";
+					$prepare_sql = apply_filters('avf_dropdown_post_query', $prepare_sql, $table_name, $limit, $element);
+					$entries 	= $wpdb->get_results($prepare_sql);
+					AviaHtmlHelper::$cache['entry_'+$limit][$element['subtype']] = $entries;
+	    		}	
+	    		//$entries 	= $wpdb->get_results( "SELECT ID, post_title FROM {$table_name} WHERE post_status = 'publish' AND post_type = '".$element['subtype']."' ORDER BY post_title ASC LIMIT {$limit}" );
 				//$entries = get_posts(array('numberposts' => apply_filters( 'avf_dropdown_post_number', 200 ), 'post_type' => $element['subtype'], 'post_status'=> 'publish', 'orderby'=> 'post_date', 'order'=> 'ASC'));
 			}
 			else
@@ -1074,6 +1113,12 @@ if ( !class_exists( 'AviaHtmlHelper' ) ) {
 		
 		static function table_row($row, $columns, $params, $element, $prepared = array())
 		{
+			$up 	= __('move up', 'avia_framework');
+			$down 	= __('move down', 'avia_framework');
+			$left 	= __('move left', 'avia_framework');
+			$right 	= __('move right', 'avia_framework');
+		
+		
 			$defaults = array('class'=>'', 'content'=>'', 'row_style'=>'');
 			$params = array_merge($defaults, $params);
 			$extraclass = "";
@@ -1081,6 +1126,16 @@ if ( !class_exists( 'AviaHtmlHelper' ) ) {
 			$output .= "	<div class='avia-table-row  {$params['class']} {$params['row_style']}'>";
 			
 			$output .= "	<div class='avia-table-cell avia-table-cell-style avia-attach-table-row-style avia-noselect'>";
+			
+			if(empty($params['no-edit']))
+			{
+				$output .= "<div class='avia-move-table-row-container'>
+							<div class='avia-move-table-row'>
+							<a href='#' class='av-table-pos-button av-table-up' data-direction='up' title='{$up}'>{$up}</a>
+							<a href='#' class='av-table-pos-button av-table-down' data-direction='down' title='{$down}'>{$down}</a>
+							</div></div>";
+			}
+			
 			$output .= self::select(array('std'=>$params['row_style'], 'subtype'=>$element['row_style'], 'id'=>'row_style', 'class'=>''));
 			$output .= "	</div>";
 			
@@ -1107,7 +1162,12 @@ if ( !class_exists( 'AviaHtmlHelper' ) ) {
 				
 				if(isset($params['col_option']))
 				{
-					$params['content']  = self::select(array('std'=>$extraclass, 'subtype'=>$element['column_style'], 'id'=>'column_style', 'class'=>''));
+					$params['content']   = "<div class='avia-move-table-col'>
+											<a href='#' class='av-table-pos-button av-table-left'  data-direction='left' title='{$left}'>{$left}</a>
+											<a href='#' class='av-table-pos-button av-table-right' data-direction='right' title='{$right}'>{$right}</a>
+											</div>";
+											
+					$params['content']  .= self::select(array('std'=>$extraclass, 'subtype'=>$element['column_style'], 'id'=>'column_style', 'class'=>''));
 				}
 				
 				if(isset($params['parent_class']) && $params['row_style'] == "avia-button-row" && strpos($params['content'], "[") !== false)
@@ -1142,8 +1202,6 @@ if ( !class_exists( 'AviaHtmlHelper' ) ) {
 			return $output;
 		}
 		
-
-		
 		
 		static function display_image($img = "")
 		{
@@ -1167,6 +1225,7 @@ if ( !class_exists( 'AviaHtmlHelper' ) ) {
 			$output = "";
 			$hidden = "avia-hidden";
 			
+			$output .= "<div class='avia-builder-prev-img-container-wrap'>";
 			$output .= "<div class='avia-builder-prev-img-container'>";
 			if(!empty($final))
 			{
@@ -1179,6 +1238,7 @@ if ( !class_exists( 'AviaHtmlHelper' ) ) {
 			}
 			
 			$output .= "</div>";
+			$output .= "</div>";
 			$output .= "<a href='#delete' class='avia-delete-image {$hidden}'>".__('Remove Image', 'avia_framework' )."</a>";
 			return $output;
 		}
@@ -1186,10 +1246,10 @@ if ( !class_exists( 'AviaHtmlHelper' ) ) {
 		
 		
 		
-		static function number_array($from = 0, $to = 100, $steps = 1, $array = array())
+		static function number_array($from = 0, $to = 100, $steps = 1, $array = array(), $label = "")
 		{
 			for ($i = $from; $i <= $to; $i += $steps) {
-			    $array[$i] = $i;
+			    $array[$i.$label] = $i;
 			}
 		
 			return $array;

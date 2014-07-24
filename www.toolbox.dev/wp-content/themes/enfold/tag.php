@@ -15,11 +15,15 @@
 
                 <main class='content <?php avia_layout_class( 'content' ); ?> units' <?php avia_markup_helper(array('context' => 'content'));?>>
 
+                    <div class="category-term-description">
+                        <?php echo term_description(); ?>
+                    </div>
+
                     <?php
                     global $wp_query, $posts;
                     $backup_query = $wp_query;
 
-                    $sorted = array();
+                    $sorted = array('post'=>array());
                     $post_type_obj = array();
 
                     foreach($posts as $post)
@@ -44,6 +48,8 @@
 
                             foreach($sorted as $key => $post_type)
                             {
+                                if(empty($post_type)) continue;
+                             
                                 if(isset($post_type_obj[$key]->labels->name))
                                 {
                                     $label = apply_filters('avf_tag_label_names', $post_type_obj[$key]->labels->name);
@@ -82,6 +88,8 @@
                     {
                         foreach($sorted as $key => $post_type)
                         {
+                            if(empty($post_type)) continue;
+                             
                             if(isset($post_type_obj[$key]->labels->name))
                             {
                                 $label = apply_filters('avf_tag_label_names', $post_type_obj[$key]->labels->name);

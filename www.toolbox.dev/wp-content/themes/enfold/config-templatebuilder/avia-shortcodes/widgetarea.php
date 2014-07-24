@@ -38,11 +38,11 @@ if ( !class_exists( 'avia_sc_widgetarea' ) )
 				$sidebars = AviaHelper::get_registered_sidebars();
 
 				if(empty($params['args']['widget_area'])) $params['args']['widget_area'] = reset($sidebars);
-
+				
 				$element = array(
 					'subtype' => $sidebars,
 					'type'=>'select',
-					'std' => $params['args']['widget_area'],
+					'std' => htmlspecialchars_decode($params['args']['widget_area']),
 					'class' => 'avia-recalc-shortcode',
 					'data'	=> array('attr'=>'widget_area')
 				);

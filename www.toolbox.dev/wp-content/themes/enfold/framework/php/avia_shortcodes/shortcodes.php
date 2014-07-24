@@ -34,6 +34,7 @@ class avia_shortcodes{
 		add_action( 'wp_ajax_scn_check_url_action', array( &$this, 'ajax_action_check_url' ) );
 		add_action( 'admin_print_scripts', array( &$this, 'extra_shortcodes' ),20);
 		add_action( 'admin_print_scripts', array( &$this, 'extra_styles' ),20);
+		add_action( 'admin_print_scripts', array( &$this, 'avia_preview_nonce' ),20);
 	}
 	
 	function action_admin_init() {
@@ -53,6 +54,18 @@ class avia_shortcodes{
 		}
 	}
 	
+	function avia_preview_nonce()
+	{	
+		if(!current_user_can('edit_files')) return;
+		
+		$nonce = wp_create_nonce ('avia_shortcode_preview');
+	
+		echo "\n <script type='text/javascript'>\n /* <![CDATA[ */  \n";
+		echo "var avia_shortcode_preview  = '".$nonce."'; \n /* ]]> */ \n ";
+		echo "</script>\n \n ";
+	}
+	
+	
 	function filter_mce_buttons( $buttons ) {
 		
 		array_push( $buttons, '|', 'scn_button');
@@ -61,7 +74,17 @@ class avia_shortcodes{
 	
 	function filter_mce_external_plugins( $plugins ) {
 		
-        $plugins['ShortcodeNinjaPlugin'] = $this->plugin_url() . 'tinymce/editor_plugin.js';
+		//if we are using tinymce 4 or higher change the javascript file
+		global $tinymce_version;
+		
+		if(version_compare($tinymce_version[0], 4, ">="))
+		{
+			$plugins['ShortcodeNinjaPlugin'] = $this->plugin_url() . 'tinymce/editor_plugin.js';
+		}
+		else
+		{
+        	$plugins['ShortcodeNinjaPlugin'] = $this->plugin_url() . 'tinymce/editor_plugin_3.js';
+        }
         return $plugins;
 	}
 	

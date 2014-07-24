@@ -220,8 +220,9 @@ if ( !class_exists( 'avia_sc_content_slider' ) )
                 'columns'       => 3,
 				'handle'		=> $shortcodename,
 				'content'		=> ShortcodeHelper::shortcode2array($content, 1),
-				'class'			=> $meta['el_class']
-				), $atts);
+				'class'			=> $meta['el_class'],
+                'custom_markup' => $meta['custom_markup']
+				), $atts, $this->config['shortcode']);
 
 				$slider  = new avia_content_slider($atts);
 				return $slider->html();
@@ -260,6 +261,7 @@ if ( !class_exists( 'avia_content_slider' ) )
                 'columns'       => 3,
 				'interval'		=> 5,
 				'class'			=> "",
+                'custom_markup' => "",
 				'css_id'		=> "",
 				'content'		=> array()
 				), $config);
@@ -335,15 +337,15 @@ if ( !class_exists( 'avia_content_slider' ) )
 
                     if($loop_counter == 1) $output .= "<div class='slide-entry-wrap'>";
 
-                    $markup = avia_markup_helper(array('context' => 'entry','echo'=>false));
+                    $markup = avia_markup_helper(array('context' => 'entry','echo'=>false, 'custom_markup'=>$custom_markup));
                     $output .= "<section class='slide-entry flex_column {$post_class} {$grid} {$extraClass}' $markup>";
 
-                    $markup = avia_markup_helper(array('context' => 'entry_title','echo'=>false));
+                    $markup = avia_markup_helper(array('context' => 'entry_title','echo'=>false, 'custom_markup'=>$custom_markup));
                     $output .= !empty($title) ? "<h3 class='slide-entry-title entry-title' $markup>" : '';
                     $output .= (!empty($link) && !empty($title)) ? "<a href='{$link}' $blank title='".esc_attr($title)."'>".$title."</a>" : $title;
                     $output .= !empty($title) ? '</h3>' : '';
 
-                    $markup = avia_markup_helper(array('context' => 'entry_content','echo'=>false));
+                    $markup = avia_markup_helper(array('context' => 'entry_content','echo'=>false, 'custom_markup'=>$custom_markup));
                     $output .= !empty($value['content']) ? "<div class='slide-entry-excerpt entry-content' $markup>".ShortcodeHelper::avia_apply_autop(ShortcodeHelper::avia_remove_autop($value['content']))."</div>" : "";
 
                     $output .= '</section>';

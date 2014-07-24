@@ -222,7 +222,7 @@ if ( !class_exists( 'avia_sc_promobox' ) )
 			                                 'icon_select' => 'yes',
 			                                 'icon' => '',
 			                                 'font' => '',
-			                                 ), $atts);
+			                                 ), $atts, $this->config['shortcode']);
 
 				$atts['position'] = 'right';
 

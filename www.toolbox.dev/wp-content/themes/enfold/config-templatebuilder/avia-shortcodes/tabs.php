@@ -198,7 +198,7 @@ if ( !class_exists( 'avia_sc_tab' ) )
          */
         function shortcode_handler($atts, $content = "", $shortcodename = "", $meta = "")
         {
-            $atts =  shortcode_atts(array('initial' => '1', 'position' => 'top_tab', 'boxed'=>'border_tabs'), $atts);
+            $atts =  shortcode_atts(array('initial' => '1', 'position' => 'top_tab', 'boxed'=>'border_tabs'), $atts, $this->config['shortcode']);
             extract($atts);
 
             $boxed   = $position != "top_tab" ? $boxed : "";
@@ -219,7 +219,7 @@ if ( !class_exists( 'avia_sc_tab' ) )
         {
             
             $output = $titleClass  = $contentClass = $icon = "";
-            $tab_atts = shortcode_atts(array('title' => '', 'icon_select'=>'no', 'icon' =>"", 'custom_id' =>'', 'font' =>''), $atts);
+            $tab_atts = shortcode_atts(array('title' => '', 'icon_select'=>'no', 'icon' =>"", 'custom_id' =>'', 'font' =>'', 'custom_markup' => ''), $atts, 'av_tab');
             
             $display_char = av_icon($tab_atts['icon'], $tab_atts['font']);
 
@@ -245,9 +245,9 @@ if ( !class_exists( 'avia_sc_tab' ) )
             }
 
 
-            $markup_tab = avia_markup_helper(array('context' => 'entry','echo'=>false));
-            $markup_title = avia_markup_helper(array('context' => 'entry_title','echo'=>false));
-            $markup_text = avia_markup_helper(array('context' => 'entry_content','echo'=>false));
+            $markup_tab = avia_markup_helper(array('context' => 'entry','echo'=>false, 'custom_markup'=>$tab_atts['custom_markup']));
+            $markup_title = avia_markup_helper(array('context' => 'entry_title','echo'=>false, 'custom_markup'=>$tab_atts['custom_markup']));
+            $markup_text = avia_markup_helper(array('context' => 'entry_content','echo'=>false, 'custom_markup'=>$tab_atts['custom_markup']));
 
             $output .= '<section class="av_tab_section" '.$markup_tab.'>';
             $output .= '    <div data-fake-id="#'.$tab_atts['custom_id'].'" class="tab '.$titleClass.'" '.$markup_title.'>'.$icon.$tab_atts['title'].'</div>'."\n";

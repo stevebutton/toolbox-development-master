@@ -41,7 +41,7 @@ if(!function_exists('avia_woo_dynamic_css'))
 			color: $meta;
 			}
 			
-			$key div.product .woocommerce-tabs ul.tabs li.active a, $key .cart_dropdown .dropdown_widget .widget_shopping_cart_content,  $key .cart_dropdown_link, $key .inner_product_header, $key .avia-arrow, #top $key .variations select, #top $key .variations input, #top $key #reviews input[type='text'], $key #reviews .comment-text, $key #reviews #comment, $key .single-product-main-image .images a, #top $key .shop_table.cart .input-text, #top $key form.login .input-text, #top $key form.register .input-text, $key .chosen-container-single .chosen-search{
+			$key div.product .woocommerce-tabs ul.tabs li.active a, $key .cart_dropdown .dropdown_widget .widget_shopping_cart_content,  $key .cart_dropdown_link, $key .inner_product_header, $key .avia-arrow, #top $key .variations select, #top $key .variations input, #top $key #reviews input[type='text'], $key #reviews .comment-text, $key #reviews #comment, $key .single-product-main-image .images a, #top $key .shop_table.cart .input-text, #top $key form.login .input-text, #top $key form.register .input-text, $key .chosen-container-single .chosen-search, $key .products .product-category h3:before{
 			background-color: $bg;
 			}
 			
@@ -49,7 +49,7 @@ if(!function_exists('avia_woo_dynamic_css'))
 			background-color: $bg2;
 			}
 			
-			$key .thumbnail_container img, #top $key #main .order_details, #top $key .chosen-search input[type='text'], #top $key .chosen-container-single .chosen-single, #top $key .chosen-container-active .chosen-single, #top $key .chosen-container .chosen-drop, $key .chosen-container .chosen-results{
+			$key .thumbnail_container img, #top $key #main .order_details, #top $key .chosen-search input[type='text'], #top $key .chosen-container-single .chosen-single, #top $key .chosen-container-active .chosen-single, #top $key .chosen-container .chosen-drop, $key .chosen-container .chosen-results, $key .products .product-category h3:before{
 			border-color: $border;
 			}
 			
@@ -70,7 +70,7 @@ if(!function_exists('avia_woo_dynamic_css'))
 			color: #fff;
 			}
 			
-			#top $key .price, $key .stock, #top #wrap_all $key ins{
+			#top $key .price, $key .stock, #top #wrap_all $key ins, $key .products .product-category h3 .count{
 			color:$primary;
 			}
 			

@@ -75,6 +75,8 @@ else
 			
 			do_action('avia_after_custom_import_hook');
 		}
+		
+		update_option('av_demo_content_imported', true);
 	}
 }
 

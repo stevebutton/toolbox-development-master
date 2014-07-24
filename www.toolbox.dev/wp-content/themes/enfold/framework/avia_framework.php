@@ -13,10 +13,10 @@
  * @link		http://aviathemes.com
  * @since		Version 1.0
  * @package 	AviaFramework
- * @version 	1.8.7
+ * @version 	1.9.1
 
 */ 
-define( 'AV_FRAMEWORK_VERSION', "1.8.8" ); 
+define( 'AV_FRAMEWORK_VERSION', "1.9.1" ); 
 
 
 

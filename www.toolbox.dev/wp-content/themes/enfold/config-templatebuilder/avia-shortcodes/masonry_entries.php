@@ -13,7 +13,7 @@ if ( !class_exists( 'avia_sc_masonry_entries' ) )
 			 */
 			function shortcode_insert_button()
 			{
-				$this->config['name']			= __('Fullwidth Masonry', 'avia_framework' );
+				$this->config['name']			= __('Masonry', 'avia_framework' );
 				$this->config['tab']			= __('Content Elements', 'avia_framework' );
 				$this->config['icon']			= AviaBuilder::$path['imagesURL']."sc-masonry.png";
 				$this->config['order']			= 38;
@@ -21,7 +21,7 @@ if ( !class_exists( 'avia_sc_masonry_entries' ) )
 				$this->config['shortcode'] 		= 'av_masonry_entries';
 				$this->config['tooltip'] 	    = __('Display a fullwidth masonry/grid with blog entries', 'avia_framework' );
 				$this->config['tinyMCE'] 		= array('disable' => "true");
-				$this->config['drag-level'] 	= 1;
+				$this->config['drag-level'] 	= 3;
 			}
 			
 			
@@ -30,7 +30,7 @@ if ( !class_exists( 'avia_sc_masonry_entries' ) )
 				add_action('wp_ajax_avia_ajax_masonry_more', array('avia_masonry','load_more'));
 				add_action('wp_ajax_nopriv_avia_ajax_masonry_more', array('avia_masonry','load_more'));
 				
-				if(!is_admin() && !session_id()) session_start();
+				if(!is_admin() && !current_theme_supports('avia_no_session_support') && !session_id()) session_start();
 			}
 			
 
@@ -195,6 +195,15 @@ if ( !class_exists( 'avia_sc_masonry_entries' ) )
 			{	
 				$params['innerHtml'] = "<img src='".$this->config['icon']."' title='".$this->config['name']."' />";
 				$params['innerHtml'].= "<div class='avia-element-label'>".$this->config['name']."</div>";
+				
+				$params['innerHtml'].= "<div class='avia-flex-element'>"; 
+				$params['innerHtml'].= 		__('This element will stretch across the whole screen by default.','avia_framework')."<br/>";
+				$params['innerHtml'].= 		__('If you put it inside a color section or column it will only take up the available space','avia_framework');
+				$params['innerHtml'].= "	<div class='avia-flex-element-2nd'>".__('Currently:','avia_framework');
+				$params['innerHtml'].= "	<span class='avia-flex-element-stretched'>&laquo; ".__('Stretch fullwidth','avia_framework')." &raquo;</span>";
+				$params['innerHtml'].= "	<span class='avia-flex-element-content'>| ".__('Adjust to content width','avia_framework')." |</span>";
+				$params['innerHtml'].= "</div></div>";
+				
 				return $params;
 			}
 			
@@ -241,15 +250,14 @@ if ( !class_exists( 'avia_sc_masonry_entries' ) )
 			function shortcode_handler($atts, $content = "", $shortcodename = "", $meta = "")
 			{
 				$output  = "";
-				
-				$skipSecond = false;
-				
+								
 				//check if we got a layerslider
 				global $wpdb;
 				
 				$params['class'] = "main_color ".$meta['el_class'];
 				$params['open_structure'] = false;
 				$params['id'] = !empty($atts['id']) ? AviaHelper::save_string($atts['id'],'-') : "";
+				$params['custom_markup'] = $meta['custom_markup'];
 				
 				//we dont need a closing structure if the element is the first one or if a previous fullwidth element was displayed before
 				if($meta['index'] == 0) $params['close'] = false;
@@ -265,31 +273,11 @@ if ( !class_exists( 'avia_sc_masonry_entries' ) )
 				
 				
 				
-				
-				// if(!ShortcodeHelper::is_top_level()) return $masonry_html; // todo: masonry within columns. doesnt quite work yet 
+				if(!ShortcodeHelper::is_top_level()) return $masonry_html;
 				
 				$output .=  avia_new_section($params);
 				$output .= $masonry_html;
-				$output .= "</div>"; //close section
-				
-				
-				//if the next tag is a section dont create a new section from this shortcode
-				if(!empty($meta['siblings']['next']['tag']) && in_array($meta['siblings']['next']['tag'], AviaBuilder::$full_el ))
-				{
-				    $skipSecond = true;
-				}
-
-				//if there is no next element dont create a new section.
-				if(empty($meta['siblings']['next']['tag']))
-				{
-				    $skipSecond = true;
-				}
-				
-				if(empty($skipSecond)) {
-				
-				$output .= avia_new_section(array('close'=>false, 'id' => "after_masonry"));
-				
-				}
+				$output .= avia_section_after_element_content( $meta , 'after_masonry' );
 				
 				return $output;
 			}
@@ -328,8 +316,9 @@ if ( !class_exists( 'avia_masonry' ) )
 												'caption_display' 	=> 'always',
 												'sort'				=> 'no',
 												'auto_ratio' 		=> 1.7, //equals a 16:9 ratio
-												'set_breadcrumb' 	=> true //no shortcode option for this, modifies the breadcrumb nav, must be false on taxonomy overview
-		                                 		), $atts);
+												'set_breadcrumb' 	=> true, //no shortcode option for this, modifies the breadcrumb nav, must be false on taxonomy overview
+												'custom_markup'		=> ''
+		                                 		), $atts, 'av_masonry_entries');
 		                                 		
 		  	$this->atts = apply_filters('avf_masonry_settings', $this->atts, self::$element);
 		}
@@ -560,7 +549,7 @@ if ( !class_exists( 'avia_masonry' ) )
                 {
                     $linktitle = 'title="'.esc_attr($the_title).'"';
                 }
-                $markup = ($post_type == 'attachment') ? avia_markup_helper(array('context' => 'image_url','echo'=>false)) : avia_markup_helper(array('context' => 'entry','echo'=>false));
+                $markup = ($post_type == 'attachment') ? avia_markup_helper(array('context' => 'image_url','echo'=>false, 'id'=>$entry['ID'], 'custom_markup'=>$this->atts['custom_markup'])) : avia_markup_helper(array('context' => 'entry','echo'=>false, 'id'=>$entry['ID'], 'custom_markup'=>$this->atts['custom_markup']));
 
 				$items .= 	"<{$html_tags[0]} class='{$class_string}' {$linktitle} {$markup}>";
 				$items .= 		"<div class='av-inner-masonry-sizer'></div>"; //responsible for the size
@@ -573,12 +562,12 @@ if ( !class_exists( 'avia_masonry' ) )
 					$items .=	"<figcaption class='av-inner-masonry-content site-background'><div class='av-inner-masonry-content-pos'><div class='avia-arrow'></div>".$text_before;
 					
 					if(strpos($this->atts['caption_elements'], 'title') !== false){
-                        $markup = avia_markup_helper(array('context' => 'entry_title','echo'=>false));
+                        $markup = avia_markup_helper(array('context' => 'entry_title','echo'=>false, 'id'=>$entry['ID'], 'custom_markup'=>$this->atts['custom_markup']));
 						$items .=	"<h3 class='av-masonry-entry-title entry-title' {$markup}>{$the_title}</h3>";
 					}
 
 					if(strpos($this->atts['caption_elements'], 'excerpt') !== false && !empty($content)){
-                        $markup = avia_markup_helper(array('context' => 'entry_content','echo'=>false));
+                        $markup = avia_markup_helper(array('context' => 'entry_content','echo'=>false, 'id'=>$entry['ID'], 'custom_markup'=>$this->atts['custom_markup']));
 						$items .=	"<div class='av-masonry-entry-content entry-content' {$markup}>{$content}</div>";
 					}
 					$items .=	$text_after."</div></figcaption>";
@@ -678,7 +667,7 @@ if ( !class_exists( 'avia_masonry' ) )
 			{ 	
 				$overlay_img = $custom_url			= false;
 				$img_size	 						= 'masonry';
-                		$author = get_the_author_meta('display_name', $entry->post_author);
+				$author = apply_filters('avf_author_name', get_the_author_meta('display_name', $entry->post_author), $entry->post_author);
                 		
 				$this->loop[$key]['text_before']	= "";
 				$this->loop[$key]['text_after']		= "";
@@ -844,7 +833,7 @@ if ( !class_exists( 'avia_masonry' ) )
 				}
 
 				$page = get_query_var( 'paged' ) ? get_query_var( 'paged' ) : get_query_var( 'page' );
-				if(!$page) $page = 1;
+				if(!$page || $params['paginate'] == 'no') $page = 1;
 
 				//if we find no terms for the taxonomy fetch all taxonomy terms
 				if(empty($terms[0]) || is_null($terms[0]) || $terms[0] === "null")
@@ -865,6 +854,7 @@ if ( !class_exists( 'avia_masonry' ) )
 									'order' 	=> 'DESC',
 									'paged' 	=> $page,
 									'post_type' => $params['post_type'],
+									'post_status' => 'publish',
 									'offset'	=> $params['offset'],
 									'posts_per_page' => $params['items'],
 									'tax_query' => array( 	array( 	'taxonomy' 	=> $params['taxonomy'],

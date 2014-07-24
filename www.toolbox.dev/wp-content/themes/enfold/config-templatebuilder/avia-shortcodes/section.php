@@ -23,7 +23,7 @@ if ( !class_exists( 'avia_sc_section' ) )
 				$this->config['name']		= __('Color Section', 'avia_framework' );
 				$this->config['icon']		= AviaBuilder::$path['imagesURL']."sc-section.png";
 				$this->config['tab']		= __('Layout Elements', 'avia_framework' );
-				$this->config['order']		= 40;
+				$this->config['order']		= 20;
 				$this->config['shortcode'] 	= 'av_section';
 				$this->config['html_renderer'] 	= false;
 				$this->config['tinyMCE'] 	= array('disable' => "true");
@@ -106,7 +106,7 @@ if ( !class_exists( 'avia_sc_section' ) )
 						"name" 	=> __("Section Colors",'avia_framework' ),
 						"id" 	=> "color",
 						"desc"  => __("The section will use the color scheme you select. Color schemes are defined on your styling page",'avia_framework' ) .
-						           '<br/><a target="_blank" href="'.admin_url('admin.php?page=avia#goto_styling').'">'.__("(Show Styling Page)",'avia_framework' )."</a>",
+						           '<br/><a target="_blank" href="'.admin_url('admin.php?page=avia#goto_general_styling').'">'.__("(Show Styling Page)",'avia_framework' )."</a>",
 						"type" 	=> "select",
 						"std" 	=> "main_color",
 						"subtype" =>  array_flip($avia_config['color_sets'])
@@ -235,13 +235,15 @@ if ( !class_exists( 'avia_sc_section' ) )
 
 
 				   array(
-						"name" 	=> __("Section Top Shadow",'avia_framework' ),
+						"name" 	=> __("Section Top Border Styling",'avia_framework' ),
 						"id" 	=> "shadow",
-						"desc"  => __("Display a small styling shadow at the top of the section",'avia_framework' ),
+						"desc"  => __("Chose a border styling for the top of your section",'avia_framework' ),
 						"type" 	=> "select",
 						"std" 	=> "no-shadow",
-						"subtype" => array(   __('Display shadow','avia_framework' )	=>'shadow',
-						                      __('Do not display shadow','avia_framework' )	=>'no-shadow',
+						"subtype" => array( __('Display simple top border','avia_framework' )	=>'no-shadow',  
+											__('Display a small styling shadow at the top of the section','avia_framework' )	=>'shadow',
+											__('No border styling','avia_framework' )	=>'no-border-styling',
+						                      
 						                  )
 				    ),
 
@@ -278,8 +280,13 @@ if ( !class_exists( 'avia_sc_section' ) )
 			    								'min_height' => '', 
 			    								'video' => '', 
 			    								'video_ratio'=>'16:9', 
-			    								'video_mobile_disabled'=>''), 
-			    							$atts);
+			    								'video_mobile_disabled'=>'',
+			    								'custom_markup' => '',
+			    								'attachment' => '',
+			    								'attachment_size' => ''
+			    								
+			    								), 
+			    							$atts, $this->config['shortcode']);
 							    							
 			    							
 				extract($atts);
@@ -288,6 +295,28 @@ if ( !class_exists( 'avia_sc_section' ) )
 			    $background  = "";
 				
 				$params['id'] = !empty($id) ? AviaHelper::save_string($id,'-') :"av_section_".avia_sc_section::$section_count;
+				$params['custom_markup'] = $meta['custom_markup'];
+				
+				
+				if(!empty($attachment) && !empty($attachment_size))
+				{
+					$attachment_entry = get_post( $attachment );
+					
+					if(!empty($attachment_entry))
+					{
+	                	if(!empty($attachment_size))
+						{
+							$src = wp_get_attachment_image_src($attachment_entry->ID, $attachment_size);
+							$src = !empty($src[0]) ? $src[0] : "";
+						}
+					}
+				}
+				else
+				{
+					$attachment = false;
+				}
+				
+				
 				
 				if($src != "")
 				{
@@ -347,7 +376,10 @@ if ( !class_exists( 'avia_sc_section' ) )
 			    		$params['close'] = false;
 			    	}
 			    }
-				
+		
+				global $avia_config;
+				$avia_config['layout_container'] = "section";
+	
 				$output .= avia_new_section($params);
 				$output .=  ShortcodeHelper::avia_remove_autop($content,true) ;
 
@@ -369,6 +401,7 @@ if ( !class_exists( 'avia_sc_section' ) )
 					$output .= avia_new_section($new_params);
 				}
 
+				unset($avia_config['layout_container']);
 				return $output;
 			}
 	}
@@ -379,8 +412,6 @@ function avia_new_section($params = array())
 {
 	global $avia_section_markup, $avia_config;
 	
-	$avia_config['layout_container'] = 'section';
-
     $defaults = array(	'class'=>'main_color', 
     					'bg'=>'', 
     					'close'=>true, 
@@ -395,12 +426,15 @@ function avia_new_section($params = array())
     					'video' => '',
     					'video_ratio' => '16:9',
     					'video_mobile_disabled' => '',
-    					'attach' => ""
+    					'attach' => "",
+    					'custom_markup' => ''
     					);
+    
+    
     
     $defaults = array_merge($defaults, $params);
     extract($defaults);
-
+		
     $post_class = "";
     $output     = "";
     $bg_slider  = "";
@@ -461,7 +495,7 @@ function avia_new_section($params = array())
         {
         	if(!empty($main_container))
         	{
-				$markup = 'main '.avia_markup_helper(array('context' =>'content','echo'=>false));
+				$markup = 'main '.avia_markup_helper(array('context' =>'content','echo'=>false, 'custom_markup'=>$custom_markup));
 				$avia_section_markup = 'main';
 			}
 			else
@@ -484,7 +518,8 @@ function avia_section_close_markup()
 {
 	global $avia_section_markup, $avia_config;
 	
-	unset($avia_config['layout_container']);
+	
+	
 
 	if(!empty($avia_section_markup))
 	{
@@ -498,6 +533,22 @@ function avia_section_close_markup()
 	}
 	
 	return $close_markup;
+}
+
+
+function avia_section_after_element_content($meta, $second_id = "", $skipSecond = false)
+{
+	$output = "</div>"; //close section
+				
+	//if the next tag is a section dont create a new section from this shortcode
+	if(!empty($meta['siblings']['next']['tag']) && in_array($meta['siblings']['next']['tag'], AviaBuilder::$full_el )){ $skipSecond = true; }
+
+	//if there is no next element dont create a new section.
+	if(empty($meta['siblings']['next']['tag'])) { $skipSecond = true; }
+	
+	if(empty($skipSecond)) { $output .= avia_new_section(array('close'=>false, 'id' => $second_id)); }
+	
+	return $output;
 }
 
 

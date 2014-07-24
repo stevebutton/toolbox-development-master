@@ -45,7 +45,6 @@ if( !class_exists( 'avia_style_generator' ) )
 		 * @var string
 		 */
 		var $extra_output = "";
-		var $webfont_count = 1;
 
         /*
          * Add print var to check if we need to output style tags or not
@@ -53,22 +52,30 @@ if( !class_exists( 'avia_style_generator' ) )
         var $print_styles = '';
         var $print_extra_output = '';
         var $used_fonts = array();
+        var $google_fontlist = "";
+        
+        var $stylewizard = array();	// holds all available styling rules that are defined in the config files 
+        var $stylewizardIDs = array(); // holds all saved elements that contain rules
 
         public function __construct(&$avia_superobject, $print_styles = true, $print_extra_output = true, $addaction = true)
         {
             $this->print_styles = $print_styles;
             $this->print_extra_output = $print_extra_output;
+            
 
             //check if stylesheet exists...
 			$safe_name = avia_backend_safe_string($avia_superobject->base_data['prefix']);
 			
             if( get_option('avia_stylesheet_exists'.$safe_name) == 'true' ) $this->print_styles = false;
+		
+			$this->get_style_wizard_additions($avia_superobject->option_page_data);	
 
             if($addaction) 
             {
             	add_action('wp_head',array(&$this, 'create_styles'),5);
             	add_action('wp_head',array(&$this, 'print_extra_output'),5);
             	add_action('wp_head',array(&$this, 'print_styles'),1000);
+            	add_action('wp_footer',array(&$this, 'print_footer'),1000);
         	}
         }
 
@@ -76,6 +83,19 @@ if( !class_exists( 'avia_style_generator' ) )
         {
             unset($this->print_styles);
             unset($this->print_extra_output);
+        }
+        
+        // gather styling wizard elements so the rules can be converted as well
+        function get_style_wizard_additions($option_page_data)
+        {
+        	foreach($option_page_data as $data)
+        	{
+        		if($data['type'] == 'styling_wizard') 
+        		{
+        			$this->stylewizardIDs[] = $data['id'];
+        			$this->stylewizard = array_merge($this->stylewizard, $data['elements']);
+        		}
+        	}
         }
 
 
@@ -87,7 +107,8 @@ if( !class_exists( 'avia_style_generator' ) )
 
 			$avia_config['style'] = apply_filters('avia_style_filter',$avia_config['style']);
 			$this->rules = $avia_config['style'];
-
+			
+			//default styling rules
 			if(is_array($this->rules))
 			{
 				foreach($this->rules as $rule)
@@ -103,23 +124,130 @@ if( !class_exists( 'avia_style_generator' ) )
 					}
 
 				}
-
-                //output inline css in head section or return the style code
-                if( !empty($this->output) )
+			}
+			
+			
+			//css wizard styling rules
+			$this->create_wizard_styles();
+			
+				
+            //output inline css in head section or return the style code
+            if( !empty($this->output) )
+            {
+                if( !empty($this->print_styles) )
                 {
-                    if( !empty($this->print_styles) )
-                    {
-                        
-                    }
-                    else
-                    {
-                        $return = $this->output;
-                    }
+                    
                 }
-                
-                if(!empty($return)) return $return;
+                else
+                {
+                    $return = $this->output;
+                }
+            }
+            
+            if(!empty($return)) return $return;
+		}
+		
+		
+		
+		function create_wizard_styles()
+		{
+			if(empty($this->stylewizardIDs)) return;
+			
+			global $avia_config;
+			
+			foreach($this->stylewizardIDs as $id)
+			{
+				$options = avia_get_option($id);
+				if(empty($options)) continue;
+				
+				foreach($options as $style)
+				{
+					if(empty($this->stylewizard[$style['id']]['selector'])) continue;
+				
+					//first of all we need to build the selector string
+					$selectorArray 	= $this->stylewizard[$style['id']]['selector'];
+					$sectionCheck	= $this->stylewizard[$style['id']]['sections'];
+					
+					foreach($selectorArray as $selector => $ruleset)
+					{
+						$temp_selector  = "";
+						$rules			= "";
+						$sectionActive  = strpos($selector, '[sections]') !== false ? true : false;
+					
+						//hover check
+						if(isset($style['hover_active']) && $style['hover_active'] != 'disabled')
+						{
+							$selector = str_replace("[hover]", ":hover", $selector);
+						}
+						else
+						{
+							$selector = str_replace("[hover]", "", $selector);
+						}
+						
+						
+						//if sections are enabled make sure that the selector string gets generated for each section
+						if($sectionActive && $sectionCheck && isset($avia_config['color_sets']))
+						{
+							foreach($avia_config['color_sets'] as $key => $name)
+							{
+								if( isset($style[$key]) && $style[$key] != 'disabled')
+								{
+									if(!empty($temp_selector)) $temp_selector .= ", ";
+									$temp_selector .= str_replace("[sections]", ".".$key, $selector);
+								}
+							}
+							
+							if(empty($temp_selector)) continue;
+						}
+						
+						//apply modified rules to the selector
+						if(!empty($temp_selector)) $selector = $temp_selector;
+						
+						
+						//we got the selector stored in $selector, now we need to generate the rules
+						foreach($style as $key => $value)
+						{
+							if($value != "" && $value != "true" && $value != "disabled" && $key != "id")
+							{
+								if( is_array( $ruleset ) )
+								{
+									foreach($ruleset as $rule_key => $rule_val)
+									{
+										if($rule_key == $key )
+										{
+											$rules .= str_replace("%{$key}%", $value, $rule_val);
+										}
+									}
+								}
+								else
+								{
+									$key = str_replace('_','-',$key);
+								
+									switch($key)
+									{
+										case "font-family": 
+		
+										$font   = explode(':',($value));
+										$font_family = $font[0];
+										$font_size	 = isset($font[1]) ? $font[1] : "";
+										$this->add_google_font($font_family, $font_size);
+										$rules .= "font-family:'{$font_family}', 'Helvetica Neue', Helvetica, Arial, sans-serif;"; break;
+										default: 			$rules .= "{$key}:{$value};"; break;
+									}
+								}
+							}
+						}
+						
+						if(!empty($rules))
+						{
+							$this->output .= $selector.'{'.$rules.'}';
+						}
+					}
+				}
 			}
 		}
+		
+		
 
 
 
@@ -136,23 +264,34 @@ if( !class_exists( 'avia_style_generator' ) )
 		}
 
 
-
-
         function print_extra_output()
         {
-        	if($this->print_extra_output) echo $this->extra_output;
+        	if($this->print_extra_output) 
+        	{
+        		$this->link_google_font();
+        		
+        		echo $this->extra_output;
+        	}
         }
-
+        
+        function print_footer()
+        {
+        	if(!empty($this->footer)) 
+        	{
+        		echo $this->footer;
+        	}
+        }
 
 
 		function cufon($rule)
 		{
 			$rule_split = explode('__',$rule['value']);
 			if(!isset($rule_split[1])) $rule_split[1] = 1;
-			$this->extra_output .= "\n<!-- cufon font replacement -->\n";
-			$this->extra_output .= "<script type='text/javascript' src='".AVIA_JS_URL."fonts/cufon.js'></script>\n";
-			$this->extra_output .= "<script type='text/javascript' src='".AVIA_JS_URL."fonts/".$rule_split[0].".font.js'></script>\n";
-			$this->extra_output .= "<script type='text/javascript'>\n\tvar avia_cufon_size_mod = '".$rule_split[1]."'; \n\tCufon.replace('".$rule['elements']."',{  fontFamily: 'cufon', hover:'true' }); \n</script>\n";
+			$this->footer .= "\n<!-- cufon font replacement -->\n";
+			$this->footer .= "<script type='text/javascript' src='".AVIA_BASE_URL."fonts/cufon.js'></script>\n";
+			$this->footer .= "<script type='text/javascript' src='".AVIA_BASE_URL."fonts/".$rule_split[0].".font.js'></script>\n";
+			$this->footer .= "<script type='text/javascript'>\n\t
+			var avia_cufon_size_mod = '".$rule_split[1]."'; \n\tCufon.replace('".$rule['elements']."',{  fontFamily: 'cufon', hover:'true' }); \n</script>\n";
 		}
 
 		function google_webfont($rule)
@@ -167,7 +306,7 @@ if( !class_exists( 'avia_style_generator' ) )
 			{
 				$data = explode(':',$rule['value']);
 				$rule['value'] = $data[0];
-				$font_weight = ":".$data[1];
+				$font_weight = $data[1];
 			}
 
 			$rule_split = explode('__',$rule['value']);
@@ -188,30 +327,46 @@ if( !class_exists( 'avia_style_generator' ) )
 				$get_google_font = false;
 			}
 			
-			
 
-			$prefix = "http";
-			if(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') $prefix = "https";
-
-			if($get_google_font){
-			
-			if(!in_array($rule_split[0], $this->used_fonts))
+			if($get_google_font)
 			{
-				$this->extra_output .= "\n<!-- google webfont font replacement -->\n";
-				$this->extra_output .= '<link id="google_webfont_'.$this->webfont_count.'" rel="stylesheet" type="text/css" href="'.$prefix.'://fonts.googleapis.com/css?family='.str_replace(' ','+',$rule_split[0]).$font_weight.'" />';
-			}
+				$this->add_google_font($rule_split[0], $font_weight);
 			
-			$this->webfont_count++;
-			if(!empty($font_weight) && strpos($font_weight,',') === false) { $font_weight = "\nfont-weight".$font_weight.";";} else { $font_weight = ""; }
+				if(!empty($font_weight) && strpos($font_weight,',') === false) { $font_weight = "font-weight:".$font_weight.";";} else { $font_weight = ""; }
 			}
 
-			$this->output .= $rule['elements']."{\nfont-family:'".$rule_split[0]."', 'HelveticaNeue', 'Helvetica Neue', Helvetica, Arial, sans-serif;".$font_weight."\n}\n\n";
-			if($rule_split[1] !== 1 && $rule_split[1]) $this->output .= $rule['elements']."{\nfont-size:".$rule_split[1]."em;\n}\n\n";
+			$this->output .= $rule['elements']."{font-family:'".$rule_split[0]."', 'HelveticaNeue', 'Helvetica Neue', Helvetica, Arial, sans-serif;".$font_weight."}";
+			if($rule_split[1] !== 1 && $rule_split[1]) $this->output .= $rule['elements']."{font-size:".$rule_split[1]."em;}";
 
 			$avia_config['font_stack'] .= " ".strtolower( str_replace( " ", "_" , $rule_split[0] ))." ";
-			
-			$this->used_fonts[] = $rule_split[0];
 		}
+		
+		
+		//add the font to the query string
+		function add_google_font($font_family, $font_weight = "")
+		{
+			if(!in_array($font_family.$font_weight, $this->used_fonts))
+			{
+				$this->used_fonts[] = $font_family.$font_weight;
+				if(!empty($this->google_fontlist)) $this->google_fontlist .= "|";
+				if(!empty($font_weight)) $font_weight = ":".$font_weight;
+				
+				$this->google_fontlist .= str_replace(' ','+',$font_family).$font_weight;
+			}
+		}
+		
+		
+		//write the link tag with the $this->google_fontlist
+		function link_google_font()
+		{
+			if(empty($this->google_fontlist)) return;
+		
+			$this->extra_output .= "\n<!-- google webfont font replacement -->\n";
+			$this->extra_output .= "<link rel='stylesheet' id='avia-google-webfont' href='//fonts.googleapis.com/css?family=".apply_filters('avf_google_fontlist', $this->google_fontlist)."' type='text/css' media='all'/> \n";
+		}
+		
+		
+		
 
 		function direct_input($rule)
 		{

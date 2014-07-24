@@ -78,7 +78,7 @@ foreach ($color_set as $key => $colors) // iterates over the color sets: usually
 	
 	/*general styles*/
 	$output.= "
-$key, $key div, $key header, $key main, $key aside, $key footer, $key article, $key nav, $key section, $key  span, $key  applet, $key object, $key iframe, $key h1, $key h2, $key h3, $key h4, $key h5, $key h6, $key p, $key blockquote, $key pre, $key a, $key abbr, $key acronym, $key address, $key big, $key cite, $key code, $key del, $key dfn, $key em, $key img, $key ins, $key kbd, $key q, $key s, $key samp, $key small, $key strike, $key strong, $key sub, $key sup, $key tt, $key var, $key b, $key u, $key i, $key center, $key dl, $key dt, $key dd, $key ol, $key ul, $key li, $key fieldset, $key form, $key label, $key legend, $key table, $key caption, $key tbody, $key tfoot, $key thead, $key tr, $key th, $key td, $key article, $key aside, $key canvas, $key details, $key embed, $key figure, $key fieldset, $key figcaption, $key footer, $key header, $key hgroup, $key menu, $key nav, $key output, $key ruby, $key section, $key summary, $key time, $key mark, $key audio, $key video, #top $key .pullquote_boxed, .responsive #top $key .avia-testimonial, .responsive #top.avia-blank #main $key.container_wrap:first-child, #top $key.fullsize .template-blog .post_delimiter{
+$key, $key div, $key header, $key main, $key aside, $key footer, $key article, $key nav, $key section, $key  span, $key  applet, $key object, $key iframe, $key h1, $key h2, $key h3, $key h4, $key h5, $key h6, $key p, $key blockquote, $key pre, $key a, $key abbr, $key acronym, $key address, $key big, $key cite, $key code, $key del, $key dfn, $key em, $key img, $key ins, $key kbd, $key q, $key s, $key samp, $key small, $key strike, $key strong, $key sub, $key sup, $key tt, $key var, $key b, $key u, $key i, $key center, $key dl, $key dt, $key dd, $key ol, $key ul, $key li, $key fieldset, $key form, $key label, $key legend, $key table, $key caption, $key tbody, $key tfoot, $key thead, $key tr, $key th, $key td, $key article, $key aside, $key canvas, $key details, $key embed, $key figure, $key fieldset, $key figcaption, $key footer, $key header, $key hgroup, $key menu, $key nav, $key output, $key ruby, $key section, $key summary, $key time, $key mark, $key audio, $key video, #top $key .pullquote_boxed, .responsive #top $key .avia-testimonial, .responsive #top.avia-blank #main $key.container_wrap:first-child, #top $key.fullsize .template-blog .post_delimiter, $key .related_posts.av-related-style-full a{
 border-color:$border;
 }
 
@@ -87,18 +87,20 @@ background:$meta;
 color:$bg;
 }
 
+$key .av-default-color, #top $key .av-force-default-color{
+color: $color;
+}
 
-
-$key , $key .site-background, $key .first-quote,  $key .related_image_wrap, $key .gravatar img  $key .hr_content, $key .news-thumb, $key .post-format-icon, $key .ajax_controlls a, $key .tweet-text.avatar_no, $key .big-preview, $key .toggler, $key .toggler.activeTitle:hover, $key #js_sort_items, $key.inner-entry, $key .grid-entry-title, $key .related-format-icon,  .grid-entry $key .avia-arrow, $key .avia-gallery-big, $key .avia-gallery-big, $key .avia-gallery img, $key .grid-content{
+$key , $key .site-background, $key .first-quote,  $key .related_image_wrap, $key .gravatar img  $key .hr_content, $key .news-thumb, $key .post-format-icon, $key .ajax_controlls a, $key .tweet-text.avatar_no, $key .toggler, $key .toggler.activeTitle:hover, $key #js_sort_items, $key.inner-entry, $key .grid-entry-title, $key .related-format-icon,  .grid-entry $key .avia-arrow, $key .avia-gallery-big, $key .avia-gallery-big, $key .avia-gallery img, $key .grid-content, $key .av-share-box ul, #top $key .av-related-style-full .related-format-icon, $key .related_posts.av-related-style-full a:hover, $key.avia-fullwidth-portfolio .pagination .current,  $key.avia-fullwidth-portfolio .pagination a{
 background-color:$bg;
 color: $color;
 }
 
-$key .heading-color, $key a.iconbox_icon:hover, $key h1, $key h2, $key h3, $key h4, $key h5, $key h6, $key .sidebar .current_page_item>a, $key .sidebar .current-menu-item>a, $key .pagination .current, $key .pagination a:hover, $key strong.avia-testimonial-name, $key .heading, $key .toggle_content strong, $key .toggle_content strong a, $key .tab_content strong, $key .tab_content strong a , $key .asc_count, $key .avia-testimonial-content strong, $key div .news-headline{
+$key .heading-color, $key a.iconbox_icon:hover, $key h1, $key h2, $key h3, $key h4, $key h5, $key h6, $key .sidebar .current_page_item>a, $key .sidebar .current-menu-item>a, $key .pagination .current, $key .pagination a:hover, $key strong.avia-testimonial-name, $key .heading, $key .toggle_content strong, $key .toggle_content strong a, $key .tab_content strong, $key .tab_content strong a , $key .asc_count, $key .avia-testimonial-content strong, $key div .news-headline, #top $key .av-related-style-full .av-related-title{
     color:$heading;
 }
 
-$key .meta-color, $key .sidebar, $key .sidebar a, $key .minor-meta, $key .minor-meta a, $key .text-sep, $key blockquote, $key .post_nav a, $key .comment-text, $key .side-container-inner, $key .news-time, $key .pagination a, $key .pagination span,  $key .tweet-text.avatar_no .tweet-time, #top $key .extra-mini-title, $key .team-member-job-title, $key .team-social a, $key #js_sort_items a, .grid-entry-excerpt, $key .avia-testimonial-subtitle, $key .commentmetadata a,$key .social_bookmarks a, $key .meta-heading>*, $key .slide-meta, $key .slide-meta a, $key .taglist, $key .taglist a, $key .phone-info, $key .phone-info a, $key .av-sort-by-term a{
+$key .meta-color, $key .sidebar, $key .sidebar a, $key .minor-meta, $key .minor-meta a, $key .text-sep, $key blockquote, $key .post_nav a, $key .comment-text, $key .side-container-inner, $key .news-time, $key .pagination a, $key .pagination span,  $key .tweet-text.avatar_no .tweet-time, #top $key .extra-mini-title, $key .team-member-job-title, $key .team-social a, $key #js_sort_items a, .grid-entry-excerpt, $key .avia-testimonial-subtitle, $key .commentmetadata a,$key .social_bookmarks a, $key .meta-heading>*, $key .slide-meta, $key .slide-meta a, $key .taglist, $key .taglist a, $key .phone-info, $key .phone-info a, $key .av-sort-by-term a, $key .av-magazine-time, $key .av-magazine .av-magazine-entry-icon{
 color: $meta;
 }
 
@@ -131,7 +133,7 @@ background-color:$border;
 border-color: $bg;
 }
 
-$key table, $key .widget_nav_menu ul:first-child>.current-menu-item, $key .widget_nav_menu ul:first-child>.current_page_item, $key .widget_nav_menu ul:first-child>.current-menu-ancestor, $key .pagination .current, $key .pagination a, $key.iconbox_top .iconbox_content, $key .av_promobox, $key .toggle_content, $key .toggler:hover, $key .related_posts_default_image, $key .search-result-counter, $key .container_wrap_meta, $key .avia-content-slider .slide-image, $key .avia-slider-testimonials .avia-testimonial-content, $key .avia-testimonial-arrow-wrap .avia-arrow, $key .news-thumb, $key .portfolio-preview-content, $key .portfolio-preview-content .avia-arrow{
+$key table, $key .widget_nav_menu ul:first-child>.current-menu-item, $key .widget_nav_menu ul:first-child>.current_page_item, $key .widget_nav_menu ul:first-child>.current-menu-ancestor, $key .pagination .current, $key .pagination a, $key.iconbox_top .iconbox_content, $key .av_promobox, $key .toggle_content, $key .toggler:hover, $key .related_posts_default_image, $key .search-result-counter, $key .container_wrap_meta, $key .avia-content-slider .slide-image, $key .avia-slider-testimonials .avia-testimonial-content, $key .avia-testimonial-arrow-wrap .avia-arrow, $key .news-thumb, $key .portfolio-preview-content, $key .portfolio-preview-content .avia-arrow, $key .av-magazine .av-magazine-entry-icon, $key .related_posts.av-related-style-full a, $key .aviaccordion-slide, $key.avia-fullwidth-portfolio .pagination, $key .isotope-item.special_av_fullwidth .av_table_col.portfolio-grid-image{
 background: $bg2;
 }
 
@@ -153,7 +155,7 @@ color:$color;
 }
 
 
-$key .av-icon-display{
+$key .av-icon-display, #top $key .av-related-style-full a:hover .related-format-icon{
 background-color:$bg2;
 color:$meta;
 }
@@ -364,6 +366,14 @@ $key .av-masonry-pagination, $key .av-masonry-pagination:hover{
 	background-color: $bg;
 }
 
+
+$key .container .av-inner-masonry-content, #top $key .container .av-masonry-load-more, #top $key .container .av-masonry-sort, $key .container .av-masonry-entry .avia-arrow{
+	background-color: $bg2;
+}
+
+
+
+
 ";
 
 
@@ -388,7 +398,12 @@ background-color: $bg2;
 color:$color;
 }
 
-$key .template-archives  .tabcontainer a, #top $key .tabcontainer .tab:hover{
+.responsive.js_active #top $key .avia_combo_widget .top_tab .tab{
+border-top-color:$border;
+}
+
+
+$key .template-archives  .tabcontainer a, #top $key .tabcontainer .tab:hover, #top $key .tabcontainer .tab.active_tab{
 color:$color;
 }
 
@@ -479,16 +494,16 @@ border-color:$border;
 
 $stripe = avia_backend_calculate_similar_color($primary, 'lighter', 2);
 $output.= "
-$key .mejs-controls .mejs-time-rail .mejs-time-current, $key .mejs-controls .mejs-volume-button .mejs-volume-slider .mejs-volume-current, $key .mejs-controls .mejs-horizontal-volume-slider .mejs-horizontal-volume-current, $key .theme-color-bar .bar {
+$key .mejs-controls .mejs-time-rail .mejs-time-current, $key .mejs-controls .mejs-volume-button .mejs-volume-slider .mejs-volume-current, $key .mejs-controls .mejs-horizontal-volume-slider .mejs-horizontal-volume-current, $key .theme-color-bar .bar, $key .button.av-sending-button{
 
 background: $primary;
 background-image:	-webkit-linear-gradient(-45deg, $primary 25%, $stripe 25%, $stripe 50%, $primary 50%, $primary 75%, $stripe 75%, $stripe);
 background-image:      -moz-linear-gradient(-45deg, $primary 25%, $stripe 25%, $stripe 50%, $primary 50%, $primary 75%, $stripe 75%, $stripe);
 background-image:           linear-gradient(-45deg, $primary 25%, $stripe 25%, $stripe 50%, $primary 50%, $primary 75%, $stripe 75%, $stripe);
-background-size: 6px 6px;
+background-size: 10px 10px;
 }
 
-$key .mejs-controls .mejs-time-rail .mejs-time-float {
+body $key .mejs-controls .mejs-time-rail .mejs-time-float {
 background: $primary;
 background: -webkit-linear-gradient($stripe, $primary);
 background:    -moz-linear-gradient($stripe, $primary);
@@ -496,7 +511,7 @@ background:         linear-gradient($stripe, $primary);
 color: #fff;
 }
 
-$key .mejs-controls .mejs-time-rail .mejs-time-float-corner {
+body $key .mejs-controls .mejs-time-rail .mejs-time-float-corner {
 border: solid 4px $primary;
 border-color: $primary transparent transparent transparent;
 }
@@ -507,6 +522,17 @@ background-color:$bg2;
 }
 
 ";
+
+/*contact form send button*/
+
+$stripe2nd = avia_backend_calculate_similar_color($secondary, 'lighter', 1);
+$output.= " $key .button.av-sending-button{
+background: $secondary;
+background-image:	-webkit-linear-gradient(-45deg, $secondary 25%, $stripe2nd 25%, $stripe2nd 50%, $secondary 50%, $secondary 75%, $stripe2nd 75%, $stripe2nd);
+background-image:      -moz-linear-gradient(-45deg, $secondary 25%, $stripe2nd 25%, $stripe2nd 50%, $secondary 50%, $secondary 75%, $stripe2nd 75%, $stripe2nd);
+background-image:           linear-gradient(-45deg, $secondary 25%, $stripe2nd 25%, $stripe2nd 50%, $secondary 50%, $secondary 75%, $stripe2nd 75%, $stripe2nd);
+border-color:$secondary;
+}";
 
 
 
@@ -711,7 +737,11 @@ $output .= "
 .image-overlay.overlay-type-video .image-overlay-inside:before{ ".av_icon_css_string('ov_video')." }
 ";
 
-
+//lightbox next/prev icons
+$output .= "
+div.avia-popup button.mfp-arrow:before		{ ".av_icon_css_string('next_big')." }
+div.avia-popup button.mfp-arrow-left:before { ".av_icon_css_string('prev_big')."}
+";
 
 
 
@@ -736,6 +766,14 @@ $avia_config['style'] = array(
 		'key'	=>	'direct_input',
 		'value'		=> avia_get_option('quick_css')
 		),
+		
+		array(
+		'key'	=>	'direct_input',
+		'value'	=> ".html_header_transparency #top .avia-builder-el-0 .container{padding-top:".avia_get_header_scroll_offset()."px;}"
+		),
+		
+		
+		
 
 		//google webfonts
 		array(

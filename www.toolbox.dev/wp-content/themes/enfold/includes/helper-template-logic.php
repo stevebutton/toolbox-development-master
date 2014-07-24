@@ -17,7 +17,7 @@ if(!function_exists('avia_modify_front'))
 			{
 				add_filter('pre_option_show_on_front', 'avia_show_on_front_filter');
 				add_filter('pre_option_page_on_front', 'avia_page_on_front_filter');
-
+				
 				if(avia_get_option('blogpage'))
 				{
 					add_filter('pre_option_page_for_posts', 'avia_page_for_posts_filter');
@@ -28,7 +28,7 @@ if(!function_exists('avia_modify_front'))
 
 	function avia_show_on_front_filter($val) { return 'page'; }
 	function avia_page_on_front_filter($val) { return avia_get_option('frontpage'); }
-	function avia_page_for_posts_filter($val){ return avia_get_option('blogpage'); }
+	function avia_page_for_posts_filter($val){ return avia_get_option('blog_style') !== 'custom' ? avia_get_option('blogpage') : ""; } //use the layout editor to build a blog?
 }
 
 
@@ -71,15 +71,21 @@ if(!function_exists('avia_modify_breadcrumb'))
 {
 	function avia_modify_breadcrumb($trail)
 	{
+        $parent = get_post_meta(avia_get_the_ID(), 'breadcrumb_parent', true);
+
 		if(get_post_type() === "portfolio")
 		{
 			$page 	= "";
 			$front 	= avia_get_option('frontpage');
 
-			if(session_id() && !empty($_SESSION['avia_portfolio']))
+			if(empty($parent) && !current_theme_supports('avia_no_session_support') && session_id() && !empty($_SESSION['avia_portfolio']))
 			{
 				$page = $_SESSION['avia_portfolio'];
 			}
+            else
+            {
+                $page = $parent;
+            }
 
 			if(!$page || $page == $front)
 			{
@@ -126,7 +132,7 @@ if(!function_exists('avia_modify_breadcrumb'))
 		{
 
 			$front = avia_get_option('frontpage');
-			$blog = avia_get_option('blogpage');
+			$blog = !empty($parent) ? $parent : avia_get_option('blogpage');
 
 			if($front && $blog && $front != $blog)
 			{
@@ -136,17 +142,26 @@ if(!function_exists('avia_modify_breadcrumb'))
 		}
 		else if(get_post_type() === "post")
 		{
-			$front = avia_get_option('frontpage');
-			$blog = avia_get_option('blogpage');
+			$front 			= avia_get_option('frontpage');
+			$blog 			= avia_get_option('blogpage');
+			$custom_blog 	= avia_get_option('blog_style') === 'custom' ? true : false;
 			
-			if($blog == $front)
+			if(!$custom_blog)
 			{
-				unset($trail[1]);
+				if($blog == $front)
+				{
+					unset($trail[1]);
+				}
+			}
+			else
+			{
+				if($blog != $front)
+				{
+					$blog = '<a href="' . get_permalink( $blog ) . '" title="' . esc_attr( get_the_title( $blog ) ) . '">' . get_the_title( $blog ) . '</a>';
+					array_splice($trail, 1, 0, array($blog));
+				}
 			}
 		}
-		
-		
-		
 		
 		return $trail;
 	}
@@ -169,7 +184,6 @@ if(!function_exists('avia_layout_class'))
 * the function is called for each main layout div
 * and then delivers the grid classes defined in functions.php
 */
-
 
 	function avia_layout_class($key, $echo = true)
 	{
@@ -276,46 +290,4 @@ if(!function_exists('avia_has_sidebar'))
 
 		return strpos($avia_config['layout']['current']['main'], 'sidebar') !== false ? true : false;
 	}
-}
-
-
-//function that checks if the user wants to display a blog with custom content based on shortcodes/template builder
-if(!function_exists('avia_custom_blog'))
-{
-	function avia_custom_blog()
-	{	
-		$front 		= avia_get_option('frontpage');
-		$blogpage_id 	= avia_get_option('blogpage');
-		$style   	= avia_get_option('blog_style');
-
-		if(is_home() || ($front == $blogpage_id && is_page($blogpage_id))) //if we are on the blog page
-		{
-			if($style == 'custom' && !empty($blogpage_id) && !empty($front))
-			{
-				global $wp_query, $avia_config;
-				
-				$origin = $wp_query;
-				$avia_config['builder_redirect_id'] 	= $blogpage_id;
-				$avia_config['overload_sidebar']		= "blog";
-				
-				query_posts(array(
-				    'p' => $blogpage_id,
-				    'post_type' => array('page'),
-				));
-				
-				$wp_query->is_page 	= 1;
-				$wp_query->is_home 	= 1;
-				$wp_query->is_paged = $origin->is_paged;
-				
-				if(isset($origin->query_vars['page'] ))
-				{
-					$wp_query->query_vars['page'] = $origin->query_vars['page'];
-				}
-				
-				the_post();
-			}
-		}
-	}
-	
-	add_action( 'wp','avia_custom_blog' ,1, 5);
 }

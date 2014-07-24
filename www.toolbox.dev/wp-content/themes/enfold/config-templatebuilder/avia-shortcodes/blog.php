@@ -146,7 +146,7 @@ if ( !class_exists( 'avia_sc_blog' ) )
 
                     array(
                         "name" 	=> __("Offset Number", 'avia_framework' ),
-                        "desc" 	=> __("The offset determines where the query begins pulling posts. Useful if you want to remove a certain number of posts because you already query them with another blog element.", 'avia_framework' ),
+                        "desc" 	=> __("The offset determines where the query begins pulling posts. Useful if you want to remove a certain number of posts because you already query them with another blog or magazine element.", 'avia_framework' ),
                         "id" 	=> "offset",
                         "type" 	=> "select",
                         "std" 	=> "0",
@@ -252,7 +252,7 @@ if ( !class_exists( 'avia_sc_blog' ) )
                                              'contents'     => 'excerpt',
 			                                 'content_length' => 'content',
                                              'offset' => '0'
-			                                 ), $atts);
+			                                 ), $atts, $this->config['shortcode']);
 
 				if($atts['blog_style'] == "blog-grid")
 				{
@@ -283,7 +283,7 @@ if ( !class_exists( 'avia_sc_blog' ) )
 
 				if($output)
 				{
-                    $markup = avia_markup_helper(array('context' => 'blog','echo'=>false));
+                    $markup = avia_markup_helper(array('context' => 'blog','echo'=>false, 'custom_markup'=>$meta['custom_markup']));
 					$output = "<div class='template-blog' {$markup}>{$output}</div>";
 				}
 
@@ -303,7 +303,7 @@ if ( !class_exists( 'avia_sc_blog' ) )
 				}
 
 				$page = get_query_var( 'paged' ) ? get_query_var( 'paged' ) : get_query_var( 'page' );
-				if(!$page) $page = 1;
+				if(!$page || $params['paginate'] == 'no') $page = 1;
 
                 if($params['offset'] == 'no_duplicates')
                 {

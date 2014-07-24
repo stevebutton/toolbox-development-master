@@ -18,7 +18,7 @@ if ( !class_exists( 'avia_sc_table' ) )
 				$this->config['name']		= __('Table', 'avia_framework' );
 				$this->config['tab']		= __('Content Elements', 'avia_framework' );
 				$this->config['icon']		= AviaBuilder::$path['imagesURL']."sc-table.png";
-				$this->config['order']		= 40;
+				$this->config['order']		= 35;
 				$this->config['target']		= 'avia-target-insert';
 				$this->config['shortcode'] 	= 'av_table';
 				$this->config['modal_data'] = array('modal_class' => 'bigscreen', 'before_save' => 'before_table_save');
@@ -156,7 +156,7 @@ if ( !class_exists( 'avia_sc_table' ) )
 			 */
 			function shortcode_handler($atts, $content = "", $shortcodename = "", $meta = "")
 			{
-				$atts 		= shortcode_atts(array('purpose' => 'pricing', 'caption' => '', 'responsive_styling' => 'avia_responsive_table'), $atts);
+				$atts 		= shortcode_atts(array('purpose' => 'pricing', 'caption' => '', 'responsive_styling' => 'avia_responsive_table'), $atts, $this->config['shortcode']);
 				$depth		= 2;
 				$table_rows = ShortcodeHelper::shortcode2array($content, $depth);
 				$output 	= "";
@@ -199,7 +199,7 @@ if ( !class_exists( 'avia_sc_table' ) )
 			function pricing_table($table_rows, $atts, $meta)
 			{
 				$sorted_rows = $this->list_sort_array($table_rows);
-                $markup = avia_markup_helper(array('context' => 'table','echo'=>false));
+                $markup = avia_markup_helper(array('context' => 'table','echo'=>false, 'custom_markup'=>$meta['custom_markup']));
 				$output  =	"";		
 				$output .= "<div class='avia-table main_color avia-pricing-table-container avia-table-".self::$table_count." ".$meta['el_class']."' $markup>";
 
@@ -266,7 +266,7 @@ if ( !class_exists( 'avia_sc_table' ) )
 			{	
 				$responsive_style = "";
 
-                $markup = avia_markup_helper(array('context' => 'table','echo'=>false));
+                $markup = avia_markup_helper(array('context' => 'table','echo'=>false, 'custom_markup'=>$meta['custom_markup']));
 
                 $output = "<div class='avia-data-table-wrap ".$atts['responsive_styling']."'>";
 				$output .= "<table class='avia-table avia-data-table avia-table-".self::$table_count." ".$meta['el_class']."' $markup>";

@@ -26,8 +26,12 @@ body {direction: rtl;unicode-bidi: embed;}
 .progressbar-icon{float: right; margin-left: 5px;margin-right:auto;}
 .progressbar-title{float: right;}
 .avia-progress-bar div.progress .bar-outer, .avia-progress-bar div.progress .bar{right:0;left:auto;}
-.avia_ajax_form .form_element_half{float: right;margin-left: 1%;margin-right:auto;}
-.avia_ajax_form .form_element_half_2{margin-left:0;margin-right:auto;}
+.avia_ajax_form .form_element_half{float: right;margin-right: 1%;margin-left:auto;}
+.avia_ajax_form .form_element_third{float:right; margin-right: 1%;margin-left:auto; clear:none;}
+.avia_ajax_form .form_element_two_third{float:right; margin-right: 1%;margin-left:auto; clear:none;}
+.avia_ajax_form .form_element_fourth{float:right; margin-right: 1%;margin-left:auto; clear:none;}
+.avia_ajax_form .form_element_three_fourth{float:right; margin-right: 1%;margin-left:auto; clear:none;}
+.avia_ajax_form .first_form{clear:both;margin-right:0;}
 .avia_ajax_form p{float:right:}
 .avia-slider-testimonials .avia-testimonial-arrow-wrap{right: 14px;left:auto;}
 .avia-slider-testimonials .avia-testimonial-meta .avia-testimonial-image{margin: 0 0 0 10px;}

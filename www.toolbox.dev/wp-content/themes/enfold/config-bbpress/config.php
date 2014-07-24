@@ -15,18 +15,18 @@ global $avia_config;
 
 
 //register my own styles
-if(!is_admin()){ add_action('bbp_enqueue_scripts', 'avia_bbpress_register_assets',15); }
+add_filter('bbp_default_styles', 'avia_bbpress_deregister_default_assets', 10, 1);
+function avia_bbpress_deregister_default_assets($styles)
+{
+	return array();
+}
 
+if(!is_admin()){ add_action('bbp_enqueue_scripts', 'avia_bbpress_register_assets',15); }
 
 function avia_bbpress_register_assets()
 {
 	global $bbp;
-
-	wp_dequeue_style( 'bbp-default-bbpress' );
 	wp_enqueue_style( 'avia-bbpress', AVIA_BASE_URL.'config-bbpress/bbpress-mod.css');
-	
-
-
 }
 
 
@@ -68,7 +68,7 @@ function avia_bbpress_filter_form_message( $retstr, $args )
 
 /*modify default breadcrumb to work better with bb forums*/
 
-if(!function_exists('avia_bbpress_breadcrumb'))
+if(!function_exists('avia_fetch_bb_trail'))
 {
 	//fetch bb trail and set the bb breadcrum output to false
 	function avia_fetch_bb_trail($trail, $breadcrumbs, $r)
@@ -180,6 +180,7 @@ if(!function_exists('avia_remove_bbpress_post_type_from_query'))
 	add_filter('avia_post_grid_query', 'avia_remove_bbpress_post_type_from_query', 10, 2);
 	add_filter('avia_post_slide_query', 'avia_remove_bbpress_post_type_from_query', 10, 2);
 	add_filter('avia_blog_post_query', 'avia_remove_bbpress_post_type_from_query', 10, 2);
+	add_filter('avf_magazine_entries_query', 'avia_remove_bbpress_post_type_from_query', 10, 2);
 }
 
 

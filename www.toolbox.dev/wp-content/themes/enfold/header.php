@@ -4,14 +4,15 @@
 	$style 		= $avia_config['box_class'];
 	$responsive	= avia_get_option('responsive_layout','responsive');
 	$blank 		= isset($avia_config['template']) ? $avia_config['template'] : "";	
+	$av_lightbox= avia_get_option('lightbox_active') != "disabled" ? 'av-default-lightbox' : 'av-custom-lightbox';
+	
 ?>
 
 
 <!DOCTYPE html>
-<html <?php language_attributes(); ?> class="<?php echo " html_{$style} ".$responsive." ".avia_header_class_string();?> ">
+<html <?php language_attributes(); ?> class="<?php echo " html_{$style} ".$responsive." ".$av_lightbox." ".avia_header_class_string();?> ">
 <head>
 <meta charset="<?php bloginfo( 'charset' ); ?>" />
-<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
 <!-- page title, displayed in your browser bar -->
 <title><?php if(function_exists('avia_set_title_tag')) { echo avia_set_title_tag(); } ?></title>

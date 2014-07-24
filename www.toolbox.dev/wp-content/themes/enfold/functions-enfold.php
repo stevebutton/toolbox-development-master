@@ -67,7 +67,9 @@ if(!function_exists('avia_append_search_nav'))
 	        get_search_form();
 	        $form =  htmlspecialchars(ob_get_clean()) ;
 
-	        $items .= '<li id="menu-item-search" class="noMobile menu-item menu-item-search-dropdown"><a href="?s=" rel="nofollow" data-avia-search-tooltip="'.$form.'" '.av_icon_string('search').'></a></li>';
+	        $items .= '<li id="menu-item-search" class="noMobile menu-item menu-item-search-dropdown">
+							<a href="?s=" rel="nofollow" data-avia-search-tooltip="'.$form.'" '.av_icon_string('search').'><span class="avia_hidden_link_text">'.__('Search','avia_framework').'</span></a>
+	        		   </li>';
 	    }
 	    return $items;
 	}
@@ -561,17 +563,6 @@ var _gaq = _gaq || []; _gaq.push(['_setAccount', '".$avia_config['analytics_code
 		}
 		
 		add_action('wp_footer', 'avia_print_tracking_code');
-		
-		/*
-if(strpos($avia_config['analytics_code'],'_gaq.push') !== false) // check for async code (put at top)
-		{
-			add_action('wp_head', 'avia_print_tracking_code');
-		}
-		else // else print code in footer
-		{
-			add_action('wp_footer', 'avia_print_tracking_code');
-		}
-*/
 	}
 
 	function avia_print_tracking_code()
@@ -640,21 +631,17 @@ if(!function_exists('avia_header_setting'))
 		}
 		
 		$header = shortcode_atts($defaults, $settings);
+		$header['header_scroll_offset'] = avia_get_header_scroll_offset($header);
 		
-		//#main data attribute used to calculate scroll offset
-		switch($header['header_size'])
-		{
-			case 'large': 	$header['header_scroll_offset'] = 116; break;
-			case 'custom': 	$header['header_scroll_offset'] = $header['header_custom_size']; break;
-			default : 		$header['header_scroll_offset'] = 88; break;
-		}
 		
 		//set header transparency
 		$header['header_transparency'] = "";
 		if(!empty($transparency)) $header['header_transparency'] = 'header_transparency';
+		if(!empty($transparency) && strpos($transparency, 'glass')) $header['header_transparency'] .= ' header_glassy';
 		
 		//deactivate title bar if header is transparent
 		if(!empty($transparency)) $header['header_title_bar'] = 'hidden_title_bar';
+		
 		
 		
 		//sticky and shrinking are tied together
@@ -677,7 +664,7 @@ if(!function_exists('avia_header_setting'))
 		
 		//set manual flag if we should display the top bar
 		$header['header_topbar'] = false;
-		if(strpos($header['header_social'], 'extra_header_active') !== false || strpos($header['header_secondary_menu'], 'extra_header_active') !== false){ $header['header_topbar'] = 'header_topbar_active'; }
+		if(strpos($header['header_social'], 'extra_header_active') !== false || strpos($header['header_secondary_menu'], 'extra_header_active') !== false || !empty($header['header_phone_active'])){ $header['header_topbar'] = 'header_topbar_active'; }
 		
 		//set manual flag if the menu is at the bottom
 		$header['bottom_menu'] = false;
@@ -685,6 +672,8 @@ if(!function_exists('avia_header_setting'))
 		
 		//header class that tells us to use the alternate logo
 		if(!empty($header['header_replacement_logo'])) $header['header_class'] .= " av_alternate_logo_active";
+		
+		$header = apply_filters('avf_header_setting_filter', $header);
 
 		//make settings available globaly
 		$avia_config['header_settings'] = $header;
@@ -695,7 +684,28 @@ if(!function_exists('avia_header_setting'))
 	}
 }
 
-
+if(!function_exists('avia_get_header_scroll_offset'))
+{
+	function avia_get_header_scroll_offset($header = array())
+	{
+			//#main data attribute used to calculate scroll offset
+			
+			if(empty($header)) 
+			{
+				$header['header_size'] = avia_get_option('header_size');
+				$header['header_custom_size'] = avia_get_option('header_custom_size');
+			}
+			
+			switch($header['header_size'])
+			{
+				case 'large': 	$header['header_scroll_offset'] = 116; break;
+				case 'custom': 	$header['header_scroll_offset'] = $header['header_custom_size']; break;
+				default : 		$header['header_scroll_offset'] = 88; break;
+			}
+			
+			return $header['header_scroll_offset'];
+	}
+}
 
 if(!function_exists('avia_header_class_string'))
 {
@@ -737,6 +747,46 @@ if(!function_exists('avia_header_class_string'))
 		return $class;
 	}
 }
+
+
+
+if(!function_exists('avia_blog_class_string'))
+{
+	function avia_blog_class_string($necessary = array() , $prefix = "av-"){
+		
+		if(empty($necessary)) $necessary = array(	'blog-meta-author', 
+													'blog-meta-comments', 
+													'blog-meta-category', 
+													'blog-meta-date',
+													'blog-meta-html-info', 
+												);
+		$class		= array();
+		$settings  	= avia_get_option();
+	
+		foreach($necessary as $class_name)
+		{
+			if(isset($settings[$class_name]) && $settings[$class_name] == "disabled") $class[] = $class_name."-disabled";
+		}
+		
+		if(empty($class)) $class = "";
+		if(!empty($class))
+		{
+			$class = array_unique($class);
+			if(!empty($class[0]))
+			{
+				$class = " ".$prefix.implode(" ".$prefix, $class);
+			}
+			else
+			{
+				$class = "";
+			}
+		}
+		
+
+		return $class;
+	}
+}
+
 
 
 if(!function_exists('avia_header_html_custom_height'))
@@ -824,8 +874,8 @@ if(!function_exists('avia_sidebar_menu'))
 
 
 /*
-function that checks if updates for the theme are available
-*/
+function that checks if updates for the theme are available - disabled for the moment because we use the new updater
+
 if(!function_exists('avia_check_updates') && class_exists('avia_update_notifier'))
 {
 	function avia_check_updates()
@@ -838,7 +888,7 @@ if(!function_exists('avia_check_updates') && class_exists('avia_update_notifier'
 
 	add_action('admin_menu', 'avia_check_updates', 1, 1);
 }
-
+*/
 
 /*
 show tag archive page for post type - without this code you'll get 404 errors: http://wordpress.org/support/topic/custom-post-type-tagscategories-archive-page
@@ -873,34 +923,6 @@ if(!function_exists('avia_fix_tag_archive_page'))
 
 
 /*
- * wrap widgets into a html5 section
- */
-if(!function_exists('avia_sidebars_widgets'))
-{
-    add_filter('dynamic_sidebar_params', 'avia_sidebars_widgets');
-
-    function avia_sidebars_widgets($params)
-    {
-        if(!empty($params) && is_array($params))
-        {
-            foreach($params as $key => $widget)
-            {
-            	if(isset($params[$key]['before_widget']))
-            	{
-                	$params[$key]['before_widget'] = '<section class="avia_widget_section">'.$params[$key]['before_widget'];
-                }
-                
-                if(isset($params[$key]['after_widget']))
-            	{
-               	 	$params[$key]['after_widget'] = $params[$key]['after_widget'].'</section>';
-            	}
-            }
-        }
-        return $params;
-    }
-}
-
-/*
  * add html5.js script to head section - required for IE compatibility
  */
 if(!function_exists('avia_print_html5_js_script'))
@@ -920,6 +942,71 @@ if(!function_exists('avia_print_html5_js_script'))
 }
 
 
+if(!function_exists('avia_add_compat_header'))
+{
+	add_filter('wp_headers', 'avia_add_compat_header');
+	function avia_add_compat_header($headers)
+	{
+		if(isset($_SERVER['HTTP_USER_AGENT']) && strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== false)
+		{
+	    	$headers['X-UA-Compatible'] = 'IE=edge,chrome=1';
+	    }
+	    return $headers;
+	}
+}
+
+
+/* 
+Add a checkbox to the featured image metabox 
+*/
+if(!function_exists('avia_theme_featured_image_meta'))
+{
+	add_filter( 'admin_post_thumbnail_html', 'avia_theme_featured_image_meta');
+	
+	function avia_theme_featured_image_meta( $content ) 
+	{
+		global $post, $post_type;
+	
+		if($post_type == "post")
+		{
+		    $text = __( "Don't display image on single post", 'avia_framework' );
+		    $id = '_avia_hide_featured_image';
+		    $value = esc_attr( get_post_meta( $post->ID, $id, true ) );
+		    $selected = !empty($value) ? "checked='checked'" : "";
+		    
+		    $label = '<label for="' . $id . '" class="selectit"><input '.$selected.' name="' . $id . '" type="checkbox" id="' . $id . '" value="1" > ' . $text .'</label>';
+		    return $content .= $label;
+		}
+		
+		return $content;
+	}
+}
+
+/* 
+Make sure the checkbox above is saved properly 
+*/
+if(!function_exists('avia_add_feature_image_checkbox'))
+{	
+	add_filter( 'avf_builder_elements', 'avia_add_feature_image_checkbox');
+
+	function avia_add_feature_image_checkbox($elements)
+	{	
+			$elements[] =  array(
+		        "slug"  => "layout",
+		        "id"    => "_avia_hide_featured_image",
+		        "type"  => "fake",
+		    );
+	   
+		return $elements;
+	}
+}
+
+
+
+
+
+
+
 /*
 function that saves the style options array into an external css file rather than fetching the data from the database
 */
@@ -927,6 +1014,7 @@ function that saves the style options array into an external css file rather tha
 if(!function_exists('avia_generate_stylesheet'))
 {
 	add_action('avia_ajax_after_save_options_page', 'avia_generate_stylesheet', 30, 1);
+	
 	function avia_generate_stylesheet($options)
 	{
 		global $avia;
@@ -982,6 +1070,7 @@ if(!function_exists('avia_generate_stylesheet'))
 	    {
 	        $dir_flag = update_option( 'avia_stylesheet_dir_writable'.$safe_name, 'true' );
 	        $stylesheet_flag = update_option( 'avia_stylesheet_exists'.$safe_name, 'true' );
+			$dynamic_id = update_option( 'avia_stylesheet_dynamic_version'.$safe_name, uniqid() );
 	    }
 	}
 }

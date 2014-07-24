@@ -18,6 +18,7 @@ jQuery(function($) {
     $('.avia_target_value').avia_target();
     $('.avia_link_controller').avia_prefill_options();
     $('.avia_onchange').avia_on_change();
+    $('.avia_styling_wizard').avia_styling_wizard();
 
     //unify select dropdowns
     $('.avia_select_unify select').live('change', function()
@@ -62,6 +63,7 @@ event binding fake plugin to circumvent event cloning problems with external plu
 			}
 			
 			var container = $(this);
+			
 			if($.fn.avia_media_advanced_plugin)		container.avia_media_advanced_plugin();
 			if($.fn.avia_color_picker_activation) 	container.avia_color_picker_activation();
 			if($.fn.avia_clone_sets) 				container.avia_clone_sets();
@@ -93,6 +95,93 @@ event binding fake plugin to circumvent event cloning problems with external plu
 	};
 })(jQuery);
 
+/************************************************************************
+
+Styling WIzard function
+
+*************************************************************************/
+(function($)
+{
+	var methods = {
+	
+		insertEL: function(event)
+		{
+			var _self 	= event.data.self,
+				value	= _self.insertVal.val(),
+				tmpl	= "";
+				
+			if(!value) return false;	
+			_self.insertVal.val('').trigger('change');
+			
+			tmpl = $(_self.container.find('#avia-tmpl-wizard-' + value).html());
+			tmpl.css({display:'none'}).prependTo(_self.insertContainer).slideDown();
+			
+			//activate color picker
+			tmpl.find('.av-wizard-subcontainer-colorpicker').avia_color_picker_activation();
+			
+			//activate change method so 
+			tmpl.find('input, select, textarea').bind('keydown change', function(){_self.saveButton.removeClass('avia_button_inactive'); });
+			
+			methods.recalc(_self.insertContainer);
+			return false;
+		},
+		
+		deleteEL: function(event)
+		{
+			var _self 	 = event.data.self,
+				 current = $(this).parents('.av-wizard-element:eq(0)');
+			
+			current.slideUp(function()
+			{
+				current.remove();
+				methods.recalc(_self.insertContainer);
+			});
+			
+			//removes the inactive state from save button, so we can save the new form if no other action was performed
+			_self.insertVal.trigger('change');
+			
+			return false;
+		},
+		
+		recalc: function(container)
+		{
+			var sets = container.find('.av-wizard-element');
+			
+			sets.each(function(i)
+			{
+				var current = $(this), replaceName = current.find('[data-recalc]');
+				
+				replaceName.each(function()
+				{
+					var replaceName = $(this), replaceVal = replaceName.data('recalc').replace("{counter}", i);
+					replaceName.attr( 'name' , replaceVal);
+				});
+			});
+		}
+	};
+
+
+	$.fn.avia_styling_wizard = function(variables) 
+	{	
+		return this.each(function()
+		{
+			var _self = {};
+			_self.container 		= $(this);
+			_self.insertContainer	= _self.container.find('.av-wizard-element-container');
+			_self.insertBtn			= _self.container.find('.add_wizard_el_button');
+			_self.insertVal			= _self.container.find('.add_wizard_el');
+			_self.saveButton 		= $('.avia_submit');
+			//bind events
+			_self.insertBtn.on('click', {self: _self}, methods.insertEL);
+			_self.container.on('click', '.avia_remove_wizard_set' , {self: _self} , methods.deleteEL);
+			
+			
+		});
+	};
+})(jQuery);	
+
+
+
 
 
 /************************************************************************
@@ -123,9 +212,8 @@ execute a function after change event was fired
 						
 					var cssValue 	= value.replace(/ /g, "+", value),
 						parentItem 	= current.parents('.avia_control:eq(0)'),
-						cssRule 	= parentItem.find('.webfont_'+this.id)
+						cssRule 	= parentItem.find('.webfont_'+this.id).remove(),
 						insert		= "";
-					
 					
 					if(value.indexOf("-websave") != -1)
 					{
@@ -135,7 +223,7 @@ execute a function after change event was fired
 					}
 					else
 					{
-						insert = '<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family='+cssValue+'" /> <style type="text/css">.webfont_'+this.id+'{font-family:'+value.replace(/:(\d+)$/,"")+';}</style>';
+						insert = '<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family='+cssValue+'" /> <style type="text/css">.webfont_'+this.id+'{font-family:'+value.replace(/:(.+)$/,"")+';}</style>';
 					}
 					
 					cssRule = $('<div class="webfont_'+this.id+'">'+insert+'</div>');

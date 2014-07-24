@@ -4,13 +4,18 @@ $full_path = __FILE__;
 $path = explode( 'wp-content', $full_path );
 require_once( $path[0] . '/wp-load.php' );
 
-$shortcode_css = AVIA_BASE_URL.'css/shortcodes.css';
-
-
 if(!current_user_can('edit_files')) die("");
+if(empty($_GET['nonce'])) die("");
+if (! wp_verify_nonce($_GET['nonce'], 'avia_shortcode_preview') ) die("");
+
 do_action('avia_shortcode_prev');
 
 
+
+
+
+
+$shortcode_css = AVIA_BASE_URL.'css/shortcodes.css';
 ?>
 
 <html>

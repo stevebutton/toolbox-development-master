@@ -60,7 +60,7 @@ if ( !class_exists( 'av_font_icon' ) )
 				
 				 array(
                     "name"  => __("Icon Caption", 'avia_framework' ),
-                    "desc"  => __("A small caption bellow the icon", 'avia_framework' ),
+                    "desc"  => __("A small caption below the icon", 'avia_framework' ),
                     "id"    => "caption",
                     "type" 	=> "input",
 					"std" 	=> "",
@@ -127,7 +127,7 @@ if ( !class_exists( 'av_font_icon' ) )
 						"desc" 	=> __("Add a tooltip for this Icon. The tooltip will appear on mouse over",'avia_framework' ),
 						"id" 	=> "content",
 						"type" 	=> "textarea",
-						"std" 	=> __("", "avia_framework" )),
+						"std" 	=> ""),
 					
 				);
         }
@@ -153,7 +153,8 @@ if ( !class_exists( 'av_font_icon' ) )
                 'position' => 'left',
                 'link' =>'',
                 'linktarget' => 'no',
-            	), $params['args']));
+                'custom_class' => '',
+            	), $params['args'], $this->config['shortcode']));
 				
 			
 				$inner  = "<div class='avia_icon_element avia_textblock avia_textblock_style'>";
@@ -209,7 +210,7 @@ if ( !class_exists( 'av_font_icon' ) )
                 'link' =>'',
                 'linktarget' => 'no',
                 'font' => ''
-            ), $atts));
+            ), $atts, $this->config['shortcode']));
 
             $char = av_icon($icon, $font);
 

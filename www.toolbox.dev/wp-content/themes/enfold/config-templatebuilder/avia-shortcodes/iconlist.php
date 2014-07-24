@@ -171,7 +171,7 @@ if ( !class_exists( 'avia_sc_iconlist' ) )
 			 */
 			function shortcode_handler($atts, $content = "", $shortcodename = "", $meta = "")
 			{
-				extract(shortcode_atts(array('position'=>'left'), $atts));
+				extract(shortcode_atts(array('position'=>'left'), $atts, $this->config['shortcode']));
 
 				$output	 = "";
 				$output .= "<div class='avia-icon-list-container ".$meta['el_class']."'>";
@@ -186,7 +186,7 @@ if ( !class_exists( 'avia_sc_iconlist' ) )
 
 			function av_iconlist_item($atts, $content = "", $shortcodename = "")
 			{
-                $atts =  shortcode_atts(array('title' => '', 'link' => '', 'icon' => '', 'font' =>'', 'linkelement' =>'', 'linktarget' => ''), $atts);
+                $atts =  shortcode_atts(array('title' => '', 'link' => '', 'icon' => '', 'font' =>'', 'linkelement' =>'', 'linktarget' => '', 'custom_markup' => ''), $atts, 'av_iconlist_item');
                 
 				$display_char = av_icon($atts['icon'], $atts['font']);
 				$display_char_wrapper = array();
@@ -230,13 +230,13 @@ if ( !class_exists( 'avia_sc_iconlist' ) )
 				$output  = "";
 				$output .= "<li>";
 				$output .= 		"<{$display_char_wrapper['start']} class='iconlist_icon avia-font-".$atts['font']."'><span class='iconlist-char' {$display_char}></span></{$display_char_wrapper['end']}>";
-                $output .=          '<article class="article-icon-entry" '.avia_markup_helper(array('context' => 'entry','echo'=>false)).'>';
+                $output .=          '<article class="article-icon-entry" '.avia_markup_helper(array('context' => 'entry','echo'=>false, 'custom_markup'=>$atts['custom_markup'])).'>';
 				$output .=              "<div class='iconlist_content_wrap'>";
                 $output .=                  '<header class="entry-content-header">';
-                $markup = avia_markup_helper(array('context' => 'entry_title','echo'=>false));
+                $markup = avia_markup_helper(array('context' => 'entry_title','echo'=>false, 'custom_markup'=>$atts['custom_markup']));
 				$output .=                      "<h4 class='iconlist_title' $markup>".$atts['title']."</h4>";
                 $output .=                  '</header>';
-                $markup = avia_markup_helper(array('context' => 'entry_content','echo'=>false));
+                $markup = avia_markup_helper(array('context' => 'entry_content','echo'=>false, 'custom_markup'=>$atts['custom_markup']));
 				$output .=                  "<div class='iconlist_content' $markup>".ShortcodeHelper::avia_apply_autop(ShortcodeHelper::avia_remove_autop( $content ) )."</div>";
                 $output .=              "</div>";
                 $output .=              '<footer class="entry-footer"></footer>';

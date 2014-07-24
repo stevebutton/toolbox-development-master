@@ -80,6 +80,18 @@ if( ! class_exists( 'avia_form' ) )
          * @var int
          */
         var $length = 20;
+        
+        /**
+         * Stores the width of the current row of elements
+         * @var int
+         */
+        var $width = 1;
+        
+        /**
+         * array that translates the passed width to a numeric value
+         * @var int
+         */
+        var $width_translate = array('fullwidth'=>1, 'element_half' => 0.5, 'element_fourth' => 0.25, 'element_third' => 0.3, 'element_two_third' => 0.6, 'element_three_fourth' => 0.75);
 
 		/**
          * Constructor
@@ -97,10 +109,11 @@ if( ! class_exists( 'avia_form' ) )
 			$this->id_sufix		= isset($params['multiform']) ? "_".$this->formID : "";
 
 			$extraClass = isset($params['form_class']) ? $params['form_class'] : "";
+			$redirect   = isset($params['redirect']) ? "data-avia-redirect='".$params['redirect']."'" : "";
 
 			$form_class = apply_filters('avf_ajax_form_class', 'ajax_form', $this->formID, $this->form_params);
 
-			$this->output  = '<form action="'.$params['action'].'" method="post" class="'.$form_class.' '.$extraClass.'" data-avia-form-id="'.$this->formID.'"><fieldset>';
+			$this->output  = '<form action="'.$params['action'].'" method="post" class="'.$form_class.' '.$extraClass.'" data-avia-form-id="'.$this->formID.'" '.$redirect.'><fieldset>';
 			$this->output .=  $params['heading'];
 
 			$this->length = apply_filters('avf_form_el_name_length', 30, $this->formID, $this->form_params);
@@ -114,13 +127,29 @@ if( ! class_exists( 'avia_form' ) )
 			}
 		}
 
-	/**
+		/**
          * remove additional characters with the save_string filter function which won't work if used for the field names
          */
         function remove_invalid_chars($trans, $string, $replace)
         {
             $trans['\.'] = '';
             return $trans;
+        }
+        
+        /**
+         * get a custom for button or captcha element based on the current $width
+         */
+        function auto_width()
+        {
+        	$class = "";
+        	if($this->width <= 0.75) { $class = 'form_element_fourth';		 }
+        	if($this->width <= 0.6)  { $class = 'form_element_third';		 }
+        	if($this->width <= 0.5)  { $class = 'form_element_half';		 }
+        	if($this->width <= 0.3)  { $class = 'form_element_two_third';	 }
+        	if($this->width <= 0.25) { $class = 'form_element_three_fourth'; }
+        	
+        	if(!empty($class)) $this->width = 1;
+        	return $class;
         }
 
 
@@ -135,7 +164,7 @@ if( ! class_exists( 'avia_form' ) )
 			$this->form_elements = $elements;
 			$iterations = 0;
 			$width = "";
-			$this->lastwidth = "";
+			
 			foreach($elements as $key => $element)
 			{
 				if(isset($element['type']) && method_exists($this, $element['type']))
@@ -150,22 +179,19 @@ if( ! class_exists( 'avia_form' ) )
 					$element_id = avia_backend_truncate($element_id, $this->length, "_", "", false, '', false);
 
 					if(empty($element['class'])) $element['class'] = "";
-
-					if(!empty($width) && strpos($this->lastwidth, '_2') === false)
+					if(empty($element['width'])) $element['width'] = "fullwidth";
+					$add = $this->width_translate[$element['width']];
+					
+					if($element['type'] != "decoy" && $element['type'] != "captcha")
 					{
-						$element['class'] .= " ".$width."_2 ";
+						$this->width += $add;
+						if($this->width > 1) { $this->width = $add; $element['class'] .= " first_form ";}
 					}
-
-					$width = !empty($element['width']) ? " form_".$element['width'] : "";
-					$element['class'] .= $width;
-
-
-					$element['last_class'] = $this->lastwidth;
-
+					
+					$element['class'] .= !empty($element['width']) ? " form_element form_".$element['width'] : "";
+					
 					$element = apply_filters('avf_form_el_filter', $element, $this->formID, $this->form_params);
-
 					$this->$element['type']($element_id.$this->id_sufix, $element);
-					$this->lastwidth = $element['class'];
 				}
 			}
 		}
@@ -179,18 +205,24 @@ if( ! class_exists( 'avia_form' ) )
 		function display_form($return = false)
 		{
 			$success = '<div id="ajaxresponse'.$this->id_sufix.'" class="ajaxresponse ajaxresponse'.$this->id_sufix.' hidden"></div>';
-
+			$submit_attr = apply_filters('avf_contact_form_submit_button_attr', '', $this->formID, $this->form_params);
+			
+			
 			if($this->submit_form && $this->send())
 			{
 				$success = '<div id="ajaxresponse'.$this->id_sufix.'" class="ajaxresponse ajaxresponse'.$this->id_sufix.'">'.$this->form_params['success'].'</div>';
 			}
 			else
 			{
-				$p_class = !empty($this->lastwidth) ? "modified_width ".$this->lastwidth." ".str_replace('_2','',$this->lastwidth) : "";
+				
+				$p_class = $this-> auto_width();
+				if(!empty($p_class)) $p_class .= " modified_width";
+				
+				
 				$this->output .= $this->elements_html;
-				$this->output .= '<p class="'.$p_class.'">';
+				$this->output .= '<p class="form_element '.$p_class.'">';
 				$this->output .= '<input type="hidden" value="1" name="avia_generated_form'.$this->formID.'" />';
-				$this->output .= '<input type="submit" value="'.$this->form_params['submit'].'" class="button" />';
+				$this->output .= '<input type="submit" value="'.$this->form_params['submit'].'" class="button" '.$submit_attr.' data-sending-label="'.__('Sending','avia_framework').'"/>';
 				$this->output .= '</p>';
 			}
 
@@ -207,7 +239,23 @@ if( ! class_exists( 'avia_form' ) )
 			}
 		}
 
-
+		/**
+         * html
+         *
+         * The html method creates custom html output for descriptions headings etc
+         * @param string $id holds the key of the element
+         * @param array $element data array of the element that should be created
+         */
+		function html($id, $element)
+		{	
+			if(!empty($element['content']))
+			{
+				$this->elements_html .= "<div id='{$id}' class='av-form-text'>".$element['content']."</div>";
+				$this->width = 1;
+			}
+		}
+		
+		
 		/**
          * text
          *
@@ -219,7 +267,10 @@ if( ! class_exists( 'avia_form' ) )
 		function text($id, $element)
 		{
 			$p_class = $required = $element_class = $value = "";
-
+			
+			$type = 'text';
+			// if($element['check'] == "is_email") $type = 'email'; //cant use this because of ie8 + 9
+			
 			if(!empty($element['check']))
 			{
 				$required = ' <abbr class="required" title="required">*</abbr>';
@@ -230,7 +281,7 @@ if( ! class_exists( 'avia_form' ) )
 			if(!empty($_POST[$id])) $value = urldecode($_POST[$id]);
 
 			$this->elements_html .= "<p class='".$p_class.$element['class']."' id='element_$id'>";
-			$form_el = ' <input name="'.$id.'" class="text_input '.$element_class.'" type="text" id="'.$id.'" value="'.$value.'"/>';
+			$form_el = ' <input name="'.$id.'" class="text_input '.$element_class.'" type="'.$type.'" id="'.$id.'" value="'.$value.'"/>';
 			$label = '<label for="'.$id.'">'.$element['label'].$required.'</label>';
 
 			if(isset($this->form_params['label_first']))
@@ -320,11 +371,14 @@ if( ! class_exists( 'avia_form' ) )
                 showButtonPanel: true,
                 closeText: AviaDatepickerTranslation.closeText,
                 currentText: AviaDatepickerTranslation.currentText,
+                nextText: AviaDatepickerTranslation.nextText,
+                prevText: AviaDatepickerTranslation.prevText,
                 monthNames: AviaDatepickerTranslation.monthNames,
                 monthNamesShort: AviaDatepickerTranslation.monthNamesShort,
                 dayName: AviaDatepickerTranslation.dayNames,
                 dayNamesShort: AviaDatepickerTranslation.dayNamesShort,
                 dayNamesMin: AviaDatepickerTranslation.dayNamesMin,
+                dayNames: AviaDatepickerTranslation.dayNames,
                 dateFormat: AviaDatepickerTranslation.dateFormat,
                 firstDay: AviaDatepickerTranslation.firstDay,
                 isRTL: AviaDatepickerTranslation.isRTL
@@ -491,7 +545,6 @@ if( ! class_exists( 'avia_form' ) )
          */
 		function captcha($id, $element)
 		{
-
 			$p_class = $required = $element_class = $value = $valueVer = "";
 
 			if(!empty($element['check']))
@@ -501,11 +554,7 @@ if( ! class_exists( 'avia_form' ) )
 				$p_class = $this->check_element($id, $element);
 			}
 
-			if(!empty($element['last_class']))
-			{
-				$p_class .= " ".$element['last_class']." ".str_replace('_2','',$element['last_class']);
-			}
-			$this->lastwidth = "";
+			$p_class = $this-> auto_width();
 
 			if(!empty($_POST[$id])) $value = urldecode($_POST[$id]);
 			if(!empty($_POST[$id.'_verifier'])) $valueVer = urldecode($_POST[$id.'_verifier']);
@@ -555,7 +604,7 @@ if( ! class_exists( 'avia_form' ) )
          * The send method tries to send the form. It builds the necessary email and submits it via wp_mail
          */
 		function send()
-		{
+		{	
 			$new_post = array();
 			foreach ($_POST as $key => $post)
 			{
@@ -607,10 +656,16 @@ if( ! class_exists( 'avia_form' ) )
 					if($usermail == true) break;
 				}
 			}
-
+			
+			
 			$to = urldecode( $mymail );
+			
+			$delimiter = ",";
+			if(strpos($to, ',') === false && strpos($to, ' ') !== false) $delimiter = " ";
+			
+			$to = array_filter(array_map('trim', explode($delimiter, $to)));
 			$to = apply_filters("avf_form_sendto", $to, $new_post, $this->form_params);
-
+	
 			$from = urldecode( $from );
 			$from = apply_filters("avf_form_from", $from, $new_post, $this->form_params);
 
@@ -639,10 +694,10 @@ if( ! class_exists( 'avia_form' ) )
 				{
 					if($element['type'] != 'hidden' && $element['type'] != 'decoy')
 					{
-						if($element['type'] == 'textarea') $message .= "<br/>";
+						if($element['type'] == 'textarea') $message .= " <br/>";
 						$field_value = apply_filters("avf_form_mail_field_values", nl2br(urldecode($new_post[$key])), $new_post, $this->form_elements, $this->form_params);
 						$message .= $element['label'].": ".$field_value." <br/>";
-						if($element['type'] == 'textarea') $message .= "<br/>";
+						if($element['type'] == 'textarea') $message .= " <br/>";
 					}
 				}
 			}
@@ -653,11 +708,10 @@ if( ! class_exists( 'avia_form' ) )
 			//$header  = 'MIME-Version: 1.0' . "\r\n";
 			$header = 'Content-type: text/html; charset=utf-8' . "\r\n";
 			$header = apply_filters("avf_form_mail_header", $header, $new_post, $this->form_params);
-			$copy 	= apply_filters("avf_form_copy", array($to), $new_post, $this->form_params);
+			$copy 	= apply_filters("avf_form_copy", $to, $new_post, $this->form_params);
 			
 			$message = stripslashes($message);
-
-
+			
 			foreach($copy as $send_to_mail)
 			{
 				if($use_wpmail)
@@ -732,7 +786,7 @@ if( ! class_exists( 'avia_form' ) )
 					case 'is_email':
 
 						$this->autoresponder[] = $id;
-						if(preg_match("!^\w[\w|\.|\-]+@\w[\w|\.|\-]+\.[a-zA-Z]{2,4}$!", urldecode($_POST[$id]))) return "valid";
+						if(preg_match("!^\w[\w|\.|\-]+@\w[\w|\.|\-]*\.[a-zA-Z]{2,4}$!", urldecode($_POST[$id]))) return "valid";
 
 					break;
 

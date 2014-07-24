@@ -34,7 +34,10 @@ if ( !class_exists( 'avia_sc_gmaps' ) )
 				{
 					$prefix  = is_ssl() ? "https" : "http";
             		wp_register_script( 'avia-google-maps-api', $prefix.'://maps.google.com/maps/api/js?sensor=false', array('jquery'), '3', true);
-					wp_enqueue_script(  'avia-google-maps-api' );
+					
+					$load_google_map_api = apply_filters('avf_load_google_map_api', true, 'av_google_map');
+					            
+					if($load_google_map_api) wp_enqueue_script(  'avia-google-maps-api' );
 					
 					$args = array(
 		                'toomanyrequests'	=> __("Too many requests at once, please wait a few seconds before requesting coordinates again",'avia_framework'),
@@ -42,7 +45,7 @@ if ( !class_exists( 'avia_sc_gmaps' ) )
 		                'insertaddress' 	=> __("Please insert a valid address in the fields above",'avia_framework')
 		            );
 	
-		            wp_localize_script( 'avia-google-maps-api', 'avia_gmaps_L10n', $args );
+		            if($load_google_map_api) wp_localize_script( 'avia-google-maps-api', 'avia_gmaps_L10n', $args );
 					
 				}
 			}
@@ -180,6 +183,13 @@ if ( !class_exists( 'avia_sc_gmaps' ) )
 							"id" 	=> "pan_control",
 							"std" 	=> "",
 							"type" 	=> "checkbox"),
+							
+						array(	
+							"name" 	=> __("Map dragging on mobile", 'avia_framework' ),
+							"desc" 	=> __("Check to disable the users ability to drag the map on mobile devices. This ensures that the user can scroll down the page, even if the map fills the whole viewport of the mobile device", 'avia_framework' )  ,
+							"id" 	=> "mobile_drag_control",
+							"std" 	=> "",
+							"type" 	=> "checkbox"),
 				);
 
 			}
@@ -245,13 +255,15 @@ if ( !class_exists( 'avia_sc_gmaps' ) )
 				'zoom'			=> '',
 				'zoom_control'  => '',
 				'pan_control'  	=> '',
+				'mobile_drag_control' =>'',
 				'handle'		=> $shortcodename,
 				'content'		=> ShortcodeHelper::shortcode2array($content, 1)
 				
-				), $atts);
+				), $atts, $this->config['shortcode']);
 				
-				$atts['zoom_control'] = empty($atts['zoom_control']) ? false : true;
-				$atts['pan_control']  = empty($atts['pan_control']) ? false : true;
+				$atts['zoom_control'] 			= empty($atts['zoom_control']) ? false : true;
+				$atts['pan_control']  			= empty($atts['pan_control']) ? false : true;
+				$atts['mobile_drag_control']  	= empty($atts['mobile_drag_control']) ? true : false;
 				
 				extract($atts);
 				$output  		= "";
@@ -364,7 +376,7 @@ if ( !class_exists( 'avia_sc_gmaps' ) )
 					}
 				}
 				
-				$first_level = array('hue', 'zoom', 'saturation', 'zoom_control' , 'pan_control');
+				$first_level = array('hue', 'zoom', 'saturation', 'zoom_control' , 'pan_control', 'mobile_drag_control');
 				foreach($first_level as $var)
 				{
 					self::$js_vars[$this->config['shortcode']][$index][$var] = $atts[$var];

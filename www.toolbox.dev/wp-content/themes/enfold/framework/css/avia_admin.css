@@ -236,7 +236,7 @@ padding: 0 0 0 24px;
 
 .avia_sidebar_content .avia_section_header{
 font-size:12px;
-padding:10px;
+padding:10px 8px;
 color:#7D8388;
 }
 
@@ -290,6 +290,8 @@ float:left;
 width:60%;
 float:right;
 }
+
+.avia_description strong{color:#222;}
 
 #avia_options_page .avia_section {
 border-top:1px solid #E2EAED;
@@ -351,7 +353,7 @@ width: 40%;
 }
 
 
-.avia_clone_set, .avia_remove_set{
+.avia_clone_set, .avia_remove_set, .avia_remove_wizard_set{
 display:block;
 height:24px;
 width:24px;
@@ -365,7 +367,7 @@ outline: none;
 text-indent: -9999px;
 }
 
-.avia_remove_set{
+.avia_remove_set, .avia_remove_wizard_set{
 right:0;
 background: #fff url(../images/icons/close.png) no-repeat  center center;
 }
@@ -396,6 +398,10 @@ width: 40px;
 visibility: hidden;
 }
 
+.avia_footer .avia_loading{
+top: 33px;
+}
+
 .avia_clone_loading{
 background: url("../images/icons/loading_mini.gif") no-repeat scroll center center #fff;
 bottom: 0;
@@ -421,6 +427,9 @@ background: url("../images/layout/arrow.png") no-repeat scroll left top #fff;
 .avia_heading h4{
 color:#333;
 }
+
+#avia_options_page .avia_heading h4{font-size: 18px; color:#111;}
+
 
 /*option pages active sidebar*/
 
@@ -490,8 +499,8 @@ right:auto;
 }
 
 div .avia_import_loading_parent{
-left: 228px;
-top: 42px;
+left: 258px;
+top: 46px;
 right:auto;
 }
 
@@ -508,7 +517,7 @@ border: 1px solid #4D9EC3;
 }
 
 #wpwrap #avia_importexport .avia_button{ width: 200px; text-align: center;}
-
+#wpwrap #avia_importexport .avia_import_loading{left: 256px;}
 /*notifications*/
 
 .avia_notification{
@@ -1746,12 +1755,17 @@ float:none;
 clear: both;
 }
 
-#wpwrap #avia_options_page .avia_section.av_3columns{
+#wpwrap #avia_options_page .avia_section.av_3columns, #wpwrap #avia_options_page .avia_section.av_3col{
 float:left;
 width:30%;
-margin:0;;
+margin:0;
 clear:none;
 padding:10px 0% 10px 3%;
+background-image: none;
+}
+
+#avia_options_page .avia_section.av_3col.avia_checkbox .avia_description{
+width: 87%;
 }
 
 #wpwrap #avia_options_page .avia_section.av_3columns select, #wpwrap #avia_options_page .avia_section.av_3columns input{
@@ -1762,7 +1776,7 @@ width:180px;
 
 }
 
-#wpwrap #avia_options_page .avia_section.av_3columns.av_col_1{
+#wpwrap #avia_options_page .avia_section.av_3columns.av_col_1, #wpwrap #avia_options_page .avia_section.av_3col.av_col_1{
 clear:both;
 }
 
@@ -1792,6 +1806,10 @@ padding:10px 0% 10px 3%;
 
 #wpwrap #avia_options_page .avia_section.av_3columns.av_col_1{
 clear:both;
+}
+
+.mce-tinymce .mce-ico.mce-i-scn_button{
+background: transparent url(../php/avia_shortcodes/tinymce/img/icon.png) center center no-repeat;
 }
 
 
@@ -1891,7 +1909,7 @@ min-width: 300px;
 
 /*eunoia additions*/
 
-#avia_sidebar .avia_control{width:100%;}
+#avia_sidebar .avia_single_set .avia_control{width:100%;}
 
 /*enfold addition*/
 .group_inside{
@@ -2037,7 +2055,7 @@ top:40%;
 position: fixed;
 left:50%;
 margin-left:-200px;
-z-index: 500;
+z-index: 15000;
 max-width: 100%;
 width:400px;
 overflow: auto;
@@ -2084,7 +2102,7 @@ bottom: 0;
 min-height: 360px;
 background: #000;
 opacity: .7;
-z-index: 400;
+z-index: 14000;
 }
 
 .avia-popup .popup-close{
@@ -2132,6 +2150,66 @@ text-align: center;
   0%   { transform:scale(0.8); opacity:0; }
   100% { transform:scale(1); opacity:1;  }
 }
+
+
+
+
+/*avia avia_styling_wizard */
+
+
+#avia_options_page .avia_styling_wizard .avia_control, #avia_options_page .avia_styling_wizard .avia_description{width:100%; float:none;}
+#avia_options_page .add_wizard_el_button{margin-left:5px;}
+.av-wizard-element-container {
+clear: both;
+border-top: 1px solid #E2EAED;
+margin-top: 27px;
+width: 103%;
+left: -20px;
+padding: 11px;
+position: relative;
+background: #F8F8F8;
+overflow: hidden;
+min-height: 171px;
+}
+.av-wizard-element{padding:10px; margin-bottom:10px; background: #fff; border: 1px solid #E2EAED; position: relative;}
+.av-wizard-element.av-wizard-with-extra{padding-bottom:2px;}
+
+.av-wizard-element, .av-wizard-form-elements{overflow: hidden; clear:both;}
+#avia_options_page .avia_styling_wizard.avia_section{padding-bottom:0px;}
+
+
+.av-wizard-description{ color:#888; font-size: 12px;}
+
+.av-wizard-element .subname{ color:#888; font-size: 11px; text-indent: 2px; }
+.av-wizard-form-elements{margin-top:5px;}
+.av-wizard-element .avia_color_picker_div { top: 6px; right: 4px; }
+
+#avia_options_page .av-wizard-element .avia_style_wrap{margin-right:5px; max-width: 95%; left:0; background: transparent; padding:0;}
+#avia_options_page .av-wizard-subcontainer .avia_style_wrap .avia_select_unify{border-radius: 1px; }
+#avia_options_page .av-wizard-subcontainer .avia_style_wrap .avia_select_fake_val{top: 2px;}
+#avia_options_page .av-wizard-subcontainer{ float: left;}
+#avia_options_page .av-wizard-subcontainer select{width:78px; height: 34px}
+#avia_options_page .av-wizard-subcontainer-colorpicker{width:108px;}
+
+#avia_options_page .av-wizard-subcontainer-bottom-box{clear:both; width:100%; margin-bottom:6px;  color:#888; font-size: 11px; }
+#avia_options_page .av-wizard-subcontainer-bottom-box label {margin-right:16px;}
+.av-wizard-checkbox-label-section{padding-bottom:3px; display:block;}
+.av-wizard-delimiter { padding-top: 7px; margin-bottom: 7px; border-bottom: 1px dashed #E2EAED; display: block; clear: both; }
+#avia_options_page .av-wizard-element input[type="checkbox"]{margin-right:2px; top: 1px; position: relative;}
+.av-wizard-element .avia_select_fake_val{width: 55%; white-space: pre;}
+#wpwrap .av-wizard-element .avia_style_wrap .avia_color_picker{font-size: 13px;}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

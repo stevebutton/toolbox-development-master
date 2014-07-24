@@ -51,7 +51,8 @@ if ( !class_exists( 'avia_sc_columns' ) )
 				$drag 		= $this->config['drag-level'];
 				$drop 		= $this->config['drop-level'];
 
-				$size = array('av_one_full' => '1/1', 'av_one_half' => '1/2', 'av_one_third' => '1/3', 'av_one_fourth' => '1/4', 'av_one_fifth' => '1/5', 'av_two_third' => '2/3', 'av_three_fourth' => '3/4');
+				$size = array('av_one_full' => '1/1', 'av_one_half' => '1/2', 'av_one_third' => '1/3', 'av_one_fourth' => '1/4', 'av_one_fifth' => '1/5', 'av_two_third' => '2/3', 'av_three_fourth' => '3/4', 'av_two_fifth' => '2/5', 'av_three_fifth' => '3/5', 'av_four_fifth' => '4/5');
+				
 				$extraClass = isset($args[0]) ? $args[0] == 'first' ? ' avia-first-col' : "" : "";
 
 				$output  = "<div class='avia_layout_column avia_pop_class ".$name.$extraClass." av_drag' data-dragdrop-level='{$drag}' data-width='{$name}'>";
@@ -268,6 +269,78 @@ if ( !class_exists( 'avia_sc_columns_one_fifth' ) )
 				$this->config['tinyMCE'] 	= array(
                     'name' => '1/5 + 1/5 + 1/5 + 1/5 + 1/5',
                     'instantInsert' => "[av_one_fifth first]1/5[/av_one_fifth]\n\n\n[av_one_fifth]2/5[/av_one_fifth]\n\n\n[av_one_fifth]3/5[/av_one_fifth]\n\n\n[av_one_fifth]4/5[/av_one_fifth]\n\n\n[av_one_fifth]5/5[/av_one_fifth]"
+				                                    );
+			}
+	}
+}
+
+if ( !class_exists( 'avia_sc_columns_two_fifth' ) )
+{
+	class avia_sc_columns_two_fifth extends avia_sc_columns{
+
+			function shortcode_insert_button()
+			{
+				$this->config['name']		= '2/5';
+				$this->config['icon']		= AviaBuilder::$path['imagesURL']."sc-two_fifth.png";
+				$this->config['tab']		= __('Layout Elements', 'avia_framework' );
+				$this->config['order']		= 39;
+				$this->config['target']		= "avia-section-drop";
+				$this->config['shortcode'] 	= 'av_two_fifth';
+				$this->config['html_renderer'] 	= false;
+				$this->config['tooltip'] 	= __('Creates a single column with 40% width', 'avia_framework' );
+				$this->config['drag-level'] = 2;
+				$this->config['drop-level'] = 2;
+				$this->config['tinyMCE'] 	= array(
+                    'name' => '2/5',
+                    'instantInsert' => "[av_two_fifth first]2/5[/av_two_fifth]"
+				                                    );
+			}
+	}
+}
+
+if ( !class_exists( 'avia_sc_columns_three_fifth' ) )
+{
+	class avia_sc_columns_three_fifth extends avia_sc_columns{
+
+			function shortcode_insert_button()
+			{
+				$this->config['name']		= '3/5';
+				$this->config['icon']		= AviaBuilder::$path['imagesURL']."sc-three_fifth.png";
+				$this->config['tab']		= __('Layout Elements', 'avia_framework' );
+				$this->config['order']		= 38;
+				$this->config['target']		= "avia-section-drop";
+				$this->config['shortcode'] 	= 'av_three_fifth';
+				$this->config['html_renderer'] 	= false;
+				$this->config['tooltip'] 	= __('Creates a single column with 60% width', 'avia_framework' );
+				$this->config['drag-level'] = 2;
+				$this->config['drop-level'] = 2;
+				$this->config['tinyMCE'] 	= array(
+                    'name' => '3/5',
+                    'instantInsert' => "[av_three_fifth first]3/5[/av_three_fifth]"
+				                                    );
+			}
+	}
+}
+
+if ( !class_exists( 'avia_sc_columns_four_fifth' ) )
+{
+	class avia_sc_columns_four_fifth extends avia_sc_columns{
+
+			function shortcode_insert_button()
+			{
+				$this->config['name']		= '4/5';
+				$this->config['icon']		= AviaBuilder::$path['imagesURL']."sc-four_fifth.png";
+				$this->config['tab']		= __('Layout Elements', 'avia_framework' );
+				$this->config['order']		= 37;
+				$this->config['target']		= "avia-section-drop";
+				$this->config['shortcode'] 	= 'av_four_fifth';
+				$this->config['html_renderer'] 	= false;
+				$this->config['tooltip'] 	= __('Creates a single column with 80% width', 'avia_framework' );
+				$this->config['drag-level'] = 2;
+				$this->config['drop-level'] = 2;
+				$this->config['tinyMCE'] 	= array(
+                    'name' => '4/5',
+                    'instantInsert' => "[av_four_fifth first]4/5[/av_four_fifth]"
 				                                    );
 			}
 	}

@@ -38,14 +38,16 @@
                     query_posts(array('posts_per_page'=>20));
 
                     // check if we got posts to display:
-                    if (have_posts()) :
+                    
 
                     echo '<div class="tabcontainer top_tab">'."\n";
                     echo '<div data-fake-id="#tab-id-1" class="tab active_tab">'.__('Blog Posts','avia_framework').'</div>'."\n";
+                    
+                   
                     echo '<div class="tab_content active_tab_content" >'."\n";
                     echo '<div class="tab_inner_content">'."\n";
 
-
+					 if (have_posts()) :
                     echo "<h3>" . __('The 20 latest Blog Posts','avia_framework') . "</h3>";
                     echo "<ul>";
                         while (have_posts()) : the_post();
@@ -54,6 +56,10 @@
 
                         endwhile;
                     echo "</ul>";
+                    else:
+                    
+                      echo "<h3>" . __('No Blog Posts found','avia_framework') . "</h3>";
+                    
                     endif;
 
                     echo '</div>'."\n";

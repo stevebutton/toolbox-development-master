@@ -164,7 +164,7 @@ if ( !class_exists( 'avia_sc_toggle' ) )
          */
         function shortcode_handler($atts, $content = "", $shortcodename = "", $meta = "")
         {
-            $atts =  shortcode_atts(array('initial' => '0', 'mode' => 'accordion', 'sort'=>''), $atts);
+            $atts =  shortcode_atts(array('initial' => '0', 'mode' => 'accordion', 'sort'=>''), $atts, $this->config['shortcode']);
             extract($atts);
 
             $output = "";
@@ -188,7 +188,7 @@ if ( !class_exists( 'avia_sc_toggle' ) )
         function av_toggle($atts, $content = "", $shortcodename = "")
         {
             $output = $titleClass = $contentClass = "";
-            $toggle_atts = shortcode_atts(array('title' => '', 'tags' => '', 'custom_id' => ''), $atts);
+            $toggle_atts = shortcode_atts(array('title' => '', 'tags' => '', 'custom_id' => '', 'custom_markup' =>''), $atts, 'av_toggle');
 
             if(is_numeric(avia_sc_toggle::$initial) && avia_sc_toggle::$counter == avia_sc_toggle::$initial)
             {
@@ -206,9 +206,9 @@ if ( !class_exists( 'avia_sc_toggle' ) )
                 $toggle_atts['custom_id'] = 'toggle-id-'.avia_sc_toggle::$toggle_id++;
             }
 
-            $markup_tab = avia_markup_helper(array('context' => 'entry','echo'=>false));
-            $markup_title = avia_markup_helper(array('context' => 'entry_title','echo'=>false));
-            $markup_text = avia_markup_helper(array('context' => 'entry_content','echo'=>false));
+            $markup_tab = avia_markup_helper(array('context' => 'entry','echo'=>false, 'custom_markup'=>$toggle_atts['custom_markup']));
+            $markup_title = avia_markup_helper(array('context' => 'entry_title','echo'=>false, 'custom_markup'=>$toggle_atts['custom_markup']));
+            $markup_text = avia_markup_helper(array('context' => 'entry_content','echo'=>false, 'custom_markup'=>$toggle_atts['custom_markup']));
 
             $output .= '<section class="av_toggle_section" '.$markup_tab.'>';
             $output .= '    <div class="single_toggle" '.$this->create_tag_string($toggle_atts['tags'], $toggle_atts).' >';

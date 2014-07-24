@@ -366,8 +366,6 @@ if(!function_exists('avia_get_modified_option'))
 
 
 
-
-
 if(!function_exists('avia_set_follow'))
 {
 	/**
@@ -436,6 +434,7 @@ if(!function_exists('avia_logo'))
 
 		if($logo = avia_get_option('logo'))
 		{
+			 $logo = apply_filters('avf_logo', $logo);
 			 $logo = "<img {$dimension} src='{$logo}' alt='{$alt}' />";
 			 $logo = "<$headline_type class='logo'><a href='".$link."'>".$logo."$sub</a></$headline_type>";
 		}

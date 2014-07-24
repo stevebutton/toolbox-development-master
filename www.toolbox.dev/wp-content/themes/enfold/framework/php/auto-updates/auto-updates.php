@@ -191,16 +191,19 @@ if(!function_exists('avia_backend_auto_updater'))
 			$username 	= trim(avia_get_option('updates_username'));
 			$apikey		= trim(avia_get_option('updates_api_key'));
 			$output 	= "";
+			$version 	= self::get_version();
+			$themename 	= self::get_themename();
+			$parent_string = is_child_theme() ? "Parent Theme (". ucfirst( $themename ).")" : "Theme";
+			
 			
 			if(empty($username) || empty($apikey))
 			{
 				$output  = "<div class='avia_backend_theme_updates'><h3>Theme Updates</h3>";
-				$output .= "Once you have entered and saved your Username and API Key the theme will check for updates regularly and notify you here, if one is available</div>";
+				$output .= "Once you have entered and saved your Username and API Key WordPress will check for updates every 12 Hours and notify you here, if one is available <br/><br/> Your ".$parent_string." Version Number: <strong>".$version."</strong></div>";
 			}
 			else if($update = self::check_for_theme_update())
 			{
-				$themename 	= self::get_themename();
-				$version 	= self::get_version();
+				
 				$target  	= network_admin_url('update-core.php?action=do-theme-upgrade');
 				$new		= $update['new_version'];
 				//$themename  = 'Platform'; //testing theme
@@ -209,7 +212,7 @@ if(!function_exists('avia_backend_auto_updater'))
 				wp_nonce_field('upgrade-core');
 				$nonce = ob_get_clean();
 				
-				$parent_string = is_child_theme() ? "Parent Theme (". ucfirst( $themename ).")" : "Theme";
+				
 				
 				$output  = "<div class='avia_backend_theme_updates'>";
 				$output .= "<h3>Update Available!</h3>";
@@ -234,8 +237,11 @@ if(!function_exists('avia_backend_auto_updater'))
 			}
 			else
 			{
+				$target  	= network_admin_url('update-core.php?force-check=1');
+			
 				$output  = "<div class='avia_backend_theme_updates'><h3>Theme Updates</h3>";
-				$output .= "No Updates available. You are running the latest version! Great!</div>";
+				$output .= "No Updates available. You are running the latest version! Great!";
+				$output .= "<br/><br/> <a href='{$target}'>Check Manually</a> </div>";
 			}
 			
 			

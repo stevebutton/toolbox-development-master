@@ -1,7 +1,7 @@
 <?php
 /**
- * Sidebar
- * Displays one of the registered Widget Areas of the theme
+ * Contact
+ * Displays a form field
  */
 
 if ( !class_exists( 'avia_sc_contact' ) )
@@ -16,7 +16,7 @@ if ( !class_exists( 'avia_sc_contact' ) )
 				$this->config['name']		= __('Contact Form', 'avia_framework' );
 				$this->config['tab']		= __('Content Elements', 'avia_framework' );
 				$this->config['icon']		= AviaBuilder::$path['imagesURL']."sc-contact.png";
-				$this->config['order']		= 40;
+				$this->config['order']		= 43;
 				$this->config['target']		= 'avia-target-insert';
 				$this->config['shortcode'] 	= 'av_contact';
 				$this->config['shortcode_nested'] = array('av_contact_field');
@@ -37,12 +37,18 @@ if ( !class_exists( 'avia_sc_contact' ) )
 
 						array(
 						"name" 	=> __("Your email address", 'avia_framework' ),
-						"desc" 	=> __("Enter the Email address where mails should be delivered to.", 'avia_framework' ) ." (".__("Default:", 'avia_framework' ) ." ". get_option('admin_email').")",
+						"desc" 	=> __("Enter one or more Email addresses (separated by comma) where mails should be delivered to.", 'avia_framework' ) ." (".__("Default:", 'avia_framework' ) ." ". get_option('admin_email').")",
 						"id" 	=> "email",
 						'container_class' =>"avia-element-fullwidth",
 						"std" 	=> get_option('admin_email'),
 						"type" 	=> "input"),
-
+						
+						array(
+						"name" 	=> __("Form Title", 'avia_framework' ),
+						"desc" 	=> __("Enter a form title that is displayed above the form", 'avia_framework' ),
+						"id" 	=> "title",
+						"std" 	=> __("Send us mail", 'avia_framework' ),
+						"type" 	=> "input"),
 
 						array(
 							"name" => __("Add/Edit Contact Form Elements", 'avia_framework' ),
@@ -80,11 +86,12 @@ if ( !class_exists( 'avia_sc_contact' ) )
 									"type" 	=> "select",
 									"std" 	=> "text",
 									"no_first"=>true,
-									"subtype" => array(	__('Text input', 'avia_framework' ) =>'text',
-														__('Text Area', 'avia_framework' ) =>'textarea',
-														__('Select Element', 'avia_framework' ) =>'select',
-														__('Checkbox', 'avia_framework' ) =>'checkbox',
-														__('Datepicker', 'avia_framework' ) =>'datepicker'
+									"subtype" => array(	__('Form Element: Text Input', 'avia_framework' ) =>'text',
+														__('Form Element: Text Area', 'avia_framework' ) =>'textarea',
+														__('Form Element: Select Element', 'avia_framework' ) =>'select',
+														__('Form Element: Checkbox', 'avia_framework' ) =>'checkbox',
+														__('Form Element: Datepicker', 'avia_framework' ) =>'datepicker',
+														__('Custom HTML: Add a Description', 'avia_framework' ) =>'html',
 														)),
 
 									array(
@@ -96,7 +103,15 @@ if ( !class_exists( 'avia_sc_contact' ) )
 										"required" => array('type','equals','select'),
 										"std" 	=> "",
 										"type" 	=> "input"),
-
+									
+									array(
+										"name" 	=> __("Add Description", 'avia_framework' ) ,
+										"id" 	=> "content",
+										"required" => array('type','equals','html'),
+										"std" 	=> "",
+										"type" 	=> "tiny_mce"),
+									
+									
 								    array(
 									"name" 	=> __("Form Element Validation", 'avia_framework' ),
 									"desc" 	=> "",
@@ -104,6 +119,7 @@ if ( !class_exists( 'avia_sc_contact' ) )
 									"type" 	=> "select",
 									"std" 	=> "",
 									"no_first"=>true,
+									"required" => array('type','not','html'),
 									"subtype" => array(	__('No Validation', 'avia_framework' ) =>'',
 														__('Is not empty', 'avia_framework' ) =>'is_empty',
 														__('Valid E-Mail address', 'avia_framework' ) =>'is_email',
@@ -112,12 +128,13 @@ if ( !class_exists( 'avia_sc_contact' ) )
 
 									 array(
 									"name" 	=> __("Form Element Width", 'avia_framework' ),
-									"desc" 	=> __("If the width is set to 50% for 2 consecutive form items they will appear beside each other instead of underneath", 'avia_framework' ) ,
+									"desc" 	=> __("Change the width of your elements and let them appear beside each other instead of underneath", 'avia_framework' ) ,
 									"id" 	=> "width",
 									"type" 	=> "select",
 									"std" 	=> "",
 									"no_first"=>true,
-									"subtype" => array(	"100%" =>'', "50%" =>'element_half')),
+									"required" => array('type','not','html'),
+									"subtype" => array(	"Fullwidth" =>'', "1/2" =>'element_half', "1/3" =>'element_third' , "2/3" =>'element_two_third', "1/4" => 'element_fourth', "3/4" => 'element_three_fourth')),
 
 						)
 					),
@@ -128,26 +145,50 @@ if ( !class_exists( 'avia_sc_contact' ) )
 						"id" 	=> "button",
 						"std" 	=> __("Submit", 'avia_framework' ),
 						"type" 	=> "input"),
-
+						
+						
 						array(
-						"name" 	=> __("Form Title", 'avia_framework' ),
-						"desc" 	=> __("Enter a form title that is displayed above the form", 'avia_framework' ),
-						"id" 	=> "title",
-						"std" 	=> __("Send us mail", 'avia_framework' ),
-						"type" 	=> "input"),
+						"name" 	=> __("What should happen once the form gets sent?", 'avia_framework' ),
+						"desc" 	=> "",
+						"id" 	=> "on_send",
+						"type" 	=> "select",
+						"std" 	=> "text",
+						"no_first"=>true,
+						"subtype" => array(	__('Display a short message on the same page', 'avia_framework' ) =>'',
+											__('Redirect the user to another page', 'avia_framework' ) =>'redirect',
+											)),
+						
 
 						array(
 						"name" 	=> __("Message Sent label", 'avia_framework' ),
 						"desc" 	=> __("What should be displayed once the message is sent?", 'avia_framework' ),
 						"id" 	=> "sent",
+						"required" => array('on_send','not','redirect'),
 						"std" 	=> __("Your message has been sent!", 'avia_framework' ),
 						"type" 	=> "input"),
 						
+						
+						array(
+	                    "name" 	=> __("Redirect", 'avia_framework' ),
+	                    "desc" 	=> __("To which page do you want the user send to?", 'avia_framework' ),
+	                    "id" 	=> "link",
+	                    "type" 	=> "linkpicker",
+	                    "fetchTMPL"	=> true,
+	                    "std"	=> "",
+						"required" => array('on_send','equals','redirect'),
+	                    "subtype" => array(
+	                        __('Set Manually', 'avia_framework' ) =>'manually',
+	                        __('Single Entry', 'avia_framework' ) =>'single'
+	                    ),
+	                    "std" 	=> ""),
+						
+						
+						
 						array(
 						"name" 	=> __("E-Mail Subject", 'avia_framework' ),
-						"desc" 	=> __("You can define a custom Email Subject for your form here. If left empty the subject will be", 'avia_framework' )."<br/><small>".__("New Message", 'avia_framework') . " (".__('sent by contact form at','avia_framework')." ".get_option('blogname').")</small>" ,
+						"desc" 	=> __("You can define a custom Email Subject for your form here. If left empty the subject will be", 'avia_framework' ).": <small>".__("New Message", 'avia_framework') . " (".__('sent by contact form at','avia_framework')." ".get_option('blogname').")</small>" ,
 						"id" 	=> "subject",
-						"std" 	=> __("", 'avia_framework' ),
+						"std" 	=> "",
 						"type" 	=> "input"),
 						
 		 				array(
@@ -184,7 +225,6 @@ if ( !class_exists( 'avia_sc_contact' ) )
 			{
 				$template = $this->update_template("label", __("Element", 'avia_framework' ). ": {{label}}");
 
-				$params['content'] = NULL;
 				$params['innerHtml']  = "";
 				$params['innerHtml'] .= "<div class='avia_title_container' {$template}>".__("Element", 'avia_framework' ).": ".$params['args']['label']."</div>";
 
@@ -208,13 +248,16 @@ if ( !class_exists( 'avia_sc_contact' ) )
 			                                 'autorespond' 	=> '',
 			                                 'captcha' 		=> '',
 			                                 'subject'		=> '',
+			                                 'on_send'		=> '',
+			                                 'link'			=> '',
 			                                 'sent'			=> __("Your message has been sent!", 'avia_framework' ),
 			                                 'title'		=> __("Send us mail", 'avia_framework' ),
-			                                 ), $atts);
+			                                 ), $atts, $this->config['shortcode']);
 				extract($atts);
 
-				$post_id = function_exists('avia_get_the_id') ? avia_get_the_id() : get_the_ID();
-
+				$post_id  = function_exists('avia_get_the_id') ? avia_get_the_id() : get_the_ID();
+				$redirect = !empty($on_send) ? AviaHelper::get_url($link) : "";
+				
 				$form_args = array(
 					"heading" 				=> $title ? "<h3>".$title."</h3>" : "",
 					"success" 				=> "<h3 class='avia-form-success'>".$sent."</h3>",
@@ -228,13 +271,14 @@ if ( !class_exists( 'avia_sc_contact' ) )
 					"subject"				=> $subject,
 					"form_class" 			=> $meta['el_class'],
 					"multiform"  			=> true, //allows creation of multiple forms without id collision
-					"label_first"  			=> true
+					"label_first"  			=> true,
+					"redirect"				=> $redirect
 				);
 				
 				if(trim($form_args['myemail']) == '') $form_args['myemail'] = get_option('admin_email');
 
 				//form fields passed by the user
-				$form_fields = $this->helper_array2form_fields(ShortcodeHelper::shortcode2array($content));
+				$form_fields = $this->helper_array2form_fields(ShortcodeHelper::shortcode2array($content, 1));
 
 				//fake username field that is not visible. if the field has a value a spam bot tried to send the form
 				$elements['avia_username']  = array('type'=>'decoy', 'label'=>'', 'check'=>'must_empty');
@@ -245,7 +289,7 @@ if ( !class_exists( 'avia_sc_contact' ) )
 
 				//merge all fields
 				$form_fields = apply_filters('avia_contact_form_elements', array_merge($form_fields, $elements));
-				$form_args   = apply_filters('avia_contact_form_args', $form_args);
+				$form_args   = apply_filters('avia_contact_form_args', $form_args, $post_id);
 
 				$contact_form = new avia_form($form_args);
 				$contact_form->create_elements($form_fields);
@@ -261,12 +305,20 @@ if ( !class_exists( 'avia_sc_contact' ) )
 			function helper_array2form_fields($base)
 			{
 				$form_fields = array();
+                		$labels = array();
+
 
 				if(is_array($base))
 				{
-					foreach($base as $field)
+					foreach($base as $key => $field)
 					{
-						$form_fields[strtolower($field['attr']['label'])] = $field['attr'];
+                        			$sanizited_id = trim(strtolower($field['attr']['label']));
+
+                        			$labels[$sanizited_id] = empty($labels[$sanizited_id]) ? 1 : $labels[$sanizited_id] + 1;
+                        			if($labels[$sanizited_id] > 1) $sanizited_id = $sanizited_id . '_' . $labels[$sanizited_id];
+
+						$form_fields[$sanizited_id] = $field['attr'];
+						if(!empty($field['content'])) $form_fields[$sanizited_id]['content'] = ShortcodeHelper::avia_apply_autop($field['content']);
 					}
 				}
 

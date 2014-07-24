@@ -3,7 +3,7 @@
 	"use strict";
 
 	var av_key = "avia_builder_button";	// $this->button['id']
-
+	
     tinymce.create('tinymce.plugins.'+av_key, 													
     {  
     	//init: register the modal open function to the tinymce editor

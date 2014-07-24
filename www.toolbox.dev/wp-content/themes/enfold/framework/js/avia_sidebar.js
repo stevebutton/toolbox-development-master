@@ -46,6 +46,10 @@
         //delete the sidebar area with all widgets within, then re calculate the other sidebar ids and re save the order
         delete_sidebar: function(e)
         {
+        	var delete_it = confirm("Do you really want to delete this widget area?");
+
+        	if(delete_it == false) return false;
+        
             var widget      = $(e.currentTarget).parents('.widgets-holder-wrap:eq(0)'),
                 title       = widget.find('.sidebar-name h3'),
                 spinner     = title.find('.spinner'),

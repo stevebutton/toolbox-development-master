@@ -10,6 +10,12 @@ p, a, strong{
 a{
   text-decoration: underline;
 }
+.entry-content a:after {
+  content: " [" attr(href) "] ";
+}
+.related_posts a:after {
+  content: attr(title);
+}
 
 
 /* Re-Do Containers
@@ -85,8 +91,9 @@ a{
 ============================*/
 
 /*Fixed nav*/
-.fixed_header #header {
-  position: inherit;
+.fixed_header #header, .html_header_top.html_header_sticky #header {
+  position: relative;
+  top:0;
 }
 .fixed_header #main {
   padding-top: 0px;
@@ -104,7 +111,9 @@ nav,
 #footer,
 #scroll-top-link,
 .image-overlay,
-#top #main .sidebar
+#top #main .sidebar,
+#commentform, .comment_container .miniheading, .comment_container .minitext,
+#top .avia-post-nav
 {display: none;}
 
 
@@ -124,6 +133,7 @@ nav,
 .avia-fullwidth-slider{
   display: none;
 }
+
 
 
 /*Shortcode Cleanup
@@ -146,8 +156,35 @@ nav,
 /*Button*/
 /*Notification*/
 /*Tabs*/
+#top .tab_titles {
+  display: none;
+}
+
+#top .tabcontainer .tab.fullsize-tab{
+  display: block;
+  border-bottom: none;
+}
+
+#top .tab_content{
+  display: block;
+  visibility: visible;
+  z-index: 3;
+  position: relative;
+  overflow: auto;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 2px;
+  left: 0;
+  width: auto;
+  background-color: #fcfcfc;
+  color: #666666;
+}
+
+#top .tab_inner_content{
+  left: 0;
+}
 /*Accordion*/
-.js_active .toggle_wrap {
+#top .toggle_wrap {
   visibility: visible;
   display: block;
   position: static;

@@ -166,7 +166,7 @@ if ( !class_exists( 'avia_sc_gallery' ) )
 				'columns'		=> 5,
                 'lazyload'      => 'avia_lazyload',
                 'crop_big_preview_thumbnail' => 'avia-gallery-big-crop-thumb'
-				), $atts));
+				), $atts, $this->config['shortcode']));
 
 
 				$attachments = get_posts(array(
@@ -184,7 +184,7 @@ if ( !class_exists( 'avia_sc_gallery' ) )
 					self::$gallery++;
 					$thumb_width = round(100 / $columns, 4);
 
-                    $markup = avia_markup_helper(array('context' => 'image','echo'=>false));
+                    $markup = avia_markup_helper(array('context' => 'image','echo'=>false, 'custom_markup'=>$meta['custom_markup']));
 					$output .= "<div class='avia-gallery avia-gallery-".self::$gallery." ".$lazyload." avia_animate_when_visible ".$meta['el_class']."' $markup>";
 					$thumbs = "";
 					$counter = 0;
@@ -205,7 +205,7 @@ if ( !class_exists( 'avia_sc_gallery' ) )
                         $title = trim($attachment->post_title) ? esc_attr($attachment->post_title) : "";
                         $description = trim($attachment->post_content) ? esc_attr($attachment->post_content) : esc_attr(trim($attachment->post_excerpt));
 
-                        $markup_url = avia_markup_helper(array('context' => 'image_url','echo'=>false));
+                        $markup_url = avia_markup_helper(array('context' => 'image_url','echo'=>false, 'id'=>$attachment->ID, 'custom_markup'=>$meta['custom_markup']));
 
 						if($style == "big_thumb" && $first)
 						{

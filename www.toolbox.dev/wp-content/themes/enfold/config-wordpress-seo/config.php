@@ -4,6 +4,7 @@
  */
 if(!defined('WPSEO_VERSION') && !class_exists('wpSEO')) return;
 
+
 /*
  * Make sure that the page analysis tool and Yoast Video SEO works with all pages & posts - even if the layout builder is used
  */

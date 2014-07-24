@@ -1286,6 +1286,8 @@ if( ! class_exists( 'avia_htmlhelper' ) )
          */
 		function reset_button()
 		{
+			if(current_theme_supports('avia_disable_reset_options')) return "";
+		
 			$output = '<span class="avia_style_wrap"><a href="#" class="avia_button avia_button_grey avia_reset">Reset all options</a></span>';
 			return $output;
 		}
@@ -1298,7 +1300,6 @@ if( ! class_exists( 'avia_htmlhelper' ) )
          */
 		function hidden_data()
 		{
-		
 			$options = get_option($this->avia_superobject->option_prefix);
 			
 			$output  = '	<div id="avia_hidden_data" class="avia_hidden">';
@@ -1412,7 +1413,242 @@ if( ! class_exists( 'avia_htmlhelper' ) )
 		return $output;
 	}
 	
+	
+	
+	
+	
+######################################################################
+# STYLING WIZARD + HELPER FUNCTIONS
+######################################################################
+	function styling_wizard($element)
+	{
+		$output 	= "";
+		$select  	= "<select class='add_wizard_el'>";
+		$fake_val	= __("Select an element to customize",'avia_framework');
+		$iteration  = 0;
+		
+		$output  = '<span class="avia_style_wrap avia_select_style_wrap"><span class="avia_select_unify">';
+		$select .= "<option value=''>{$fake_val}</option>";
+		
+		//dropdown menu with elements
+		foreach($element['order'] as $order)
+		{
+			$select .= "<optgroup label='{$order}'>";
+			
+			foreach($element['elements'] as $sub)
+			{
+				if($sub['group'] == $order)
+				{
+					$select .= "<option value='".$sub['id']."'>".$sub['name']."</option>";
+				}
+			}
+			
+			$select .= "</optgroup>";
+		}
+		
+		$select .= "</select>";
+		$select .= '<span class="avia_select_fake_val">'.$fake_val.'</span>';
+		$select .= '</span><a href="#" class="avia_button add_wizard_el_button" >'.__("Edit Element",'avia_framework').'</a></span>';
+		
+		
+		$output .= $select;
+		$output .= "<div class='av-wizard-element-container'>";
+		
+		
+		//show active items
+		if(is_array($element['std']))
+		{
+			foreach ($element['std'] as $key => $value)
+			{
+				if(empty($element['elements'][$value['id']])) continue;
+			
+				$sub 				= $element['elements'][$value['id']];
+				$sub['std_a'] 		= $value;
+				$sub['iteration'] 	= $key;
+				$sub['master_id'] 	= $element['id'];
+				$output 		   .= $this->styling_wizard_el($sub);
+				$iteration ++;
+			}
+		}
+		
+		
+		//generate the templates for new items
+		$template = "";
+		foreach($element['elements'] as $sub)
+		{
+			$sub['iteration'] 	= "{counter}";
+			$sub['master_id'] 	= $element['id'];
+			
+			$template .= "\n<script type='text/html' id='avia-tmpl-wizard-{$sub['id']}'>\n";
+			$template .= $this->styling_wizard_el($sub);
+			$template .= "\n</script>\n\n";
+			
+		}
+		$output .= $template;
+		
+		
+		$output .= "</div>";
+		
+		return $output;
+	}
+	
+	
+	function styling_wizard_el($element)
+	{
+		extract($element);
+		
+		$extraClass		=  ($sections || $hover) ? "av-wizard-with-extra" : "";
+		$name_string  	=  $master_id."-__-".$iteration."-__-";
+		$blank_string 	=  $master_id."-__-{counter}-__-";
+		
+		$output  = "";
+		$output .= "<div class='av-wizard-element  {$extraClass}'>";
+		$output .= 		"<strong>{$name}</strong>";
+		
+		if($description)
+		{
+			$output .= 		"<span class='av-wizard-description'> - {$description}</span>";
+		}
+		
+		$output .= 		"<div class='av-wizard-form-elements'>";
+		$output .= 		"<input name='".$name_string."id' value='".$element['id']."' type='hidden' data-recalc='".$blank_string."id' />";
+		
+			foreach($edit as $key => $form)
+			{
+				$method = "styling_wizard_".$form['type'];
+				
+				if(method_exists($this, $method))
+				{
+					$element['html_name']  = $name_string.$key;
+					$element['data_tmpl']  = $blank_string.$key;
+					$element['sub_values'] = $form;
+					$element['std'] = isset($element['std_a'][$key]) ? $element['std_a'][$key] : "";
+					
+					$output .= "<div class='av-wizard-subcontainer av-wizard-subcontainer-".$element['sub_values']['type']."'>";
+					$output .= $this->$method($element);
+					$output .= "</div>";
+				}
+			}
+			
+			
+		if($extraClass) $output .= "<span class='av-wizard-delimiter'></span>";
+		
+			
+		if($sections)
+		{
+			global $avia_config;
+	
+			$output .= "<div class='av-wizard-subcontainer av-wizard-subcontainer-checkbox av-wizard-subcontainer-bottom-box'>";
+			$output .= "<span class='av-wizard-checkbox-label-section'>".__('Apply to Section: ','avia_framework')."</span>";
+			
+			foreach($avia_config['color_sets'] as $key => $name)
+			{
+				$element['name']  		= $name;
+				$element['html_name']  	= $name_string.$key;
+				$element['data_tmpl']  	= $blank_string.$key;
+				$element['std'] 		= isset($element['std_a'][$key]) ? $element['std_a'][$key] : "true";
+				$output .= $this->styling_wizard_checkbox($element);
+			}
+			
+			$output .= "</div>";
+		}
+		
+		if($hover)
+		{
+			$key 					= 'hover_active';
+			$element['name']  		= __('Apply only to mouse hover state','avia_framework');
+			$element['html_name']  	= $name_string.$key;
+			$element['data_tmpl']  	= $blank_string.$key;
+			$element['std'] 		= isset($element['std_a'][$key]) ? $element['std_a'][$key] : "";
+			$output .= "<div class='av-wizard-subcontainer av-wizard-subcontainer-checkbox av-wizard-subcontainer-bottom-box'>";
+			$output .= $this->styling_wizard_checkbox($element);
+			$output .= "</div>";
+		}
+		
+			
+			
+		$output .= 		'<a class="avia_remove_wizard_set" href="#">Remove icon</a>';
+		$output .= 		"</div>";
+		$output .= "</div>";
+		
+		return $output;
+	}
+	
+	
+	
+	function styling_wizard_checkbox($element)
+	{
+		extract($element);
+		
+		$checked = ($std != "" && $std != 'disabled') ? "checked='checked'" : "";
+		
+		$output  = "";
+		$output .= "<label><input type='checkbox' class='avia_color_picker' value='true' {$checked} name='{$html_name}' data-recalc='{$data_tmpl}' /> <span class='av-wizard-checkbox-label'>{$name}</span></label>";
+		
+		return $output;
+	}
+	
+	
+	
+	
+	function styling_wizard_colorpicker($element)
+	{
+		extract($element);
+		
+		$output  = "";
+		$output .= "<span class='avia_style_wrap avia_colorpicker avia_colorpicker_style_wrap'>";
+		$output .= "<input type='text' class='avia_color_picker' value='{$std}' name='{$html_name}' data-recalc='{$data_tmpl}' />";
+		$output .= "<span class='avia_color_picker_div'></span></span>";
+		$output .= "<div class='subname'>".$sub_values['name']."</div>";
+		
 
+		return $output;
+	}
+	
+	
+	
+	function styling_wizard_size($element)
+	{
+		$range 		= explode("-", $element['sub_values']['range']);
+		$unit 		= !isset($element['sub_values']['unit']) ? "px" : $element['sub_values']['unit'];
+		$increment 	= !isset($element['sub_values']['increment']) ? 1 : $element['sub_values']['increment'];
+		
+		$element['sub_values']['options'] = array();
+		$element['sub_values']['options']['Default'] = "";
+		
+		for ($i = $range[0]; $i <= $range[1]; $i += $increment)
+		{
+			$element['sub_values']['options'][$i . $unit] = $i . $unit;
+		}
+		
+		return $this->styling_wizard_select($element);
+	}
+	
+	
+	
+	function styling_wizard_font($element)
+	{
+		return $this->styling_wizard_select($element);
+	}
+	
+	
+	
+	function styling_wizard_select($element)
+	{
+		extract($element);
+		$output  = "";
+		$output .= "<span class='avia_style_wrap avia_select_style_wrap'><span class='avia_select_unify'><select name='{$html_name}' data-recalc='{$data_tmpl}'>";
+		
+		foreach($sub_values['options'] as $key => $option)
+		{
+			$selected = $option == $std ? "selected='selected'" : "";
+			$output .= "<option {$selected} value='{$option}'>{$key}</option>";
+		}
+		
+		$output .= "</select><span class='avia_select_fake_val'>Default</span></span></span>";
+		$output .= "<div class='subname'>".$sub_values['name']."</div>";
+		return $output;
+	}
 		
 	}
 }

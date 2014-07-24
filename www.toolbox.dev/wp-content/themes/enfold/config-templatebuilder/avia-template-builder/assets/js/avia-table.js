@@ -29,6 +29,7 @@
 					scope.on('click' , '.avia-delete-row .avia-table-cell', methods.remove_col);
 					scope.on('click' , '.avia-attach-delete-table-row', methods.remove_row);
 					scope.on('click' , '.avia_sorthandle .avia-delete', methods.remove_element);
+					scope.on('click' , '.av-table-pos-button', methods.change_order)
 					scope.on('change', 'select[name=column_style]', methods.change_col_class);
 					scope.on('change', 'select[name=row_style]', methods.change_row_class);
 					scope.on('click' ,  methods.close_editor);
@@ -92,7 +93,7 @@
 				{
 					var columns	 = $scope.find('.avia-template-row .avia-table-cell');
 			
-					if(columns.length <= 12)
+					if(columns.length <= 14)
 					{
 						var	template = $scope.find('.avia-template-row .avia-table-cell:eq(1)'),
 							insert	 = $scope.find('.avia-table-row .avia-table-cell-delete'),
@@ -191,7 +192,70 @@
 						template 	= $scope.find('.avia-template-row .avia-table-cell:eq(1)'),
 						current		= select.parents('.avia-table-cell:eq(0)').html(template.html());
 						e.stopImmediatePropagation();
-				}
+				},
+				
+				change_order: function(e)
+				{
+					var button 		= $(this),
+						direction	= button.data('direction');
+						
+						
+					if(direction == 'up' || direction == 'down')
+					{
+						methods.change_row_order(button, direction);
+					}
+					else
+					{
+						methods.change_col_order(button, direction);
+					}
+					return false;
+				},
+				
+				change_row_order: function(button, direction)
+				{
+					var row 	= button.parents('.avia-table-row').eq(0),
+						moveTo  = direction === "up" ? row.prev() : row.next();
+					
+					//if its the first or last visible row dont move it
+					if(moveTo.is('.avia-template-row') || moveTo.is('.avia-attach-table-col-style')) return;
+					
+					if(direction === "up")
+					{
+						row.insertBefore(moveTo);
+					}
+					else
+					{
+						row.insertAfter(moveTo);
+					}
+					
+				},
+				
+				change_col_order: function(button, direction)
+				{
+					var current		= button.parents('.avia-table-cell:eq(0)'),
+						elements 	= button.parents('.avia-table-row:eq(0)').find('.avia-table-cell'),
+						index 		= elements.index(current),
+						move_els	= $table.find('.avia-table-row .avia-table-cell:nth-child('+(index + 1)+')');
+					
+					if((index === 1 && direction === "left") || (index === elements.length - 2 && direction === "right")) return;
+					
+					move_els.each(function()
+					{
+						var col = $(this);
+						
+						if(direction === "left")
+						{
+							col.insertBefore(col.prev());
+						}
+						else
+						{
+							col.insertAfter(col.next());
+						}
+						
+					});
+				},
+				
+				
 			};
 			
 			

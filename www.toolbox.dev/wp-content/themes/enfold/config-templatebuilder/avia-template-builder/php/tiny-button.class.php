@@ -46,7 +46,7 @@ if ( !class_exists( 'avia_tinyMCE_button' ) )
 		//displays all buttons that are added to the $buttons array in the tinymce visual editor
 		function display_in_editor($buttons) 
 		{  
-			array_push($buttons, $this->button['id']);   
+			array_push($buttons, $this->button['id']);
 			return $buttons;  
 		}  
 		
@@ -56,6 +56,7 @@ if ( !class_exists( 'avia_tinyMCE_button' ) )
 		function add_javascript($plugin_array) 
 		{  
 			$plugin_array[$this->button['id']] = $this->button['js_plugin_file'];
+			
 			return $plugin_array;  
 		} 
 		

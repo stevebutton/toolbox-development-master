@@ -16,7 +16,7 @@ if ( !class_exists( 'avia_sc_portfolio' ) )
 				$this->config['name']		= __('Portfolio Grid', 'avia_framework' );
 				$this->config['tab']		= __('Content Elements', 'avia_framework' );
 				$this->config['icon']		= AviaBuilder::$path['imagesURL']."sc-portfolio.png";
-				$this->config['order']		= 39;
+				$this->config['order']		= 38;
 				$this->config['target']		= 'avia-target-insert';
 				$this->config['shortcode'] 	= 'av_portfolio';
 				$this->config['tooltip'] 	= __('Creates a grid of portfolio excerpts', 'avia_framework' );
@@ -24,7 +24,7 @@ if ( !class_exists( 'avia_sc_portfolio' ) )
 
 			function extra_assets()
 			{
-				if(!is_admin() && !session_id()) session_start();
+				if(!is_admin() && !current_theme_supports('avia_no_session_support') && !session_id()) session_start();
 			}
 
 			/**
@@ -67,7 +67,8 @@ if ( !class_exists( 'avia_sc_portfolio' ) )
 												__('2 Columns', 'avia_framework' )=>'2',
 												__('3 Columns', 'avia_framework' )=>'3',
 												__('4 Columns', 'avia_framework' )=>'4',
-												/* __('5 Columns', 'avia_framework' )=>'5', */
+												__('5 Columns', 'avia_framework' )=>'5',
+												__('6 Columns', 'avia_framework' )=>'6',
 												)),
 
                     array(
@@ -202,6 +203,14 @@ if ( !class_exists( 'avia_sc_portfolio' ) )
 			{
 				$params['innerHtml'] = "<img src='".$this->config['icon']."' title='".$this->config['name']."' />";
 				$params['innerHtml'].= "<div class='avia-element-label'>".$this->config['name']."</div>";
+				$params['innerHtml'].= "<div class='avia-flex-element'>"; 
+				$params['innerHtml'].= 		__('This element will stretch across the whole screen by default.','avia_framework')."<br/>";
+				$params['innerHtml'].= 		__('If you put it inside a color section or column it will only take up the available space','avia_framework');
+				$params['innerHtml'].= "	<div class='avia-flex-element-2nd'>".__('Currently:','avia_framework');
+				$params['innerHtml'].= "	<span class='avia-flex-element-stretched'>&laquo; ".__('Stretch fullwidth','avia_framework')." &raquo;</span>";
+				$params['innerHtml'].= "	<span class='avia-flex-element-content'>| ".__('Adjust to content width','avia_framework')." |</span>";
+				$params['innerHtml'].= "</div></div>";
+				
 				$params['content'] 	 = NULL; //remove to allow content elements
 
 				return $params;
@@ -241,11 +250,31 @@ if ( !class_exists( 'avia_sc_portfolio' ) )
 
 					if(is_string($atts['post_type'])) $atts['post_type'] = explode(',', $atts['post_type']);
 				}
-
+				
+				$atts['fullscreen'] = ShortcodeHelper::is_top_level();
 
 				$grid = new avia_post_grid($atts);
 				$grid->query_entries();
-				return $grid->html();
+				$portfolio_html = $grid->html();
+			
+				if(!ShortcodeHelper::is_top_level()) 
+				return $portfolio_html;
+				
+				
+				$params['class'] = "main_color avia-no-border-styling avia-fullwidth-portfolio ".$meta['el_class'];
+				$params['open_structure'] = false;
+				$params['id'] = !empty($atts['id']) ? AviaHelper::save_string($atts['id'],'-') : "";
+				$params['custom_markup'] = $meta['custom_markup'];
+				
+				//we dont need a closing structure if the element is the first one or if a previous fullwidth element was displayed before
+				if($meta['index'] == 0) $params['close'] = false;
+				if(!empty($meta['siblings']['prev']['tag']) && in_array($meta['siblings']['prev']['tag'], AviaBuilder::$full_el_no_section )) $params['close'] = false;
+					
+				$output  =  avia_new_section($params);
+				$output .= $portfolio_html;
+				$output .= avia_section_after_element_content( $meta , 'after_portfolio' );
+				
+				return $output;
 			}
 		}
 }
@@ -278,8 +307,10 @@ if ( !class_exists( 'avia_post_grid' ) )
 		                                 		'taxonomy'  => 'portfolio_entries',
 		                                 		'one_column_template' => 'special',
 		                                 		'set_breadcrumb' => true, //no shortcode option for this, modifies the breadcrumb nav, must be false on taxonomy overview
-		                                 		'class'		=> ""
-		                                 		), $atts);
+		                                 		'class'		=> "",
+		                                 		'custom_markup'	=> '',
+		                                 		'fullscreen'	=> false,
+		                                 		), $atts, 'av_portfolio');
 
 
 
@@ -317,22 +348,27 @@ if ( !class_exists( 'avia_post_grid' ) )
 				case "3": $grid = 'av_one_third';  break;
 				case "4": $grid = 'av_one_fourth'; if($preview_mode == 'auto') $image_size = 'portfolio_small'; break;
 				case "5": $grid = 'av_one_fifth';  if($preview_mode == 'auto') $image_size = 'portfolio_small'; break;
+				case "6": $grid = 'av_one_sixth';  if($preview_mode == 'auto') $image_size = 'portfolio_small'; break;
 			}
+			
+			if($fullscreen && $preview_mode =='auto' && $image_size == "portfolio_small") $image_size = 'portfolio';
 
 			$output .= $sort == "yes" ? $this->sort_buttons($this->entries->posts, $this->atts) : "";
 
 			if($linking == "ajax")
 			{
-			global $avia_config;
-
-			$output .= "<div class='portfolio_preview_container' data-portfolio-id='{$container_id}'>
-							<div class='ajax_controlls iconfont'>
-								<a href='#prev' class='ajax_previous' 	".av_icon_string('prev')."></a>
-								<a href='#next' class='ajax_next'		".av_icon_string('next')."></a>
-								<a class='avia_close' href='#close'		".av_icon_string('close')."></a>
-							</div>
-							<div class='portfolio-details-inner'></div>
-						</div>";
+				global $avia_config;
+				
+				$container_class = $fullscreen ? "container" : "";
+				
+				$output .= "<div class='portfolio_preview_container {$container_class}' data-portfolio-id='{$container_id}'>
+								<div class='ajax_controlls iconfont'>
+									<a href='#prev' class='ajax_previous' 	".av_icon_string('prev')."></a>
+									<a href='#next' class='ajax_next'		".av_icon_string('next')."></a>
+									<a class='avia_close' href='#close'		".av_icon_string('close')."></a>
+								</div>
+								<div class='portfolio-details-inner'></div>
+							</div>";
 			}
 			$output .= "<div class='{$class} grid-sort-container isotope {$style_class}-container with-{$contents}-container grid-total-{$total} grid-col-{$columns} grid-links-{$linking}' data-portfolio-id='{$container_id}'>";
 
@@ -380,14 +416,14 @@ if ( !class_exists( 'avia_post_grid' ) )
                     $extraClass .= ' special_av_fullwidth ';
 
                     $output .= "<div data-ajax-id='{$the_id}' class=' grid-entry flex_column isotope-item all_sort {$style_class} {$post_class} {$sort_class} {$grid} {$extraClass}'>";
-                    $output .= "<article class='main_color inner-entry' ".avia_markup_helper(array('context' => 'entry','echo'=>false)).">";
+                    $output .= "<article class='main_color inner-entry' ".avia_markup_helper(array('context' => 'entry','echo'=>false, 'id'=>$the_id, 'custom_markup'=>$custom_markup)).">";
                     $output .= apply_filters('avf_portfolio_extra', "", $entry);
 
                     $output .= "<div class='av_table_col first portfolio-entry grid-content'>";
 
                     if(!empty($title))
                     {
-                        $markup = avia_markup_helper(array('context' => 'entry_title','echo'=>false));
+                        $markup = avia_markup_helper(array('context' => 'entry_title','echo'=>false, 'id'=>$the_id, 'custom_markup'=>$custom_markup));
                         $output .= '<header class="entry-content-header">';
                         $output .= "<h2 class='portfolio-grid-title entry-title' $markup><a href='{$title_link}'>".$title."</a></h2>";
                         $output .= '</header>';
@@ -395,7 +431,7 @@ if ( !class_exists( 'avia_post_grid' ) )
 
                     if(!empty($excerpt))
                     {
-                        $markup = avia_markup_helper(array('context' => 'entry_content','echo'=>false));
+                        $markup = avia_markup_helper(array('context' => 'entry_content','echo'=>false, 'id'=>$the_id, 'custom_markup'=>$custom_markup));
 
                         $output .= "<div class='entry-content-wrapper'>";
                         $output .= "<div class='grid-entry-excerpt entry-content' $markup>".$excerpt."</div>";
@@ -420,19 +456,19 @@ if ( !class_exists( 'avia_post_grid' ) )
                     $extraClass .= ' default_av_fullwidth ';
 
                     $output .= "<div data-ajax-id='{$the_id}' class=' grid-entry flex_column isotope-item all_sort {$style_class} {$post_class} {$sort_class} {$grid} {$extraClass}'>";
-                    $output .= "<article class='main_color inner-entry' ".avia_markup_helper(array('context' => 'entry','echo'=>false)).">";
+                    $output .= "<article class='main_color inner-entry' ".avia_markup_helper(array('context' => 'entry','echo'=>false, 'id'=>$the_id, 'custom_markup'=>$custom_markup)).">";
                     $output .= apply_filters('avf_portfolio_extra', "", $entry);
                     $output .= "<".$link_markup[0]." data-rel='grid-".avia_post_grid::$grid."' class='grid-image avia-hover-fx'>".$custom_overlay.get_the_post_thumbnail( $the_id, $image_size )."</".$link_markup[1].">";
                     $output .= !empty($title) || !empty($excerpt) ? "<div class='grid-content'><div class='avia-arrow'></div>" : '';
 
                     if(!empty($title))
                     {
-                        $markup = avia_markup_helper(array('context' => 'entry_title','echo'=>false));
+                        $markup = avia_markup_helper(array('context' => 'entry_title','echo'=>false, 'id'=>$the_id, 'custom_markup'=>$custom_markup));
                         $output .= '<header class="entry-content-header">';
                         $output .= "<h3 class='grid-entry-title entry-title' $markup><a href='{$title_link}' title='".esc_attr(strip_tags($title))."'>".$title."</a></h3>";
                         $output .= '</header>';
                     }
-                    $output .= !empty($excerpt) ? "<div class='grid-entry-excerpt entry-content' ".avia_markup_helper(array('context'=>'entry_content','echo'=>false)).">".$excerpt."</div>" : '';
+                    $output .= !empty($excerpt) ? "<div class='grid-entry-excerpt entry-content' ".avia_markup_helper(array('context'=>'entry_content','echo'=>false, 'id'=>$the_id, 'custom_markup'=>$custom_markup)).">".$excerpt."</div>" : '';
                     $output .= !empty($title) || !empty($excerpt) ? "</div>" : '';
                     $output .= '<footer class="entry-footer"></footer>';
                     $output .= "</article>";
@@ -568,6 +604,8 @@ if ( !class_exists( 'avia_post_grid' ) )
 
 			//merge default and params array. remove empty params with array_filter
 			$params = array_merge($defaults, array_filter($params));
+			
+			$params = apply_filters('avf_portfolio_preview_template_params', $params, $entry);
 
 			//set the content
 			$content = str_replace(']]>', ']]&gt;', apply_filters('the_content', $params['text'] )); unset($params['text']);
@@ -605,7 +643,7 @@ if ( !class_exists( 'avia_post_grid' ) )
 
 			$output .= "<div class='ajax_slide ajax_slide_{$id}' data-slide-id='{$id}' >";
 
-				$output .= "<article class='inner_slide $nogalleryclass' ".avia_markup_helper(array('context' => 'entry','echo'=>false)).">";
+				$output .= "<article class='inner_slide $nogalleryclass' ".avia_markup_helper(array('context' => 'entry','echo'=>false, 'id'=>$id, 'custom_markup'=>$this->atts['custom_markup'])).">";
 
 				if(!empty($images))
 				{
@@ -618,12 +656,12 @@ if ( !class_exists( 'avia_post_grid' ) )
 
 					$output .= "<div class='av_table_col $nogalleryclass portfolio-entry portfolio-preview-content'>";
 
-                        $markup = avia_markup_helper(array('context' => 'entry_title','echo'=>false));
+                        $markup = avia_markup_helper(array('context' => 'entry_title','echo'=>false, 'id'=>$id, 'custom_markup'=>$this->atts['custom_markup']));
                         $output .= '<header class="entry-content-header">';
 						$output .= "<h2 class='portfolio-preview-title entry-title' $markup><a href='{$link}'>".$entry->post_title."</a></h2>";
                         $output .= '</header>';
 
-						$output .= "<div class='entry-content-wrapper entry-content' ".avia_markup_helper(array('context' => 'entry_content','echo'=>false)).">";
+						$output .= "<div class='entry-content-wrapper entry-content' ".avia_markup_helper(array('context' => 'entry_content','echo'=>false, 'id'=>$id, 'custom_markup'=>$this->atts['custom_markup'])).">";
 						$output .= $content;
 						$output .= "</div>";
 						$output .= "<span class='avia-arrow'></span>";
@@ -694,7 +732,7 @@ if ( !class_exists( 'avia_post_grid' ) )
 			}
 
 			$page = get_query_var( 'paged' ) ? get_query_var( 'paged' ) : get_query_var( 'page' );
-			if(!$page) $page = 1;
+			if(!$page || $params['paginate'] == 'no') $page = 1;
 
 			//if we find categories perform complex query, otherwise simple one
 			if(isset($terms[0]) && !empty($terms[0]) && !is_null($terms[0]) && $terms[0] != "null")

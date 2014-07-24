@@ -6,6 +6,7 @@ if(empty($post_loop_count)) $post_loop_count = 1;
 $blog_style = !empty($avia_config['blog_style']) ? $avia_config['blog_style'] : avia_get_option('blog_style','multi-big');
 if(is_single()) $blog_style = avia_get_option('single_post_style','single-big');
 $blog_content = !empty($avia_config['blog_content']) ? $avia_config['blog_content'] : "content";
+$initial_id = avia_get_the_ID();
 
 // check if we got posts to display:
 if (have_posts()) :
@@ -21,15 +22,22 @@ if (have_posts()) :
 	$current_post['the_id']	   	= get_the_ID();
 	$current_post['parity']	   	= $post_loop_count % 2 ? 'odd' : 'even';
 	$current_post['last']      	= count($wp_query->posts) == $post_loop_count ? " post-entry-last " : "";
+	$current_post['post_type']	= get_post_type($current_post['the_id']);
 	$current_post['post_class'] 	= "post-entry-".$current_post['the_id']." post-loop-".$post_loop_count." post-parity-".$current_post['parity'].$current_post['last']." ".$blog_style;
+	$current_post['post_class']	.= ($current_post['post_type'] == "post") ? '' : ' post';
 	$current_post['post_format'] 	= get_post_format() ? get_post_format() : 'standard';
+	$current_post['post_layout']	= avia_layout_class('main', false);
 
 	/*
      * retrieve slider, title and content for this post,...
      */
-    $size = strpos($blog_style, 'big') ? strpos(avia_layout_class( 'main' , false), 'sidebar') ? 'entry_with_sidebar' : 'entry_without_sidebar' : 'square';
+    $size = strpos($blog_style, 'big') ? (strpos($current_post['post_layout'], 'sidebar') !== false) ? 'entry_with_sidebar' : 'entry_without_sidebar' : 'square';
     if(!empty($avia_config['preview_mode']) && !empty($avia_config['image_size']) && $avia_config['preview_mode'] == 'custom') $size = $avia_config['image_size'];
 	$current_post['slider']  	= get_the_post_thumbnail($current_post['the_id'], $size);
+	
+	if(is_single($initial_id) && get_post_meta( $current_post['the_id'], '_avia_hide_featured_image', true ) ) $current_post['slider'] = "";
+	
+	
 	$current_post['title']   	= get_the_title();
 	$current_post['content'] 	= $blog_content == "content" ? get_the_content(__('Read more','avia_framework').'<span class="more-link-arrow">  &rarr;</span>') : get_the_excerpt();
 	$current_post['content'] 	= $blog_content == "excerpt_read_more" ? $current_post['content'].'<div class="read-more-link"><a href="'.get_permalink().'" class="more-link">'.__('Read more','avia_framework').'<span class="more-link-arrow">  &rarr;</span></a></div>' : $current_post['content'];
@@ -64,7 +72,7 @@ if (have_posts()) :
 	echo "<article class='".implode(" ", get_post_class('post-entry post-entry-type-'.$post_format . " " . $post_class . " ".$with_slider))."' ".avia_markup_helper(array('context' => 'entry','echo'=>false)).">";
 
         //default link for preview images
-        $link = get_permalink();
+        $link = !empty($url) ? $url : get_permalink();
         
         //preview image description
         $featured_img_desc = the_title_attribute('echo=0');
@@ -189,12 +197,22 @@ if (have_posts()) :
 
             wp_link_pages($avia_wp_link_pages_args);
 
-            if(has_tag() && is_single() && !post_password_required())
+            if(is_single() && !post_password_required())
             {
-                echo '<span class="blog-tags minor-meta">';
-                the_tags('<strong>'.__('Tags:','avia_framework').'</strong><span> ');
-                echo '</span></span>';
+            	//tags on single post
+            	if(has_tag())
+            	{
+                	echo '<span class="blog-tags minor-meta">';
+                	the_tags('<strong>'.__('Tags:','avia_framework').'</strong><span> ');
+                	echo '</span></span>';
+            	}
+            	
+            	//share links on single post
+            	avia_social_share_links();
+   
             }
+            
+            do_action('ava_after_content', $the_id, 'post');
 
             echo '</footer>';
 

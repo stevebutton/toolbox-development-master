@@ -153,6 +153,14 @@ if ( !class_exists( 'avia_sc_slider_full' ) )
 									"std" 	=> "",
 									"type" 	=> "checkbox"),
 									
+									array(	
+									"name" 	=> __("Disable Autoplay", 'avia_framework' ),
+									"desc" 	=> __("Check if you want to disable video autoplay when this slide shows", 'avia_framework' ) ,
+									"id" 	=> "video_autoplay",
+									"required"=> array('slide_type','equals','video'),
+									"std" 	=> "",
+									"type" 	=> "checkbox"),
+									
 									
 									array(	
 									"name" 	=> __("Caption Title", 'avia_framework' ),
@@ -270,8 +278,14 @@ if ( !class_exists( 'avia_sc_slider_full' ) )
 									"id" 	=> "link1",
 									"container_class" => 'av_half av_half_first',
 									"required"=> array('link_apply','contains','button'),
-									"type" 	=> "input",
-									"std" 	=> "http://"),						
+									"type" 	=> "linkpicker",
+									"fetchTMPL"	=> true,
+									"subtype" => array(	
+														__('Set Manually', 'avia_framework' ) =>'manually',
+														__('Single Entry', 'avia_framework' ) => 'single',
+														__('Taxonomy Overview Page',  'avia_framework' ) => 'taxonomy',
+														),
+									"std" 	=> ""),					
 								
 								array(	
 									"name" 	=> __("Button 1 Link Target?", 'avia_framework' ),
@@ -328,8 +342,14 @@ if ( !class_exists( 'avia_sc_slider_full' ) )
 									"id" 	=> "link2",
 									"container_class" => 'av_half av_half_first',
 									"required"=> array('link_apply','contains','button-two'),
-									"type" 	=> "input",
-									"std" 	=> "http://"),						
+									"type" 	=> "linkpicker",
+									"fetchTMPL"	=> true,
+									"subtype" => array(	
+														__('Set Manually', 'avia_framework' ) =>'manually',
+														__('Single Entry', 'avia_framework' ) => 'single',
+														__('Taxonomy Overview Page',  'avia_framework' ) => 'taxonomy',
+														),
+									"std" 	=> ""),						
 								
 								array(	
 									"name" 	=> __("Button 2 Link Target?", 'avia_framework' ),
@@ -518,7 +538,7 @@ if ( !class_exists( 'avia_sc_slider_full' ) )
 				'stretch'		=> '',
 				'content'		=> ShortcodeHelper::shortcode2array($content, 1)
 				
-				), $atts);
+				), $atts, $this->config['shortcode']);
 				
 				extract($atts);
 				$output  	= "";

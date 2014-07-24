@@ -17,7 +17,7 @@ Template: enfold
 
 
 /*
-Mobile Styles test this
+Mobile Styles
 ================================================== */
 /* Note: Add new css to the media query below that you want to only effect the Mobile and Tablet Portrait view */
 /* iPads (landscape) ----------- */
@@ -25,8 +25,7 @@ Mobile Styles test this
 and (min-device-width : 768px) 
 and (max-device-width : 1024px) 
 and (orientation : landscape) {
-/* //test matching sprite 
-*/.spritewatch {
+ .spritewatch {
 width: 30%;
 height: 0;
 cursor: pointer;
@@ -44,92 +43,7 @@ display:inline-block;
 
 
 }
-/* Note: woocommerce mods */
-#header .mega_menu_title {
-margin-bottom: 8px;
-font-size: 14px;
-line-height: 1.1em;
-font-weight: 600;
-display: block;
-}
-#top #header .mega_menu_title a {
-font-size: 14px;
-line-height: 1.1em;
-padding: 0;
-margin: 0;
-background: transparent;
-border: none;
-}
-#top #header .avia_mega_div > .sub-menu {
-display: table;
-padding-top: 15px;
-padding-right: 15px;
-padding-bottom: 20px;
-padding-left: 15px;
-border-top-style: solid;
-border-top-width: 2px;
-}
-#top .woocommerce-tabs h2 {
-font-size: 16px;
-display: none;
-}
 
-div .product-sorting {
-width: 100%;
-float: left;
-padding-bottom: 30px;
-position: relative;
-z-index: 9999;
-display: none;
-}
-.shop_table my_account_subscriptions my_account_orders{
-display: none;
-}
-
-.template-shop .product_meta {
-clear: both;
-font-size: 11px;
-position: relative;
-top: 8px;
-display: none;
-}
-
-.avia_cart_buttons {
-opacity: 0.2;
-border-top-width: 1px;
-border-top-style: solid;
-padding: 10px;
-overflow: hidden;
--webkit-transition: all 0.3s ease;
--moz-transition: all 0.3s ease-in-out;
-transition: all 0.3s ease-in-out;
-display: none;
-}
-
-.products .product h3, .products .product h4, .products .product h5, .products .product h6 {
-padding-top: 5px;
-font-size: 18px;
-line-height: 18px;
-text-align:center;
-/* font-weight: normal; */
-margin: 0;
-}
-
-.title_container .main-title {
-margin: 0;
-font-size: 28px;
-position: relative;
-z-index: 2;
-min-height: 36px;
-line-height: 2.3em;
-top: 0;
-font-weight: 400;
-}
-/* Note: End woocommerce mods */
-
-.single .big-preview.single-big {
-display: none;
-}
 div.entry-content>div.av_one_full p {
 text-align: justify;
 }
@@ -1122,7 +1036,7 @@ margin-bottom: 14px;
 
 h1 {
 text-transform: none !important;
-font-size: 28px !important;
+*/font-size: 28px !important;
 line-height: 1.1em;
 margin-bottom: 14px;
 }

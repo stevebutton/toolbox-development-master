@@ -53,7 +53,7 @@ if($headerS['header_topbar'] == true)
 			                $nav = wp_nav_menu($args);
 						}
 			                
-						if(!empty($nav))
+						if(!empty($nav) || apply_filters('avf_execute_avia_meta_header', false))
 						{
 							echo "<nav class='sub_menu' ".avia_markup_helper(array('context' => 'nav', 'echo' => false)).">";
 							echo $nav;
@@ -117,7 +117,8 @@ if($headerS['header_topbar'] == true)
 						        $args = array(
 						            'theme_location'	=> $avia_theme_location,
 						            'menu_id' 			=> $avia_menu_class,
-						            'container_class'	=> $avia_menu_class,
+						            'menu_class'		=> 'menu av-main-nav',
+						            'container_class'	=> $avia_menu_class.' av-main-nav-wrap',
 						            'fallback_cb' 		=> 'avia_fallback_menu',
 						            'walker' 			=> new avia_responsive_mega_menu()
 						        );

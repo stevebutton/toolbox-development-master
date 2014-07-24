@@ -21,11 +21,12 @@ if (have_posts()) :
 	$current_post['last']      	 = count($wp_query->posts) == $post_loop_count ? " post-entry-last " : "";
 	$current_post['post_class'] 	 = "post-entry-".$current_post['the_id']." post-loop-".$post_loop_count." post-parity-".$current_post['parity'].$current_post['last']." ".$blog_style;
 	$current_post['post_format'] 	 = get_post_format() ? get_post_format() : 'standard';
+	$current_post['post_layout']	 = avia_layout_class('main', false);
 
 	/*
      * retrieve slider, title and content for this post,...
      */
-    $size = strpos($blog_style, 'big') ? strpos(avia_layout_class( 'main' , false), 'sidebar') ? 'entry_with_sidebar' : 'entry_without_sidebar' : 'square';
+    $size = strpos($blog_style, 'big') ? (strpos($current_post['post_layout'], 'sidebar') !== false) ? 'entry_with_sidebar' : 'entry_without_sidebar' : 'square';
 	$current_post['slider']  	= get_the_post_thumbnail($current_post['the_id'], $size);
 	$current_post['title']   	= get_the_title();
 	$current_post['content'] 	= get_the_excerpt();
@@ -104,8 +105,16 @@ if (have_posts()) :
                             echo "<span class='text-sep'>/</span>";
                             echo '<span class="blog-categories minor-meta">'.__('in','avia_framework')." ";
                             echo $cats;
-                            echo '</span>';
+                            echo '</span><span class="text-sep text-sep-cat">/</span>';
                         }
+                        
+			echo '<span class="blog-author minor-meta">'.__('by','avia_framework')." ";
+			echo '<span class="entry-author-link" '.avia_markup_helper(array('context' => 'author_name','echo'=>false)).'>';
+			echo '<span class="vcard author"><span class="fn">';
+				the_author_posts_link();
+			echo '</span></span>';
+			echo '</span>';
+			echo '</span>';
 
                         ?>
 
@@ -122,6 +131,9 @@ if (have_posts()) :
 			</div>
 
             <footer class="entry-footer"></footer>
+            
+            <?php do_action('ava_after_content', $the_id, 'loop-author'); ?>
+            
 		</article><!--end post-entry-->
 	<?php
 

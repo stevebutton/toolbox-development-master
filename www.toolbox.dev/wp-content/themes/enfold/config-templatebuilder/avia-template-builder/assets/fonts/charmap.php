@@ -293,3 +293,13 @@ $chars['entypo-fontello']['ue8c7'] = 'ue8c7';
 $chars['entypo-fontello']['ue862'] = 'ue862';
 $chars['entypo-fontello']['ue8dd'] = 'ue8dd';
 $chars['entypo-fontello']['ue868'] = 'ue868';
+$chars['entypo-fontello']['ue920'] = 'ue920';
+$chars['entypo-fontello']['ue92b'] = 'ue92b';
+$chars['entypo-fontello']['ue926'] = 'ue926';
+$chars['entypo-fontello']['ue927'] = 'ue927';
+$chars['entypo-fontello']['ue928'] = 'ue928';
+$chars['entypo-fontello']['ue92a'] = 'ue92a';
+$chars['entypo-fontello']['ue929'] = 'ue929';
+
+
+

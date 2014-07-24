@@ -64,6 +64,11 @@ html.responsive {
   width: 100%;
   position: relative;
   z-index: 2;
+  overflow: hidden;
+}
+.boxed #wrap_all {
+  overflow: visible;
+  /*needed for cart icon */
 }
 /* Nested Column Classes */
 body .unit.alpha,
@@ -661,14 +666,16 @@ div .av_one_tenth {
   .responsive .av_one_fourth.first + .av_one_fourth + .av_one_fourth,
   .responsive .av_one_fourth.first + .av_one_fourth + .av_one_fourth + .av_one_fourth,
   .responsive .av_one_half.first + .av_one_fourth.el_before_av_one_fourth,
-  .responsive .av_one_half.first + .av_one_fourth.el_before_av_one_fourth + .av_one_fourth {
+  .responsive .av_one_half.first + .av_one_fourth.el_before_av_one_fourth + .av_one_fourth,
+  .responsive .avia-content-slider-inner .av_one_fourth {
     margin-left: 4%;
     width: 48%;
   }
   .responsive .av_one_fourth.first.el_before_av_one_fourth,
   .responsive .av_one_fourth.first + .av_one_fourth + .av_one_fourth,
   .responsive .av_one_half.first + .av_one_fourth.el_before_av_one_fourth,
-  .responsive .av_one_fourth.first + .av_one_fourth + .av_one_half {
+  .responsive .av_one_fourth.first + .av_one_fourth + .av_one_half,
+  .responsive .avia-content-slider-inner .av_one_fourth.first {
     margin-left: 0%;
     clear: both;
   }
@@ -682,21 +689,5 @@ div .av_one_tenth {
   .responsive .av_one_fourth.first + .av_one_fourth + .av_one_fourth + .av_one_fourth,
   .responsive .av_one_fourth.first + .av_one_fourth + .av_one_half {
     margin-top: 30px;
-  }
-}
-/*breaking point logic for the  1/5 element on mobile. makes sure that it converts to a 1/2 element */
-@media only screen and (min-width: 480px) and (max-width: 767px) {
-  .responsive #top #wrap_all .av_one_fifth.el_after_av_one_fifth {
-    margin-left: 4%;
-    width: 48%;
-  }
-  .responsive #top #wrap_all .av_one_fifth.first + .av_one_fifth,
-  .responsive #top #wrap_all .av_one_fifth.first + .av_one_fifth + .av_one_fifth + .av_one_fifth,
-  .responsive #top #wrap_all .av_one_fifth.first.el_after_av_one_fifth {
-    margin-left: 0%;
-    clear: both;
-  }
-  .responsive #top #wrap_all .av_one_fifth.first.el_after_av_one_fifth {
-    width: 100%;
   }
 }

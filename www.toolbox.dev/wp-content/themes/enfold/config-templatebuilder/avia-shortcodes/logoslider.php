@@ -281,8 +281,9 @@ if ( !class_exists( 'avia_sc_partner_logo' ) )
                 'border'		=> '',
 				'handle'		=> $shortcodename,
 				'content'		=> ShortcodeHelper::shortcode2array($content),
-				'class'			=> $meta['el_class']
-				), $atts);
+				'class'			=> $meta['el_class'],
+				'custom_markup' => $meta['custom_markup']
+				), $atts, $this->config['shortcode']);
 
 				$logo = new avia_partner_logo($atts);
 				return $logo->html();
@@ -326,6 +327,7 @@ if ( !class_exists( 'avia_partner_logo' ) )
                 'columns'       => 3,
 				'interval'		=> 5,
 				'class'			=> "",
+				'custom_markup' => "",
 				'hover'			=> '',
 				'css_id'		=> "",
 				'content'		=> array()
@@ -431,8 +433,8 @@ if ( !class_exists( 'avia_partner_logo' ) )
 				$output .= "</div>";
 
 
-                $markup_url = avia_markup_helper(array('context' => 'image_url','echo'=>false));
-                $markup = avia_markup_helper(array('context' => 'image','echo'=>false));
+                $markup_url = avia_markup_helper(array('context' => 'image_url','echo'=>false, 'custom_markup'=>$custom_markup));
+                $markup = avia_markup_helper(array('context' => 'image','echo'=>false, 'custom_markup'=>$custom_markup));
 
 				$output .= "<div class='avia-content-slider-inner'>";
 
@@ -441,8 +443,11 @@ if ( !class_exists( 'avia_partner_logo' ) )
                     if(isset($this->slides[$id]))
                     {
                         $slide = $this->slides[$id];
-                        $meta = array_merge( array('link' => '', 'link_target' => '', 'linktitle' => '', 'hover'=>''), $this->subslides[$key]['attr']);
+                        $meta = array_merge( array('link' => '', 'link_target' => '', 'linktitle' => '', 'hover'=>'', 'custom_markup'=>''), $this->subslides[$key]['attr']);
                         extract($meta);
+
+                        $markup_url = avia_markup_helper(array('context' => 'image_url','echo'=>false, 'id'=>$slide->ID, 'custom_markup'=>$custom_markup));
+                		$markup = avia_markup_helper(array('context' => 'image','echo'=>false, 'id'=>$slide->ID, 'custom_markup'=>$custom_markup));
 
                         $img = wp_get_attachment_image($slide->ID, $size);
                         $link = aviaHelper::get_url($link, $slide->ID);

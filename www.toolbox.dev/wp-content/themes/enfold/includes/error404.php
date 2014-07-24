@@ -1,5 +1,4 @@
 
-
 <p class='entry-content'><strong><?php _e('Nothing Found', 'avia_framework'); ?></strong><br/>
 
 <?php _e('Sorry, the post you are looking for is not available. Maybe you want to perform a search?', 'avia_framework'); ?>
@@ -40,5 +39,7 @@
             'before_title' => '<h3 class="widgettitle">',
             'after_title' => '</h3>'
         ));
+        
+    do_action('ava_after_content', '', 'error404');
     ?>
 </section>

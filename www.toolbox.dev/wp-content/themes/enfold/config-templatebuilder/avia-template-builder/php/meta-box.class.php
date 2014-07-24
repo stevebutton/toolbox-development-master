@@ -194,8 +194,14 @@ if ( !class_exists( 'MetaBoxBuilder' ) ) {
 			do_action('avia_save_post_meta_box');
 			
 			// all checks passed. now save all item values that were passed
+			
 			foreach($this->box_elements as $box)
 			{
+				if(isset($box['type']) && ($box['type'] == 'fake' || $box['type'] == 'checkbox'))
+				{
+					if(empty($_POST[$box['id']])) $_POST[$box['id']] = 0;
+				}
+	
 				foreach($_POST as $key=>$value)
 				{
 					if(strpos($key, $box['id']) !== false)

@@ -556,13 +556,13 @@ if(!function_exists('avia_backend_truncate'))
 		{
 			if($breakpoint < strlen($string) - 1)
 			{
-                if($safe_truncate)
+                if($safe_truncate || is_rtl())
                 {
                     $string = mb_strimwidth($string, 0, $breakpoint) . $pad;
                 }
                 else
                 {
-                    $string = mb_substr($string, 0, $breakpoint) . $pad;
+                    $string = substr($string, 0, $breakpoint) . $pad;
                 }
 			}
 		}
@@ -570,13 +570,13 @@ if(!function_exists('avia_backend_truncate'))
 		// if there is no breakpoint an no tags we could accidentaly split split inside a word
 		if(!$breakpoint && strlen(strip_tags($string)) == strlen($string))
 		{
-            if($safe_truncate)
+            if($safe_truncate || is_rtl())
             {
                 $string = mb_strimwidth($string, 0, $limit) . $pad;
             }
             else
             {
-                $string = mb_substr($string, 0, $limit) . $pad;
+                $string = substr($string, 0, $limit) . $pad;
             }
 		}
 
@@ -737,6 +737,8 @@ if(!function_exists('avia_backend_create_file'))
 	    return $created;
 	}
 }
+
+
 
 
 

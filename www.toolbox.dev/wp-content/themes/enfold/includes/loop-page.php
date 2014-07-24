@@ -33,6 +33,8 @@ if (have_posts()) :
                                         'pagelink' => '<span>%</span>'
                                         ));
                 echo '</footer>';
+                
+                do_action('ava_after_content', get_the_ID(), 'page');
                 ?>
 			</div>
 

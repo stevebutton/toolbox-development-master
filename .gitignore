@@ -1,4 +1,6 @@
 .htaccess
+resources_ignore
+/resources_ignore
 wp-content/uploads/
 wp-content/blogs.dir/
 wp-content/upgrade/

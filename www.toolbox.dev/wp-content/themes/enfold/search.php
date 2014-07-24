@@ -31,7 +31,7 @@ global $avia_config;
 
 
                     <?php
-                    if(!empty($_GET['s']))
+                    if(!empty($_GET['s']) || have_posts())
                     {
                         echo "<h4 class='extra-mini-title widgettitle'>{$results}</h4>";
 

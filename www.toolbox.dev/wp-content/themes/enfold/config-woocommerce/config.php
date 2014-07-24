@@ -209,12 +209,12 @@ function avia_add_cart_button()
 
 	if($product->product_type == 'variable' && empty($output))
 	{
-		$output = "<a class='add_to_cart_button button product_type_variable' href='".get_permalink($product->id)."'><span ".av_icon_string('details')."></span> ".__('Select options','avia_framework')."</a>";
+		$output = '<a class="add_to_cart_button button product_type_variable" href="'.get_permalink($product->id).'"><span '.av_icon_string("details").'></span> '.__("Select options","avia_framework").'</a>';
 	}
 
-	if($product->product_type == 'simple' || $product->product_type == 'subscription')
+	if(in_array($product->product_type, array('subscription', 'simple', 'bundle')))
 	{
-		$output .= "<a class='button show_details_button' href='".get_permalink($product->id)."'><span ".av_icon_string('details')."></span>  ".__('Show Details','avia_framework')."</a>";
+		$output .= '<a class="button show_details_button" href="'.get_permalink($product->id).'"><span '.av_icon_string("details").'></span>  '.__("Show Details","avia_framework").'</a>';
 	}
 	else
 	{
@@ -785,7 +785,7 @@ function avia_woocommerce_cart_dropdown()
 
 	$output = "";
 	$output .= "<ul class = 'cart_dropdown' data-success='".__('was added to the cart', 'avia_framework')."'><li class='cart_dropdown_first'>";
-	$output .= "<a class='cart_dropdown_link' href='".$link."'><span ".av_icon_string('cart')."></span></a><!--<span class='cart_subtotal'>".$cart_subtotal."</span>-->";
+	$output .= "<a class='cart_dropdown_link' href='".$link."'><span class='avia_hidden_link_text'>".__('Cart','avia_framework')."</span><span ".av_icon_string('cart')."></span></a><!--<span class='cart_subtotal'>".$cart_subtotal."</span>-->";
 	$output .= "<div class='dropdown_widget dropdown_widget_cart'><div class='avia-arrow'></div>";
 	$output .= '<div class="widget_shopping_cart_content"></div>';
 	$output .= "</div>";
@@ -830,7 +830,7 @@ function avia_woocommerce_cross_sale_count($count)
 }
 
 #
-# move cross sells bellow the shipping
+# move cross sells below the shipping
 #
 
 remove_action( 'woocommerce_cart_collaterals', 'woocommerce_cross_sell_display' );
@@ -940,8 +940,10 @@ if(!function_exists('avia_close_image_div'))
 	function avia_close_image_div()
 	{
 		global $avia_config;
+		if(is_product()) {
 		$avia_config['currently_viewing'] = "shop_single";
 		get_sidebar();
+		}
 		echo "</div>";
 	}
 }
@@ -963,9 +965,6 @@ if(!function_exists('avia_add_summary_div'))
 }
 
 //remove_action( 'woocommerce_product_thumbnails', 'woocommerce_show_product_thumbnails', 20 );
-
-
-
 
 
 

@@ -57,6 +57,8 @@ if ( !class_exists( 'aviaShortcodeTemplate' ) ) {
 
 		*	$this->config['tinyMCE'] = array('tiny_only'=>true,'instantInsert' => "[asdf]1[/asdf]", 'disable' => true); // show only in tiny mce / do an instant insert instead of modal / disable element in tinymce
 
+		*	$this->config['invisible'] = true; // used to hide the element in builder tab. used for columns eg: 2/5, 3/5 etc
+
 		*	$this->config['html_renderer'] 	= false; //function that renderes the backend editor element.
 													 //if set to false no function is used and the output has to be passed by the
 													 //"editor_element" function. if not set at all the default function
@@ -138,7 +140,7 @@ if ( !class_exists( 'aviaShortcodeTemplate' ) ) {
 				$this->elements = $this->avia_custom_class_for_element($this->elements);
 			}
 			
-			$elements = $this->elements;
+			$elements = apply_filters('avf_template_builder_shortcode_elements', $this->elements);
 
 			//if the ajax request told us that we are fetching the subfunction iterate over the array elements and
 			if(!empty($_POST['params']['subelement']))
@@ -152,7 +154,7 @@ if ( !class_exists( 'aviaShortcodeTemplate' ) ) {
 					}
 				}
 			}
-
+			
 
 			$elements = $this->set_default_values($elements);
 			echo AviaHtmlHelper::render_multiple_elements($elements, $this);
@@ -238,6 +240,11 @@ if ( !class_exists( 'aviaShortcodeTemplate' ) ) {
 				$meta['el_class'] .= " ". $atts['custom_class'];
 				$meta['custom_class'] = $atts['custom_class'];
 			}
+			
+			if(!isset($meta['custom_markup'])) $meta['custom_markup'] = "";
+			
+			
+			$meta = apply_filters('avf_template_builder_shortcode_meta', $meta, $atts, $content, $shortcodename);
 
             $content = $this->shortcode_handler($atts, $content, $shortcodename, $meta);
 
@@ -308,13 +315,14 @@ if ( !class_exists( 'aviaShortcodeTemplate' ) ) {
 			{
 				switch($element['type'])
 				{
-					case "tiny_mce": 	$this->config['modal_on_load'][] = 'modal_load_tiny_mce'; break;
-					case "colorpicker": $this->config['modal_on_load'][] = 'modal_load_colorpicker'; break;
-					case "table": 		$this->config['modal_on_load'][] = 'modal_load_tablebuilder'; break;
+					case "tiny_mce": 		$this->config['modal_on_load'][] = 'modal_load_tiny_mce'; break;
+					case "colorpicker": 	$this->config['modal_on_load'][] = 'modal_load_colorpicker'; break;
+					case "table": 			$this->config['modal_on_load'][] = 'modal_load_tablebuilder'; break;
 					case "modal_group":
-										$this->config['modal_on_load'][] = 'modal_start_sorting';
-										$this->config['modal_on_load'][] = 'modal_tab_functions';
-										$this->extra_config_element_iterator($element['subelements']);
+											$this->config['modal_on_load'][] = 'modal_start_sorting';
+											$this->config['modal_on_load'][] = 'modal_tab_functions';
+											$this->config['modal_on_load'][] = 'modal_hotspot_helper';
+											$this->extra_config_element_iterator($element['subelements']);
 					break;
 				}
 			}
@@ -378,10 +386,10 @@ if ( !class_exists( 'aviaShortcodeTemplate' ) ) {
 		* function that sets the default values and passes them to the user defined editor element
 		* which in turn returns the array with the properties to render a new AviaBuilder Canvas Element
 		*/
-		public function prepare_editor_element($content = "", $args = array())
+		public function prepare_editor_element($content = false, $args = array())
 		{
 			//set the default content unless it was already passed
-			if(empty($content))
+			if($content === false)
 			{
 				$content = $this->get_default_content($content);
 			}
@@ -500,11 +508,11 @@ if ( !class_exists( 'aviaShortcodeTemplate' ) ) {
 		public function set_default_values($elements)
 		{
 			$shortcode = !empty($_POST['params']['shortcode']) ? $_POST['params']['shortcode'] : "";
-
+			
+			
 
 			if($shortcode)
 			{
-				
 				//will extract the shortcode into $_POST['extracted_shortcode']
 				$this->builder->text_to_interface($shortcode);
 
@@ -518,7 +526,7 @@ if ( !class_exists( 'aviaShortcodeTemplate' ) ) {
 				if(!empty($extracted_shortcode['attr']) || !empty($extracted_shortcode['content']))
 				{
 					if(empty($extracted_shortcode['attr'])) $extracted_shortcode['attr'] = "";
-					if(!empty($extracted_shortcode['content'])) $extracted_shortcode['attr']['content'] = $extracted_shortcode['content'];
+					if(isset($extracted_shortcode['content'])) $extracted_shortcode['attr']['content'] = $extracted_shortcode['content'];
 
 					//iterate over each array item and check if we already got a value
 					foreach($elements as &$element)

@@ -69,7 +69,8 @@
         
         display_tooltip: function(e)
         {
-            var element = $(e.currentTarget),
+            var target 	= this.options.event == "click" ? e.target : e.currentTarget,
+            	element = $(target),
                 text    = element.data(this.options.data),
                 newTip  = element.data('avia-created-tooltip'),
                 attach  = this.options.attach == 'element' ? element : this.body,

@@ -240,8 +240,9 @@ if ( !class_exists( 'avia_post_slider' ) )
 												'class'		=> '',
 		                                 		'categories'=> array(),
 		                                 		'custom_query'=> array(),
-                                                'offset' => 0
-		                                 		), $atts);
+                                                'offset' => 0,
+                                                'custom_markup' => ''
+		                                 		), $atts, 'av_postslider');
 		}
 
 		public function html()
@@ -276,7 +277,7 @@ if ( !class_exists( 'avia_post_slider' ) )
 			$data = AviaHelper::create_data_string(array('autoplay'=>$autoplay, 'interval'=>$interval, 'animation' => $animation, 'show_slide_delay'=>90));
 
 			$thumb_fallback = "";
-            $markup = avia_markup_helper(array('context' => 'blog','echo'=>false));
+            $markup = avia_markup_helper(array('context' => 'blog','echo'=>false, 'custom_markup'=>$custom_markup));
 			$output .= "<div {$data} class='avia-content-slider avia-content-{$type}-active avia-content-slider".avia_post_slider::$slide." avia-content-slider-{$total} {$class}' $markup>";
 			$output .= 		"<div class='avia-content-slider-inner'>";
 
@@ -361,12 +362,12 @@ if ( !class_exists( 'avia_post_slider' ) )
 
 					if($loop_counter == 1) $output .= "<div class='slide-entry-wrap'>";
 
-                    $markup = avia_markup_helper(array('context' => 'entry','echo'=>false));
+                    $markup = avia_markup_helper(array('context' => 'entry','echo'=>false, 'id'=>$the_id, 'custom_markup'=>$custom_markup));
 					$output .= "<article class='slide-entry flex_column {$style} {$post_class} {$grid} {$extraClass} {$thumb_class}' $markup>";
 					$output .= $thumbnail ? "<a href='{$link}' data-rel='slide-".avia_post_slider::$slide."' class='slide-image' title=''>{$thumbnail}</a>" : "";
 					$output .= "<div class='slide-content'>";
 
-                    $markup = avia_markup_helper(array('context' => 'entry_title','echo'=>false));
+                    $markup = avia_markup_helper(array('context' => 'entry_title','echo'=>false, 'id'=>$the_id, 'custom_markup'=>$custom_markup));
                     $output .= '<header class="entry-content-header">';
                     $output .= !empty($title) ? "<h3 class='slide-entry-title entry-title' $markup><a href='{$link}' title='".esc_attr(strip_tags($title))."'>".$title."</a></h3>" : '';
                     $output .= '</header>';
@@ -381,11 +382,11 @@ if ( !class_exists( 'avia_post_slider' ) )
 
 							$output .= "<div class='slide-meta-comments'><a href='{$link}{$link_add}'>{$commentCount} {$text_add}</a></div><div class='slide-meta-del'>/</div>";
 						}
-                        $markup = avia_markup_helper(array('context' => 'entry_time','echo'=>false));
+                        $markup = avia_markup_helper(array('context' => 'entry_time','echo'=>false, 'id'=>$the_id, 'custom_markup'=>$custom_markup));
 						$output .= "<time class='slide-meta-time updated' $markup>" .get_the_time(get_option('date_format'), $the_id)."</time>";
 						$output .= "</div>";
 					}
-                    $markup = avia_markup_helper(array('context' => 'entry_content','echo'=>false));
+                    $markup = avia_markup_helper(array('context' => 'entry_content','echo'=>false, 'id'=>$the_id, 'custom_markup'=>$custom_markup));
 					$output .= !empty($excerpt) ? "<div class='slide-entry-excerpt entry-content' $markup>".$excerpt."</div>" : "";
 
                     $output .= "</div>";
@@ -465,7 +466,7 @@ if ( !class_exists( 'avia_post_slider' ) )
 				}
 
 				$page = get_query_var( 'paged' ) ? get_query_var( 'paged' ) : get_query_var( 'page' );
-				if(!$page) $page = 1;
+				if(!$page || $params['paginate'] == 'no') $page = 1;
 
 				//if we find no terms for the taxonomy fetch all taxonomy terms
 				if(empty($terms[0]) || is_null($terms[0]) || $terms[0] === "null")

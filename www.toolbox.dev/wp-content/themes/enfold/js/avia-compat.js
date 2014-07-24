@@ -17,6 +17,8 @@ document.documentElement.className += ' js_active ';
     var prefix = ['-webkit-','-moz-', '-ms-', ""];
     for (var i in prefix)
     { 
+    	// http://artsy.github.io/blog/2012/10/18/so-you-want-to-do-a-css3-3d-transform/
     	if(prefix[i]+'transform' in document.documentElement.style) document.documentElement.className += " avia_transform "; 
+    	if(prefix[i]+'perspective' in document.documentElement.style) document.documentElement.className += " avia_transform3d "; 
 	}
 })();

@@ -207,19 +207,20 @@ if ( !class_exists( 'avia_sc_team' ) )
 			                                 'src' => '',
 			                                 'description' => '',
 			                                 'job' => '',
-			                                 ), $atts);
+			                                 'custom_markup' => ''
+			                                 ), $atts, $this->config['shortcode']);
 				extract($atts);
 
 				$socials = ShortcodeHelper::shortcode2array($content);
 
 				$output  = "";
-                $markup = avia_markup_helper(array('context' => 'person','echo'=>false));
+                $markup = avia_markup_helper(array('context' => 'person','echo'=>false, 'custom_markup'=>$custom_markup));
 
 				$output .= "<section class='avia-team-member ".$meta['el_class']."' $markup>";
 				if($src)
 				{
 					$output.= "<div class='team-img-container'>";
-                    $markup = avia_markup_helper(array('context' => 'single_image','echo'=>false));
+                    $markup = avia_markup_helper(array('context' => 'single_image','echo'=>false, 'custom_markup'=>$custom_markup));
 					$output.= "<img class='avia_image avia_image_team' src='".$src."' alt='".esc_attr($name)."' $markup />";
 
 
@@ -232,7 +233,7 @@ if ( !class_exists( 'avia_sc_team' ) )
 							foreach($socials as $social)
 							{
 								//set defaults
-								$social['attr'] =  shortcode_atts(array('link' => '',  'link_target' => '', 'icon' => '','font'=>'','title' => '' ), $social['attr']);
+								$social['attr'] =  shortcode_atts(array('link' => '',  'link_target' => '', 'icon' => '','font'=>'','title' => '' ), $social['attr'], 'av_social');
 
 								//build link for each social item
 								$tooltip = $social['attr']['title'] ? 'data-avia-tooltip="'.$social['attr']['title'].'"' : "";
@@ -243,18 +244,18 @@ if ( !class_exists( 'avia_sc_team' ) )
 
                                 if(strstr($social['attr']['link'], '@'))
                                 {
-                                    $markup = avia_markup_helper(array('context' => 'email','echo'=>false));
+                                    $markup = avia_markup_helper(array('context' => 'email','echo'=>false, 'custom_markup'=>$custom_markup));
                                 }
                                 else
                                 {
-                                    $markup = avia_markup_helper(array('context' => 'url','echo'=>false));
+                                    $markup = avia_markup_helper(array('context' => 'url','echo'=>false, 'custom_markup'=>$custom_markup));
                                 }
 								
 								$display_char = av_icon($social['attr']['icon'], $social['attr']['font']);
 								
                                 $output .= "<span class='hidden av_member_url_markup {$social_class}' $markup>".$social['attr']['link']."</span>";
 
-								$output.= "<a rel='v:url' {$tooltip} {$target} class='{$social_class} avia-team-icon noLightbox' href='".$social['attr']['link']."' {$display_char}>";
+								$output.= "<a rel='v:url' {$tooltip} {$target} class='{$social_class} avia-team-icon ' href='".$social['attr']['link']."' {$display_char}>";
 								$output.= "</a>";
 							}
 
@@ -268,23 +269,23 @@ if ( !class_exists( 'avia_sc_team' ) )
 
 				if($name)
 				{
-                    $markup = avia_markup_helper(array('context' => 'name','echo'=>false));
+                    $markup = avia_markup_helper(array('context' => 'name','echo'=>false, 'custom_markup'=>$custom_markup));
 					$output.= "<h3 class='team-member-name' $markup>{$name}</h3>";
 				}
 
 				if($job)
 				{
-                    $markup = avia_markup_helper(array('context' => 'job','echo'=>false));
+                    $markup = avia_markup_helper(array('context' => 'job','echo'=>false, 'custom_markup'=>$custom_markup));
 					$output.= "<div class='team-member-job-title' $markup>{$job}</div>";
 				}
 
 				if($description)
 				{
-                    $markup = avia_markup_helper(array('context' => 'description','echo'=>false));
+                    $markup = avia_markup_helper(array('context' => 'description','echo'=>false, 'custom_markup'=>$custom_markup));
 					$output.= "<div class='team-member-description' $markup>".ShortcodeHelper::avia_apply_autop(ShortcodeHelper::avia_remove_autop($description) )."</div>";
 				}
 
-                $markup = avia_markup_helper(array('context' => 'affiliation','echo'=>false));
+                $markup = avia_markup_helper(array('context' => 'affiliation','echo'=>false, 'custom_markup'=>$custom_markup));
 				$output .= "<span class='hidden team-member-affiliation' $markup>".get_bloginfo('name')."</span>";
 				$output .= "</section>";
 				return $output;
@@ -310,7 +311,8 @@ if ( !class_exists( 'avia_sc_team' ) )
 					'plus.google',
 					'myspace',
 					'forrst',
-					'skype'
+					'skype',
+					'reddit'
 				);
 
 				foreach($services as $service)

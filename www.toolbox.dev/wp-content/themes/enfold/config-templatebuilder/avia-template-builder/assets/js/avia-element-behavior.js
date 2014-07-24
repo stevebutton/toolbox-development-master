@@ -318,6 +318,7 @@
 				value1		= this.value,
 				is_hidden	= current.parents('.avia-form-element-container:eq(0)').is('.avia-hidden');
 				
+				if(current.is('input[type=checkbox]') && !current.prop('checked')) value1 = "";
 				if(!dependent.length) return;
 				
 				dependent.each(function()
@@ -339,8 +340,6 @@
 								case 'doesnt_contain':  if(value1.indexOf(value2) == -1) show = true; break;
 								case 'is_empty_or':  	if(value1 == "" || value1 == value2) show = true; break;
 								case 'not_empty_and':  	if(value1 != "" && value1 != value2) show = true; break;
-								
-								
 							}
 						}
 						
@@ -409,6 +408,7 @@
 		the_body.on('change', '.avia-attach-templating select, .avia-attach-templating radio, .avia-attach-templating input[type=checkbox]', function()
 		{
 			var current = $(this),
+				css_id	= current.attr('id'),
 				wrapper = current.parents('.avia-form-element-container:eq(0)'),
 				scope	= current.parents('.avia-modal:eq(0)'),
 				target  = current.next('.template-container');
@@ -417,13 +417,14 @@
 			if(!target.length) return;
 			
 			var new_value 	= this.value,
-				template	= $("#avia-tmpl-"+new_value);
+				temp_string = "#avia-tmpl-"+css_id+'-'+new_value,
+				template	= $(temp_string);
 				
 				if(!template.length)
 				{
 					if(avia_globals.builderMode && avia_globals.builderMode == "debug")
 					{
-						avia_log('template snippet "#avia-tmpl-'+new_value+'" not defined','error');
+						avia_log('template snippet "'+temp_string+'" not defined','error');
    						avia_log('Make sure that the you have created the template and check the source code if its really available','help');
 					}
 					
@@ -436,7 +437,7 @@
 		
 		the_body.on('avia_modal_finished', function(event, window)
 		{
-			window.modal.find(".avia-attach-templating select,.avia-attach-templating radio,.avia-attach-templating input[type=checkbox]").trigger('change');
+			window.modal.find(".avia-attach-templating select, .avia-attach-templating radio, .avia-attach-templating input[type=checkbox]").trigger('change');
 		});
 		
 		

@@ -15,8 +15,16 @@ function avia_log(text, type)
 {
 	if(typeof console === 'undefined') return;
 	if(typeof type === 'undefined') type = "log"
-	type = "AVIA-" + type.toUpperCase();
-	console.log("["+type+"] " +text);
+	
+	if(type === false)
+	{
+		console.log(text);
+	}
+	else
+	{
+		type = "AVIA-" + type.toUpperCase();
+		console.log("["+type+"] " +text);
+	}
 }
 //global newline helper
 function avia_nl2br (str, is_xhtml) 
@@ -58,6 +66,9 @@ function avia_nl2br (str, is_xhtml)
         
         //wether tinymce is available
         this.tiny_active		= typeof window.tinyMCE == 'undefined' ? false : true;
+        
+        //tinymce version
+        this.tiny_version		= this.tiny_active ? window.tinyMCE.majorVersion : false;
         
         //wordpress tiny_mce editor
         this.classic_editor 	= $('#postdivrich');
@@ -244,7 +255,7 @@ function avia_nl2br (str, is_xhtml)
 		},
 		
 		
-		/*version compare helper function for the drag and drop fix bellow.*/
+		/*version compare helper function for the drag and drop fix below.*/
 		cmpVersion: function(a, b) {
 		    var i, cmp, len, re = /(\.0)+[^\.]*$/;
 		    a = (a + '').replace(re, '').split('.');
@@ -695,9 +706,12 @@ function avia_nl2br (str, is_xhtml)
 				currentField, currentContent, currentParent, currentSize,
 				sizes			= { 
 									'av_one_full'		:   1		, 
+									'av_four_fifth'		:   0.8		, 
 									'av_three_fourth'	:   0.75	,
 									'av_two_third'		:   0.66	, 
+									'av_three_fifth'	:   0.6		, 
 									'av_one_half'		:   0.5		, 
+									'av_two_fifth'		:   0.4		, 
 									'av_one_third'		:   0.33	, 
 									'av_one_fourth'		:   0.25	, 
 									'av_one_fifth'		:	0.2	 
@@ -789,11 +803,13 @@ function avia_nl2br (str, is_xhtml)
 				if(text.indexOf('[') === -1)
 				{
                 	text = this.classic_textarea.val(); //testdrive: val() to html()
+                	if(this.tiny_active) text = window.switchEditors._wp_Nop(text);
                 	this.secureContent.val(text);
 				}
 			}
 			
-			if(this.tiny_active) text = window.switchEditors._wp_Nop(text);
+			// if(this.tiny_active) text = window.switchEditors._wp_Nop(text); // moved up 5 lines in order to fix this: https://github.com/AviaThemes/wp-themes/issues/573 
+			
 			
 			//sends the request. calls the the wp_ajax_avia_ajax_fetch_shortcode php function
 			$.ajax({
@@ -1007,6 +1023,7 @@ function avia_nl2br (str, is_xhtml)
 				shortcode = element_container.data('shortcodehandler'),
 				output = "", tags = {};
 			
+			avia_log(values, false);
 		  
 			//if we got a string value passed insert the string, otherwise calculate the shortcode
 			if(typeof values == 'string')
@@ -1049,7 +1066,7 @@ function avia_nl2br (str, is_xhtml)
 				
 		},
 		
-		update_builder_html: function(element_container, values)
+		update_builder_html: function(element_container, values, force_content_close)
 		{	
 			var output = "",
 				key, 
@@ -1181,7 +1198,7 @@ function avia_nl2br (str, is_xhtml)
 						
 						//create the shortcode string out of the arguments and save it to the data storage textarea
 						var tags = {}, return_val = {};
-						return_val.output = this.createShortcode(values, shortcode, tags);
+						return_val.output = this.createShortcode(values, shortcode, tags, force_content_close);
 						return_val.tags = tags;
 
 						return return_val;
@@ -1192,9 +1209,9 @@ function avia_nl2br (str, is_xhtml)
 		/**
 		* function that gets executed by send_to_datastorage and creates the actual shortcode string out of the arguments and content
 		*/
-		createShortcode: function(values, shortcode, tag)
+		createShortcode: function(values, shortcode, tag, force_content_close)
 		{
-		
+			
 			var key, output = "", attr = "", content = "", i, array_seperator = ",", line_break = "\n";
 			if(!tag) tag = {};
 			
@@ -1237,7 +1254,7 @@ function avia_nl2br (str, is_xhtml)
 			
 			tag.open = "["+shortcode+" "+ $.trim(attr) +"]";
 			output = tag.open;
-			if(content)
+			if(content || (typeof force_content_close !== 'undefined' && force_content_close == true))
 			{
 				if($.trim(content) == "") content = "";
 				
@@ -1336,7 +1353,10 @@ function avia_nl2br (str, is_xhtml)
 		e.stopImmediatePropagation();
 		
 		var $_clicked = $(clicked),
-			item      = $_clicked.parents('.avia-modal-group-element:eq(0)');
+			item      = $_clicked.parents('.avia-modal-group-element:eq(0)'),
+			container = item.parents('.avia-modal-group:eq(0)');
+		
+		container.trigger('av-item-delete', [item]);
 		
 		item.slideUp(200, function()
 		{
@@ -1355,6 +1375,8 @@ function avia_nl2br (str, is_xhtml)
 			newTemplate = $(template.html()).appendTo(parent).css({display:"none"});
 		
 			newTemplate.slideDown(200);
+			
+			parent.trigger('av-item-add', [newTemplate]);
 	}
 	
 	
@@ -1371,9 +1393,12 @@ function avia_nl2br (str, is_xhtml)
 			dataString	= dataStorage.val(),
 			sizes		= [ 
 							['av_one_full'	,		'1/1'], 
+							['av_four_fifth',		'4/5'], 
 							['av_three_fourth',		'3/4'],
 							['av_two_third',		'2/3'], 
+							['av_three_fifth',		'3/5'], 
 							['av_one_half',			'1/2'], 
+							['av_two_fifth',		'2/5'], 
 							['av_one_third',		'1/3'], 
 							['av_one_fourth',		'1/4'], 
 							['av_one_fifth',		'1/5'] 

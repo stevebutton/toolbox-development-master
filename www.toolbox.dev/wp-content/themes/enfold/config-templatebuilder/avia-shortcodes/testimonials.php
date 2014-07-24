@@ -171,7 +171,7 @@ array(
 			 */
 			function shortcode_handler($atts, $content = "", $shortcodename = "", $meta = "")
 			{
-				$atts =  shortcode_atts(array('style'=> "grid",  'columns'=> "2", "autoplay"=>true, "interval"=>5), $atts);
+				$atts =  shortcode_atts(array('style'=> "grid",  'columns'=> "2", "autoplay"=>true, "interval"=>5), $atts, $this->config['shortcode']);
 				$custom_class = !empty($meta['custom_class']) ? $meta['custom_class'] : "";
 				extract($atts);
 
@@ -213,7 +213,7 @@ array(
 
 			function av_testimonial_single($atts, $content = "", $shortcodename = "")
 			{
-				extract(shortcode_atts(array('src'=> "",  'name'=> "",  'subtitle'=> "",  'link'=> "", 'linktext'=>"" ), $atts));
+				extract(shortcode_atts(array('src'=> "",  'name'=> "",  'subtitle'=> "",  'link'=> "", 'linktext'=>"", 'custom_markup' =>'' ), $atts, 'av_testimonial_single'));
 
 				$output = "";
 				$avatar = "";
@@ -236,25 +236,25 @@ array(
 	$avatar_size = apply_filters('avf_testimonials_avatar_size', 'thumbnail', $src, $class);
 
 	//avatar
-                $markup = avia_markup_helper(array('context' => 'single_image','echo'=>false));
+                $markup = avia_markup_helper(array('context' => 'single_image','echo'=>false, 'custom_markup'=>$custom_markup));
 	if($src)	$avatar  = "<div class='avia-testimonial-image' $markup>".wp_get_attachment_image( $src , $avatar_size , false, array('alt'=>esc_attr(strip_tags($name))))."</div>";
 
 	//meta
-                $markup_text = avia_markup_helper(array('context' => 'entry','echo'=>false));
-                $markup_name = avia_markup_helper(array('context' => 'name','echo'=>false));
-                $markup_job = avia_markup_helper(array('context' => 'job','echo'=>false));
+                $markup_text = avia_markup_helper(array('context' => 'entry','echo'=>false, 'custom_markup'=>$custom_markup));
+                $markup_name = avia_markup_helper(array('context' => 'name','echo'=>false, 'custom_markup'=>$custom_markup));
+                $markup_job = avia_markup_helper(array('context' => 'job','echo'=>false, 'custom_markup'=>$custom_markup));
                 if(strstr($link, '@'))
                 {
-                    $markup_url = avia_markup_helper(array('context' => 'email','echo'=>false));
+                    $markup_url = avia_markup_helper(array('context' => 'email','echo'=>false, 'custom_markup'=>$custom_markup));
                 }
                 else
                 {
-                    $markup_url = avia_markup_helper(array('context' => 'url','echo'=>false));
+                    $markup_url = avia_markup_helper(array('context' => 'url','echo'=>false, 'custom_markup'=>$custom_markup));
                 }
 
 	//final output
 				
-				$markup = avia_markup_helper(array('context' => 'person','echo'=>false));
+				$markup = avia_markup_helper(array('context' => 'person','echo'=>false, 'custom_markup'=>$custom_markup));
 				
 				$output .= "<div class='avia-testimonial {$class}' $markup>";
 				$output .= "<div class='avia-testimonial_inner'>";

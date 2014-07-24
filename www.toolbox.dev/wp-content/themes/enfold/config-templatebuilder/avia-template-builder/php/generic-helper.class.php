@@ -29,7 +29,14 @@ if ( !class_exists( 'AviaHelper' ) ) {
     		if(empty($link[1]))               return $link[0];
     		if($link[0] == 'manually')        return $link[1];
             if(post_type_exists( $link[0] ))  return get_permalink($link[1]);
-            if(taxonomy_exists( $link[0]  ))  return get_term_link(get_term($link[1], $link[0]));
+            if(taxonomy_exists( $link[0]  ))  
+            {
+            	$return = get_term_link(get_term($link[1], $link[0]));
+            	if(is_object($return)) $return = ""; //if an object is returned it is a WP_Error object and something was not found
+            	return $return;
+            } 
+            
+            
     	}
     	
     	/**
@@ -63,7 +70,7 @@ if ( !class_exists( 'AviaHelper' ) ) {
 			return $sidebars;
     	}
     	
-    	static function get_registered_image_sizes($exclude = array(), $enforce_both = false)
+    	static function get_registered_image_sizes($exclude = array(), $enforce_both = false, $exclude_default = false)
     	{
     		global $_wp_additional_image_sizes;
     		
@@ -72,6 +79,9 @@ if ( !class_exists( 'AviaHelper' ) ) {
 	        						'thumbnail' => array("width"=>get_option('thumbnail_size_w'), "height"=>get_option('thumbnail_size_h')),
 	        						'medium' 	=> array("width"=>get_option('medium_size_w'), "height"=>get_option('medium_size_h')), 
 	        						'large' 	=> array("width"=>get_option('large_size_w'), "height"=>get_option('large_size_h')));
+	        
+	        
+	        if(!empty($exclude_default)) unset($image_sizes['no scaling']);
 	        
 	        if ( isset( $_wp_additional_image_sizes ) && count( $_wp_additional_image_sizes ) )
 	                $image_sizes = array_merge( $image_sizes, $_wp_additional_image_sizes  );

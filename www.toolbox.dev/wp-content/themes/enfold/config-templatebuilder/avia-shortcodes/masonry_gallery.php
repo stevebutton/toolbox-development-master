@@ -13,7 +13,7 @@ if ( !class_exists( 'avia_sc_masonry_gallery' ) )
 			 */
 			function shortcode_insert_button()
 			{
-				$this->config['name']			= __('Fullwidth Masonry Gallery', 'avia_framework' );
+				$this->config['name']			= __('Masonry Gallery', 'avia_framework' );
 				$this->config['tab']			= __('Media Elements', 'avia_framework' );
 				$this->config['icon']			= AviaBuilder::$path['imagesURL']."sc-masonry-gallery.png";
 				$this->config['order']			= 5;
@@ -21,7 +21,7 @@ if ( !class_exists( 'avia_sc_masonry_gallery' ) )
 				$this->config['shortcode'] 		= 'av_masonry_gallery';
 				$this->config['tooltip'] 	    = __('Display a fullwidth masonry/grid gallery', 'avia_framework' );
 				$this->config['tinyMCE'] 		= array('disable' => "true");
-				$this->config['drag-level'] 	= 1;
+				$this->config['drag-level'] 	= 3;
 			}
 			
 			
@@ -174,6 +174,15 @@ if ( !class_exists( 'avia_sc_masonry_gallery' ) )
 			{	
 				$params['innerHtml'] = "<img src='".$this->config['icon']."' title='".$this->config['name']."' />";
 				$params['innerHtml'].= "<div class='avia-element-label'>".$this->config['name']."</div>";
+				
+				
+				$params['innerHtml'].= "<div class='avia-flex-element'>"; 
+				$params['innerHtml'].= 		__('This element will stretch across the whole screen by default.','avia_framework')."<br/>";
+				$params['innerHtml'].= 		__('If you put it inside a color section or column it will only take up the available space','avia_framework');
+				$params['innerHtml'].= "	<div class='avia-flex-element-2nd'>".__('Currently:','avia_framework');
+				$params['innerHtml'].= "	<span class='avia-flex-element-stretched'>&laquo; ".__('Stretch fullwidth','avia_framework')." &raquo;</span>";
+				$params['innerHtml'].= "	<span class='avia-flex-element-content'>| ".__('Adjust to content width','avia_framework')." |</span>";
+				$params['innerHtml'].= "</div></div>";
 				return $params;
 			}
 			
@@ -237,11 +246,16 @@ if ( !class_exists( 'avia_sc_masonry_gallery' ) )
 				if($meta['index'] != 0) $params['class'] .= " masonry-not-first";
 				if($meta['index'] == 0 && get_post_meta(get_the_ID(), 'header', true) != "no") $params['class'] .= " masonry-not-first";
 				
-				$output .=  avia_new_section($params);
+				
 				$atts['container_class'] = "av-masonry-gallery";
 				$masonry  = new avia_masonry($atts);
 				$masonry->query_entries_by_id();
-				$output .= $masonry->html();
+				$masonry_html = $masonry->html();
+				
+				if(!ShortcodeHelper::is_top_level()) return $masonry_html;
+				
+				$output .=  avia_new_section($params);
+				$output .= $masonry_html;
 				$output .= "</div><!-- close section -->"; //close section
 				
 				

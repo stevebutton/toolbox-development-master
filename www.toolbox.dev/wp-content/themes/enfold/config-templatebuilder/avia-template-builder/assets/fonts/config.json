@@ -3,6 +3,8 @@
   "css_prefix_text": "icon-",
   "css_use_suffix": false,
   "hinting": true,
+  "units_per_em": 1000,
+  "ascent": 850,
   "glyphs": [
     {
       "uid": "39e2e6682c28e1e3b5f49825a19717c4",
@@ -1709,6 +1711,12 @@
       "src": "entypo"
     },
     {
+      "uid": "1e2035b7cbaeb3d902cf9849e456069d",
+      "css": "delicious",
+      "code": 59689,
+      "src": "zocial"
+    },
+    {
       "uid": "aaf371ab44841e9aaffebd179d324ce4",
       "css": "android",
       "code": 59676,
@@ -1718,6 +1726,12 @@
       "uid": "d089814548af1441aa00ecec47851f38",
       "css": "fivehundredpx",
       "code": 59677,
+      "src": "zocial"
+    },
+    {
+      "uid": "523e56b66e166a5bb7b823844bdf56e6",
+      "css": "bitcoin",
+      "code": 59690,
       "src": "zocial"
     },
     {
@@ -1733,9 +1747,33 @@
       "src": "zocial"
     },
     {
+      "uid": "8625d6e45fba1219638069e21eedbce8",
+      "css": "digg",
+      "code": 59688,
+      "src": "zocial"
+    },
+    {
+      "uid": "b3a537446285bb3510bba57d20374818",
+      "css": "reddit",
+      "code": 59687,
+      "src": "zocial"
+    },
+    {
       "uid": "1dbc2b4a7f00ef209a85e4b5d9fedec4",
       "css": "appstore",
       "code": 59680,
+      "src": "zocial"
+    },
+    {
+      "uid": "3a171c02a5096c63c7c0e2e84d5eeb5a",
+      "css": "weibo",
+      "code": 59691,
+      "src": "zocial"
+    },
+    {
+      "uid": "12db1f260b5b2ccd1aa4d8942cc7f6dd",
+      "css": "vk",
+      "code": 59686,
       "src": "zocial"
     },
     {

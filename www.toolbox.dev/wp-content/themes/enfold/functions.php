@@ -4,7 +4,7 @@ global $avia_config;
 
 /*
  * if you run a child theme and dont want to load the default functions.php file
- * set the global var bellow in you childthemes function.php to true:
+ * set the global var below in you childthemes function.php to true:
  *
  * example: global $avia_config; $avia_config['use_child_theme_functions_only'] = true;
  * The default functions.php file will then no longer be loaded. You need to make sure then
@@ -53,6 +53,7 @@ $avia_config['color_sets'] = array(
 add_theme_support('avia_mega_menu');
 
 
+
 /*
  * deactivates the default mega menu and allows us to pass individual menu walkers when calling a menu
  */
@@ -95,6 +96,7 @@ $avia_config['imgSize']['extra_large'] 		 	= array('width'=>1500, 'height'=>1500
 $avia_config['imgSize']['portfolio'] 		 	= array('width'=>495, 'height'=>400 );						// images for portfolio entries (2,3 column)
 $avia_config['imgSize']['portfolio_small'] 		= array('width'=>260, 'height'=>185 );						// images for portfolio 4 columns
 $avia_config['imgSize']['gallery'] 		 		= array('width'=>710, 'height'=>575 );						// images for portfolio entries (2,3 column)
+$avia_config['imgSize']['magazine'] 		 	= array('width'=>710, 'height'=>375 );						// images for magazines
 $avia_config['imgSize']['masonry'] 		 		= array('width'=>705, 'height'=>705 , 'crop' => false);		// images for fullscreen masonry
 $avia_config['imgSize']['entry_with_sidebar'] 	= array('width'=>710, 'height'=>270);		                 // big images for blog and page entries
 $avia_config['imgSize']['entry_without_sidebar']= array('width'=>1030, 'height'=>360 );						// images for fullsize pages and fullsize slider
@@ -152,7 +154,7 @@ $avia_config['layout']['sidebar_right'] = array('content' => 'nine alpha',   'si
  
  $avia_config['font_icons'] = apply_filters('avf_default_icons', array(
  
-    //post formats
+    //post formats +  types
     'standard' 		=> array( 'font' =>'entypo-fontello', 'icon' => 'ue836'),
     'link'    		=> array( 'font' =>'entypo-fontello', 'icon' => 'ue822'),
     'image'    		=> array( 'font' =>'entypo-fontello', 'icon' => 'ue80f'),
@@ -160,6 +162,8 @@ $avia_config['layout']['sidebar_right'] = array('content' => 'nine alpha',   'si
     'quote'   		=> array( 'font' =>'entypo-fontello', 'icon' => 'ue833'),
     'gallery'   	=> array( 'font' =>'entypo-fontello', 'icon' => 'ue80e'),
     'video'   		=> array( 'font' =>'entypo-fontello', 'icon' => 'ue80d'),
+    'portfolio'   	=> array( 'font' =>'entypo-fontello', 'icon' => 'ue849'),
+    'product'   	=> array( 'font' =>'entypo-fontello', 'icon' => 'ue859'),
     				
     //social		
     'behance' 		=> array( 'font' =>'entypo-fontello', 'icon' => 'ue915'),
@@ -179,6 +183,10 @@ $avia_config['layout']['sidebar_right'] = array('content' => 'nine alpha',   'si
 	'xing'			=> array( 'font' =>'entypo-fontello', 'icon' => 'ue923'),  
 	'soundcloud'	=> array( 'font' =>'entypo-fontello', 'icon' => 'ue913'),  
 	'five_100_px'	=> array( 'font' =>'entypo-fontello', 'icon' => 'ue91d'),  
+	'vk'			=> array( 'font' =>'entypo-fontello', 'icon' => 'ue926'),  
+	'reddit'		=> array( 'font' =>'entypo-fontello', 'icon' => 'ue927'),  
+	'digg'			=> array( 'font' =>'entypo-fontello', 'icon' => 'ue928'),  
+	'delicious'		=> array( 'font' =>'entypo-fontello', 'icon' => 'ue929'),  
 	'mail' 			=> array( 'font' =>'entypo-fontello', 'icon' => 'ue805'),
 					
 	//woocomemrce    
@@ -217,6 +225,7 @@ $avia_config['layout']['sidebar_right'] = array('content' => 'nine alpha',   'si
 	'clipboard' 	=> array( 'font' =>'entypo-fontello', 'icon' => 'ue8d1'),
 	'scrolltop' 	=> array( 'font' =>'entypo-fontello', 'icon' => 'ue876'),
 	'scrolldown' 	=> array( 'font' =>'entypo-fontello', 'icon' => 'ue877'),
+	'bitcoin' 		=> array( 'font' =>'entypo-fontello', 'icon' => 'ue92a'),
 
 ));
 
@@ -259,11 +268,10 @@ if(!function_exists('avia_register_frontend_scripts'))
 		$child_theme_url = get_stylesheet_directory_uri();
 
 		//register js
-		wp_enqueue_script( 'avia-compat', $template_url.'/js/avia-compat.js', array('jquery'), 1, false ); //needs to be loaded at the top to prevent bugs
-		wp_enqueue_script( 'avia-default', $template_url.'/js/avia.js', array('jquery'), 1, true );
-		wp_enqueue_script( 'avia-shortcodes', $template_url.'/js/shortcodes.js', array('jquery'), 1, true );
-		wp_enqueue_script( 'avia-prettyPhoto',  $template_url.'/js/prettyPhoto/js/jquery.prettyPhoto.js', 'jquery', "3.1.5", true);
-		// wp_register_script( 'wp-mediaelement',  $template_url.'/js/mediaelement/mediaelement-and-player.min.js', 'jquery', "1", true);
+		wp_enqueue_script( 'avia-compat', $template_url.'/js/avia-compat.js', array('jquery'), 2, false ); //needs to be loaded at the top to prevent bugs
+		wp_enqueue_script( 'avia-default', $template_url.'/js/avia.js', array('jquery'), 2, true );
+		wp_enqueue_script( 'avia-shortcodes', $template_url.'/js/shortcodes.js', array('jquery'), 2, true );
+		wp_enqueue_script( 'avia-popup',  $template_url.'/js/aviapopup/jquery.magnific-popup.min.js', array('jquery'), 2, true);
 
 		wp_enqueue_script( 'jquery' );
 		wp_enqueue_script( 'wp-mediaelement' );
@@ -273,19 +281,20 @@ if(!function_exists('avia_register_frontend_scripts'))
 
 
 		//register styles
-		wp_register_style('avia-style' ,  $child_theme_url."/style.css", array(), '1', 'all' ); //register default style.css file. only include in childthemes. has no purpose in main theme
-		wp_enqueue_style( 'avia-grid' ,   $template_url."/css/grid.css", array(), '1', 'all' );
-		wp_enqueue_style( 'avia-base' ,   $template_url."/css/base.css", array(), '1', 'all' );
-		wp_enqueue_style( 'avia-layout',  $template_url."/css/layout.css", array(), '1', 'all' );
-		wp_enqueue_style( 'avia-scs',     $template_url."/css/shortcodes.css", array(), '1', 'all' );
-		wp_enqueue_style( 'avia-custom',  $template_url."/css/custom.css", array(), '1', 'all' );
-		wp_enqueue_style( 'avia-prettyP', $template_url."/js/prettyPhoto/css/prettyPhoto.css", array(), '1', 'screen' );
+		wp_register_style( 'avia-style' ,  $child_theme_url."/style.css", array(), 		'2', 'all' ); //register default style.css file. only include in childthemes. has no purpose in main theme
+		wp_register_style( 'avia-custom',  $template_url."/css/custom.css", array(), 	'2', 'all' );
+																						 
+		wp_enqueue_style( 'avia-grid' ,   $template_url."/css/grid.css", array(), 		'2', 'all' );
+		wp_enqueue_style( 'avia-base' ,   $template_url."/css/base.css", array(), 		'2', 'all' );
+		wp_enqueue_style( 'avia-layout',  $template_url."/css/layout.css", array(), 	'2', 'all' );
+		wp_enqueue_style( 'avia-scs',     $template_url."/css/shortcodes.css", array(), '2', 'all' );
+		wp_enqueue_style( 'avia-popup-css', $template_url."/js/aviapopup/magnific-popup.css", array(), '1', 'screen' );
 		wp_enqueue_style( 'avia-media'  , $template_url."/js/mediaelement/skin-1/mediaelementplayer.css", array(), '1', 'screen' );
 		wp_enqueue_style( 'avia-print' ,  $template_url."/css/print.css", array(), '1', 'print' );
 		
 		
 		if ( is_rtl() ) {
-		  wp_enqueue_style(  'avia-rtl',  $template_url."/css/rtl.css", array(), '1', 'screen' );
+			wp_enqueue_style(  'avia-rtl',  $template_url."/css/rtl.css", array(), '1', 'all' );
 		}
 		
 
@@ -295,10 +304,13 @@ if(!function_exists('avia_register_frontend_scripts'))
         if( get_option('avia_stylesheet_exists'.$safe_name) == 'true' )
         {
             $avia_upload_dir = wp_upload_dir();
+            if(is_ssl()) $avia_upload_dir['baseurl'] = str_replace("http://", "https://", $avia_upload_dir['baseurl']);
 
             $avia_dyn_stylesheet_url = $avia_upload_dir['baseurl'] . '/dynamic_avia/'.$safe_name.'.css';
-            wp_register_style('avia-dynamic', $avia_dyn_stylesheet_url, array(), '1', 'all' );
-            wp_enqueue_style( 'avia-dynamic'  );
+			$version_number = get_option('avia_stylesheet_dynamic_version'.$safe_name);
+			if(empty($version_number)) $version_number = '1';
+            
+            wp_enqueue_style( 'avia-dynamic', $avia_dyn_stylesheet_url, array(), $version_number, 'all' );
         }
 
 		wp_enqueue_style( 'avia-custom');
@@ -323,7 +335,8 @@ if(!function_exists('avia_remove_default_video_styling'))
 	{
 		//remove default style for videos
 		wp_dequeue_style( 'mediaelement' );
-		//wp_dequeue_style( 'wp-mediaelement' );
+		// wp_dequeue_script( 'wp-mediaelement' );
+		// wp_dequeue_style( 'wp-mediaelement' );
 	}
 }
 
@@ -337,18 +350,30 @@ if(!function_exists('avia_nav_menus'))
 {
 	function avia_nav_menus()
 	{
-		global $avia_config;
+		global $avia_config, $wp_customize;
 
 		add_theme_support('nav_menus');
-		foreach($avia_config['nav_menus'] as $key => $value){ register_nav_menu($key, THEMENAME.' '.$value); }
+		
+		foreach($avia_config['nav_menus'] as $key => $value)
+		{
+			//wp-admin\customize.php does not support html code in the menu description - thus we need to strip it
+			$name = (!empty($value['plain']) && !empty($wp_customize)) ? $value['plain'] : $value['html'];
+			register_nav_menu($key, THEMENAME.' '.$name);
+		}
 	}
 
-	$avia_config['nav_menus'] = array(	'avia' => 'Main Menu' ,
-										'avia2' => 'Secondary Menu <br/><small>(Will be displayed if you selected a header layout that supports a submenu <a target="_blank" href="'.admin_url('?page=avia#goto_header').'">here</a>)</small>',
-										'avia3' => 'Footer Menu <br/><small>(no dropdowns)</small>'
+	$avia_config['nav_menus'] = array(	'avia' => array('html' => __('Main Menu', 'avia_framework')),
+										'avia2' => array(
+													'html' => __('Secondary Menu <br/><small>(Will be displayed if you selected a header layout that supports a submenu <a target="_blank" href="'.admin_url('?page=avia#goto_header_layout').'">here</a>)</small>', 'avia_framework'),
+													'plain'=> __('Secondary Menu - will be displayed if you selected a header layout that supports a submenu', 'avia_framework')),
+										'avia3' => array(
+													'html' => __('Footer Menu <br/><small>(no dropdowns)</small>', 'avia_framework'),
+													'plain'=> __('Footer Menu (no dropdowns)', 'avia_framework'))
 									);
+
 	avia_nav_menus(); //call the function immediatly to activate
 }
+
 
 
 
@@ -431,6 +456,9 @@ if(!function_exists('avia_register_avia_widgets'))
 		register_widget( 'avia_combo_widget' );
 		register_widget( 'avia_partner_widget' );
 		register_widget( 'avia_google_maps' );
+		register_widget( 'avia_fb_likebox' );
+		
+		
 	}
 
 	avia_register_avia_widgets(); //call the function immediatly to activate

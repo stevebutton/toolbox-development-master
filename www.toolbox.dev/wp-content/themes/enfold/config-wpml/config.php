@@ -12,7 +12,8 @@ if(defined('ICL_SITEPRESS_VERSION') && defined('ICL_LANGUAGE_CODE'))
 	//add_action( 'avia_wpml_backend_language_switch', 'avia_default_dynamics');
 	add_action( 'avia_wpml_backend_language_switch', 'avia_wpml_copy_options');
 	add_action( 'wp_enqueue_scripts', 'avia_wpml_register_assets' );
-	add_action( 'avia_meta_header', 'avia_wpml_language_switch' );
+	add_action( 'avia_meta_header', 'avia_wpml_language_switch', 10);
+    add_filter( 'avf_execute_avia_meta_header', '__return_true', 10, 1);
 
 
 
@@ -245,7 +246,11 @@ if(defined('ICL_SITEPRESS_VERSION') && defined('ICL_LANGUAGE_CODE'))
 	{
 		function avia_wpml_language_switch()
 		{
-			global $sitepress;
+			global $sitepress, $avia_config;
+            
+            if(empty($avia_config['wpml_language_menu_position'])) $avia_config['wpml_language_menu_position'] = apply_filters('avf_wpml_language_switcher_position', 'sub_menu');
+            if($avia_config['wpml_language_menu_position'] != 'sub_menu') return;
+
 			$languages = icl_get_languages('skip_missing=0&orderby=custom');
 			$output = "";
 
@@ -536,6 +541,96 @@ if(defined('ICL_SITEPRESS_VERSION') && defined('ICL_LANGUAGE_CODE'))
 
 
 
+	if(!function_exists('avia_append_lang_flags'))
+	{
+		//first append search item to main menu
+		add_filter( 'wp_nav_menu_items', 'avia_append_lang_flags', 20, 2 );
+		add_filter( 'avf_fallback_menu_items', 'avia_append_lang_flags', 20, 2 );
+		
+		function avia_append_lang_flags( $items, $args )
+		{
+		    if ((is_object($args) && $args->theme_location == 'avia'))
+		    {
+		        global $avia_config, $sitepress;
+		
+		        if(empty($avia_config['wpml_language_menu_position'])) $avia_config['wpml_language_menu_position'] = apply_filters('avf_wpml_language_switcher_position', 'main_menu');
+		        if($avia_config['wpml_language_menu_position'] != 'main_menu') return $items;
+		
+		        $languages = icl_get_languages('skip_missing=0&orderby=custom');
+		
+		        if(is_array($languages))
+		        {
+		            foreach($languages as $lang)
+		            {
+		                $currentlang = (ICL_LANGUAGE_CODE == $lang['language_code']) ? 'avia_current_lang' : '';
+		
+		                if(is_home() || is_front_page()) $lang['url'] = $sitepress->language_url($lang['language_code']);
+		
+		                $items .= "<li class='language_".$lang['language_code']." $currentlang'><a href='".$lang['url']."'>";
+		                $items .= "	<span class='language_flag'><img title='".$lang['native_name']."' src='".$lang['country_flag_url']."' /></span>";
+		                $items .= "</a></li>";
+		            }
+		        }
+		    }
+		    return $items;
+		}
+	}
+    
+    
+    
+
+	if(!function_exists('avia_wpml_translate_date_format'))
+	{
+		function avia_wpml_translate_date_format($format)
+		{
+			if (function_exists('icl_translate')) $format = icl_translate('Formats', $format, $format);
+			return $format;
+		}
+	
+		add_filter('option_date_format', 'avia_wpml_translate_date_format');
+	}
+
+
+
+
+	if(!function_exists('avia_translate_ids_from_query'))
+	{
+		function avia_translate_ids_from_query($query, $params)
+		{
+			$res = array();
+			
+			if(!empty($query['tax_query'][0]['terms']) && !empty($query['tax_query'][0]['taxonomy']))
+			{
+				foreach ($query['tax_query'][0]['terms'] as $id)
+				{
+					$xlat = icl_object_id($id, $query['tax_query'][0]['taxonomy'], true);
+					if(!is_null($xlat)) $res[] = $xlat;
+				}
+			
+				if(!empty($res)) $query['tax_query'][0]['terms'] = $res;
+			}
+			else if(!empty($query['post__in']) && !empty($query['post_type']))
+			{
+				foreach($query['post__in'] as $id)
+				{
+					$xlat = icl_object_id($id, $query['post_type'], true);
+					if(!is_null($xlat)) $res[] = $xlat;
+				}
+				
+				if(!empty($res)) $query['post__in'] = $res;
+			}
+		
+			return $query;
+		}
+		
+		add_filter('avia_masonry_entries_query', 'avia_translate_ids_from_query', 10, 2);
+		add_filter('avia_post_grid_query', 'avia_translate_ids_from_query', 10, 2);
+		add_filter('avia_post_slide_query', 'avia_translate_ids_from_query', 10, 2);
+		add_filter('avia_blog_post_query', 'avia_translate_ids_from_query', 10, 2);
+	}
+
+
+
 }
 
 
@@ -558,3 +653,5 @@ if(!function_exists('avia_portfolio_compat') && defined('ICL_SITEPRESS_VERSION')
 		}
 	}
 }
+
+

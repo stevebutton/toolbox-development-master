@@ -8,9 +8,13 @@ if(!function_exists('avia_markup_helper'))
     function avia_markup_helper($args)
     {
         if(!empty($args))
-            $args = array_merge(array('context' => '', 'echo' => true, 'post_type' => ''), $args);
+        $args = array_merge(array('context' => '', 'echo' => true, 'post_type' => '', 'id' => '', 'custom_markup' => '', 'force' => false), $args);
 
-        $args = apply_filters('avf_markup_helper_args', $args);
+		$args = apply_filters('avf_markup_helper_args', $args);
+			
+		// dont show markup if its deactivated. markup can still be enforced with args['force'] = true;
+		if('inactive' == avia_get_option('markup') && $args['force'] == false) return;
+
         if(empty($args['context'])) return;
 
         // markup string - stores markup output
@@ -22,13 +26,13 @@ if(!function_exists('avia_markup_helper'))
         {
             case 'body':
                 $attributes['itemscope'] = 'itemscope';
-                $attributes['itemtype']  = 'http://schema.org/WebPage';
+                $attributes['itemtype']  = 'https://schema.org/WebPage';
                 break;
 
             case 'header':
                 $attributes['role']      = 'banner';
                 $attributes['itemscope'] = 'itemscope';
-                $attributes['itemtype']  = 'http://schema.org/WPHeader';
+                $attributes['itemtype']  = 'https://schema.org/WPHeader';
                 break;
 
             case 'title':
@@ -46,7 +50,7 @@ if(!function_exists('avia_markup_helper'))
             case 'nav':
                 $attributes['role']      = 'navigation';
                 $attributes['itemscope'] = 'itemscope';
-                $attributes['itemtype']  = 'http://schema.org/SiteNavigationElement';
+                $attributes['itemtype']  = 'https://schema.org/SiteNavigationElement';
                 break;
 
             case 'content':
@@ -57,31 +61,31 @@ if(!function_exists('avia_markup_helper'))
                 if (is_singular('post') || is_archive() || is_home())
                 {
                     $attributes['itemscope'] = 'itemscope';
-                    $attributes['itemtype']  = 'http://schema.org/Blog';
+                    $attributes['itemtype']  = 'https://schema.org/Blog';
                 }
 
                 if(is_archive() && $args['post_type'] == 'products')
                 {
-                    $attributes['itemtype']  = 'http://schema.org/SomeProducts';
+                    $attributes['itemtype']  = 'https://schema.org/SomeProducts';
                 }
 
                 //* Search results pages
                 if (is_search())
                 {
                     $attributes['itemscope'] = 'itemscope';
-                    $attributes['itemtype'] = 'http://schema.org/SearchResultsPage';
+                    $attributes['itemtype'] = 'https://schema.org/SearchResultsPage';
                 }
                 break;
 
             case 'entry':
                 global $post;
                 $attributes['itemscope'] = 'itemscope';
-                $attributes['itemtype']  = 'http://schema.org/CreativeWork';
+                $attributes['itemtype']  = 'https://schema.org/CreativeWork';
 
                 //* Blog posts microdata
                 if ( 'post' === $post->post_type )
                 {
-                    $attributes['itemtype']  = 'http://schema.org/BlogPosting';
+                    $attributes['itemtype']  = 'https://schema.org/BlogPosting';
 
                     //* If main query,
                     if ( is_main_query() )
@@ -92,12 +96,12 @@ if(!function_exists('avia_markup_helper'))
             case 'phone':
                 $attributes['itemprop']  = 'telephone';
                 $attributes['itemscope'] = 'itemscope';
-                $attributes['itemtype']  = 'http://schema.org/LocalBusiness';
+                $attributes['itemtype']  = 'https://schema.org/LocalBusiness';
                 break;
 
             case 'image':
                 $attributes['itemscope'] = 'itemscope';
-                $attributes['itemtype']  = 'http://schema.org/ImageObject';
+                $attributes['itemtype']  = 'https://schema.org/ImageObject';
                 break;
 
             case 'image_url':
@@ -127,12 +131,12 @@ if(!function_exists('avia_markup_helper'))
             case 'author':
                 $attributes['itemprop']  = 'author';
                 $attributes['itemscope'] = 'itemscope';
-                $attributes['itemtype']  = 'http://schema.org/Person';
+                $attributes['itemtype']  = 'https://schema.org/Person';
                 break;
 
             case 'person':
                 $attributes['itemscope'] = 'itemscope';
-                $attributes['itemtype']  = 'http://schema.org/Person';
+                $attributes['itemtype']  = 'https://schema.org/Person';
                 break;
 
             case 'single_image':
@@ -163,19 +167,19 @@ if(!function_exists('avia_markup_helper'))
             case 'comment':
                 $attributes['itemprop']  = 'comment';
                 $attributes['itemscope'] = 'itemscope';
-                $attributes['itemtype']  = 'http://schema.org/UserComments';
+                $attributes['itemtype']  = 'https://schema.org/UserComments';
                 break;
 
             case 'comment_author':
                 $attributes['itemprop']  = 'creator';
                 $attributes['itemscope'] = 'itemscope';
-                $attributes['itemtype']  = 'http://schema.org/Person';
+                $attributes['itemtype']  = 'https://schema.org/Person';
                 break;
 
             case 'comment_author_link':
                 $attributes['itemprop']  = 'creator';
                 $attributes['itemscope'] = 'itemscope';
-                $attributes['itemtype']  = 'http://schema.org/Person';
+                $attributes['itemtype']  = 'https://schema.org/Person';
                 $attributes['rel']  = 'external nofollow';
                 break;
 
@@ -192,39 +196,39 @@ if(!function_exists('avia_markup_helper'))
             case 'author_box':
                 $attributes['itemprop']  = 'author';
                 $attributes['itemscope'] = 'itemscope';
-                $attributes['itemtype']  = 'http://schema.org/Person';
+                $attributes['itemtype']  = 'https://schema.org/Person';
                 break;
 
             case 'table':
                 $attributes['itemscope'] = 'itemscope';
-                $attributes['itemtype']  = 'http://schema.org/Table';
+                $attributes['itemtype']  = 'https://schema.org/Table';
                 break;
 
             case 'video':
                 $attributes['itemprop'] = 'video';
-                $attributes['itemtype']  = 'http://schema.org/VideoObject';
+                $attributes['itemtype']  = 'https://schema.org/VideoObject';
                 break;
 
             case 'audio':
                 $attributes['itemscope'] = 'itemscope';
-                $attributes['itemtype']  = 'http://schema.org/AudioObject';
+                $attributes['itemtype']  = 'https://schema.org/AudioObject';
                 break;
 
             case 'blog':
                 $attributes['itemscope'] = 'itemscope';
-                $attributes['itemtype']  = 'http://schema.org/Blog';
+                $attributes['itemtype']  = 'https://schema.org/Blog';
                 break;
 
             case 'sidebar':
                 $attributes['role']      = 'complementary';
                 $attributes['itemscope'] = 'itemscope';
-                $attributes['itemtype']  = 'http://schema.org/WPSideBar';
+                $attributes['itemtype']  = 'https://schema.org/WPSideBar';
                 break;
 
             case 'footer':
                 $attributes['role']      = 'contentinfo';
                 $attributes['itemscope'] = 'itemscope';
-                $attributes['itemtype']  = 'http://schema.org/WPFooter';
+                $attributes['itemtype']  = 'https://schema.org/WPFooter';
                 break;
         }
 

@@ -97,7 +97,7 @@ if ( !class_exists( 'avia_sc_heading' ) )
 				            				            
 				     array(	
 							"name" 	=> __("Subheading", 'avia_framework' ),
-							"desc" 	=> __("Add an extra descriptive subheading above or bellow the actual heading", 'avia_framework' ),
+							"desc" 	=> __("Add an extra descriptive subheading above or below the actual heading", 'avia_framework' ),
 							"id" 	=> "subheading_active",
 							"type" 	=> "select",
 							"std" 	=> "",
@@ -111,7 +111,7 @@ if ( !class_exists( 'avia_sc_heading' ) )
 						"id" 	=> "content",
 						"type" 	=> "textarea",
 						"required" => array('subheading_active','not',''),
-						"std" 	=> __("", "avia_framework" )),   
+						"std" 	=> ""),   
 						
 					array(	"name" 	=> __("Subheading Size", 'avia_framework' ),
 							"desc" 	=> __("Size of your subeading in Pixel", 'avia_framework' ),
@@ -144,7 +144,7 @@ if ( !class_exists( 'avia_sc_heading' ) )
 			 */
 			function editor_element($params)
 			{
-				$params['args'] = shortcode_atts(array('tag' => 'h3', 'padding' => '5', 'heading'=>'', 'color'=>'', 'style'=>'', 'custom_font'=>'', 'size'=>'', 'subheading_active' => '', 'subheading_size'=>''), $params['args']);
+				$params['args'] = shortcode_atts(array('tag' => 'h3', 'padding' => '5', 'heading'=>'', 'color'=>'', 'style'=>'', 'custom_font'=>'', 'size'=>'', 'subheading_active' => '', 'subheading_size'=>'', 'custom_class'=>''), $params['args'], $this->config['shortcode']);
 				
 				$templateNAME  	= $this->update_template("name", "{{name}}");
 			
@@ -172,7 +172,7 @@ if ( !class_exists( 'avia_sc_heading' ) )
 			 */
 			function shortcode_handler($atts, $content = "", $shortcodename = "", $meta = "")
 			{
-			    extract(shortcode_atts(array('tag' => 'h3', 'padding' => '5', 'heading'=>'', 'color'=>'', 'style'=>'', 'custom_font'=>'', 'size'=>'', 'subheading_active' => '', 'subheading_size'=>''), $atts));
+			    extract(shortcode_atts(array('tag' => 'h3', 'padding' => '5', 'heading'=>'', 'color'=>'', 'style'=>'', 'custom_font'=>'', 'size'=>'', 'subheading_active' => '', 'subheading_size'=>''), $atts, $this->config['shortcode']));
 			
         		$output  = "";
         		$styling = "";
@@ -184,7 +184,7 @@ if ( !class_exists( 'avia_sc_heading' ) )
         		if($heading)
         		{
         			// add seo markup
-                    $markup = avia_markup_helper(array('context' => 'entry_title','echo'=>false));
+                    $markup = avia_markup_helper(array('context' => 'entry_title','echo'=>false, 'custom_markup'=>$meta['custom_markup']));
 					
 					// filter heading for & symbol and convert them					
         			$heading = apply_filters('avia_ampersand', wptexturize($heading));
@@ -227,7 +227,7 @@ if ( !class_exists( 'avia_sc_heading' ) )
 	        		//html markup
 	        		$output .= "<div {$styling} class='av-special-heading av-special-heading-{$tag} {$color} {$style} {$class}'>";
 	        		$output .= 		$before;
-	        		$output .= 		"<{$tag} class='av-special-heading-tag' $markup>{$heading}</{$tag}>";
+	        		$output .= 		"<{$tag} class='av-special-heading-tag' $markup $styling>{$heading}</{$tag}>";
 	        		$output .= 		$after;
 	        		$output .= 		"<div class='special-heading-border'><div class='special-heading-inner-border' {$border_styling}></div></div>";
 	        		$output .= "</div>";

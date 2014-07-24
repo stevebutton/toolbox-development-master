@@ -1,9 +1,9 @@
 (function($)
-{
+{	
     "use strict";
 
     $(document).ready(function()
-    {
+    {	
     	//global variables that are used on several ocassions
     	$.avia_utilities = $.avia_utilities || {};
     	
@@ -50,6 +50,10 @@
 		if($.fn.avia_masonry)
 		$('.av-masonry').avia_masonry();
 		
+		//activate the accordion
+		if($.fn.aviaccordion)
+		$('.aviaccordion').aviaccordion();
+		
     });
 
 
@@ -79,7 +83,7 @@
 
     function activate_shortcode_scripts(container)
 	{
-		if(typeof container == 'undefined'){ container = 'body';};
+		if(typeof container == 'undefined'){ container = 'body';}
 		
 		//activates the form shortcode
 		if($.fn.avia_ajax_form)
@@ -114,20 +118,25 @@
 			$('.avia-gallery', container).avia_sc_gallery();
 		}
 		
+		//activates animated number shortcode
+		if($.fn.avia_sc_animated_number)
+		{
+			$('.avia-animated-number', container).avia_sc_animated_number();
+		}
 		
 		//animation for elements that are not connected like icon shortcode
 		if($.fn.avia_sc_animation_delayed)
 		{
 			$('.av_font_icon', container).avia_sc_animation_delayed({delay:100});
+			$('.avia-image-container', container).avia_sc_animation_delayed({delay:100});
+			$('.av-hotspot-image-container', container).avia_sc_animation_delayed({delay:100});
 		}
-		
 
 		//activates animation for iconlist
 		if($.fn.avia_sc_iconlist)
 		{
 			$('.avia-icon-list', container).avia_sc_iconlist();
 		}
-
 
 		//activates animation for progress bar
 		if($.fn.avia_sc_progressbar)
@@ -158,9 +167,135 @@
         {
         	$('.avia-google-map-container', container).aviaMaps();
     	}
+    	
+    	 //load magazine sorting
+        if($.fn.aviaMagazine)
+        {
+        	$('.av-magazine-tabs-active', container).aviaMagazine();
+    	}
+    	
+    	 //load image hotspot
+        if($.fn.aviaHotspots)
+        {
+        	$('.av-hotspot-image-container', container).aviaHotspots();
+    	}
+    	
     }
 
 
+
+
+//creates relate posts tooltip
+// 
+
+// -------------------------------------------------------------------------------------------
+// 
+// AVIA Image Hotspots
+// 
+// -------------------------------------------------------------------------------------------
+(function($)
+{ 
+	"use strict";
+
+	$.fn.aviaHotspots = function( options )
+	{
+		if(!this.length) return; 
+
+		return this.each(function()
+		{
+			var _self = {};
+			
+			_self.container	= $(this);
+			_self.hotspots	= _self.container.find('.av-image-hotspot');
+			
+				_self.container.on('avia_start_animation', function()
+				{
+					setTimeout(function()
+					{
+						_self.hotspots.each(function(i)
+						{
+							var current = $(this);
+							setTimeout(function(){ current.addClass('av-display-hotspot'); },300 * i);
+						});
+					},400);
+				});
+
+		});
+		
+		
+		
+	}
+	
+}(jQuery));
+
+
+
+// -------------------------------------------------------------------------------------------
+// 
+// AVIA Magazine function for magazine sorting
+// 
+// -------------------------------------------------------------------------------------------
+(function($)
+{ 
+	"use strict";
+	
+	var animating = false,
+		methods = {
+		
+		switchMag: function(clicked, _self)
+		{
+			var current 		= $(clicked)
+			
+			if(current.is('.active_sort') || animating) return;
+			
+			var filter			= current.data('filter'),
+				oldContainer	= _self.container.filter(':visible'),
+				newContainer	= _self.container.filter('.' + filter);
+			
+			//switch Class
+			animating = true;
+			_self.sort_buttons.removeClass('active_sort');
+			current.addClass('active_sort');
+			
+			//apply fixed heiht for transition
+			_self.magazine.height(_self.magazine.outerHeight());
+			
+			//switch items
+			oldContainer.avia_animate({opacity:0}, 200, function()
+			{
+				oldContainer.css({display:'none'});
+				newContainer.css({opacity:0, display:'block'}).avia_animate({opacity:1}, 150, function()
+				{
+					_self.magazine.avia_animate({height: (newContainer.outerHeight() + _self.sort_bar.outerHeight())}, 150, function()
+					{
+						_self.magazine.height('auto');
+						animating = false;
+					});
+					
+				});
+			});
+		}
+	};
+	
+	
+	$.fn.aviaMagazine = function( options )
+	{
+		if(!this.length) return; 
+
+		return this.each(function()
+		{
+			var _self = {};
+			 
+			_self.magazine		= $(this),
+			_self.sort_buttons 	= _self.magazine.find('.av-magazine-sort a');
+			_self.container		= _self.magazine.find('.av-magazine-group');
+			_self.sort_bar		= _self.magazine.find('.av-magazine-top-bar');
+			
+			_self.sort_buttons.on('click', function(e){ e.preventDefault(); methods.switchMag(this, _self);  } );
+		});
+	}
+	
+}(jQuery));
 
 // -------------------------------------------------------------------------------------------
 // 
@@ -212,7 +347,7 @@
     	_getAPI: function( )
 		{	
 			//make sure the api file is loaded only once
-			if($.AviaMapsAPI.apiFiles.loading === false)
+			if((typeof window.google == 'undefined' || typeof window.google.maps == 'undefined') && $.AviaMapsAPI.apiFiles.loading == false)
 			{	
 				$.AviaMapsAPI.apiFiles.loading = true;
 				var script 	= document.createElement('script');
@@ -221,7 +356,8 @@
 				
       			document.body.appendChild(script);
 			}
-			else if($.AviaMapsAPI.apiFiles.finished === true)
+			else if((typeof window.google != 'undefined' && typeof window.google.maps != 'undefined') || $.AviaMapsAPI.apiFiles.loading == false)
+			//else if($.AviaMapsAPI.apiFiles.finished === true)
 			{
 				this._applyMap();
 			}
@@ -241,7 +377,8 @@
 				return;
 			}
 			
-			var _self = this;
+			var _self = this,
+				mobile_drag = $.avia_utilities.isMobile ? this.$data.mobile_drag_control : true;
 			
 			this.mapVars = {
 				mapMaker: false, //mapmaker tiles are user generated content maps. might hold more info but also be inaccurate
@@ -250,10 +387,12 @@
 				streetViewControl: false,
 				panControl: this.$data.pan_control,
 				zoomControl: this.$data.zoom_control,
+				draggable: mobile_drag,
 				scrollwheel: false,
 				zoom: this.$data.zoom,
 				mapTypeId:google.maps.MapTypeId.ROADMAP,
-				center: new google.maps.LatLng(this.$data.marker[0].lat, this.$data.marker[0].long)
+				center: new google.maps.LatLng(this.$data.marker[0].lat, this.$data.marker[0].long),
+				styles:[{featureType: "poi", elementType: "labels", stylers: [ { visibility: "off" }] }]
 			};
 
 			this.map = new google.maps.Map(this.container, this.mapVars);
@@ -278,6 +417,11 @@
 					      featureType: "all",
 					      elementType: "all",
 					      stylers: stylers
+					    }, {
+					      featureType: "poi",
+					      stylers: [
+						{ visibility: "off" }
+					      ]
 					    }];
 					
 				mapType = new google.maps.StyledMapType(style, { name:"av_map_style" });
@@ -320,8 +464,8 @@
 						    { 
 						    	var size = _self.$data.marker[key].imagesize, half = "", full = "";
 						    	
-						    	if(_self.retina && size > 40) size = 40;				//retina downsize to at least half the px size
-						    	half = new google.maps.Point(size / 2, size / 2) ; 	//used to position the marker
+						    	if(_self.retina && size > 40) size = 40;			//retina downsize to at least half the px size
+						    	half = new google.maps.Point(size / 2, size ) ; 	//used to position the marker
 						    	full = new google.maps.Size(size , size ) ; 		//marker size
 						    	markerArgs.icon = new google.maps.MarkerImage(_self.$data.marker[key].icon, null, null, half, full);
 						    }
@@ -423,7 +567,7 @@ window.aviaOnGoogleMapsLoaded = function(){ $('body').trigger('av-google-maps-ap
 	
 	$.AviaVideoAPI.apiFiles =
     {
-    	youtube : {loaded: false, src: 'http://www.youtube.com/iframe_api' }
+    	youtube : {loaded: false, src: 'https://www.youtube.com/iframe_api' }
     }
 	
   	$.AviaVideoAPI.prototype =
@@ -554,7 +698,7 @@ window.aviaOnGoogleMapsLoaded = function(){ $('body').trigger('av-google-maps-ap
 					/*
 					this.$video.load(function()
 					{ 	
-						if(_self.eventsBound == true || typeof _self.eventsBound == 'undefined') return;
+						if(_self.eventsBound == true || typeof _self.eventsBound == 'undefined') return;
 				        _self.$option_container.trigger('av-video-loaded');
 						$.avia_utilities.log('VIMEO Fallback Trigger');
 				    });
@@ -592,7 +736,7 @@ window.aviaOnGoogleMapsLoaded = function(){ $('body').trigger('av-google-maps-ap
 			//fallback always trigger after 2 seconds
 			setTimeout(function()
 			{ 	
-				if(_self.eventsBound == true || typeof _self.eventsBound == 'undefined' || _self.type == 'youtube' ) { return; }
+				if(_self.eventsBound == true || typeof _self.eventsBound == 'undefined' || _self.type == 'youtube' ) { return; }
 				$.avia_utilities.log('Fallback Video Trigger "'+_self.type+'":', 'log', _self);
 				
 				_self.$option_container.trigger('av-video-loaded'); 
@@ -604,7 +748,7 @@ window.aviaOnGoogleMapsLoaded = function(){ $('body').trigger('av-google-maps-ap
 		//bind events we should listen to, to the player
 		_bindEvents: function()
 		{	
-			if(this.eventsBound == true || typeof this.eventsBound == 'undefined')
+			if(this.eventsBound == true || typeof this.eventsBound == 'undefined')
 			{
 				return;
 			}
@@ -782,7 +926,7 @@ window.aviaOnGoogleMapsLoaded = function(){ $('body').trigger('av-google-maps-ap
 		{	
 			// does not work properly with iframe api. needs to manual loop on "end" event
 			// this.player.setLoop(true); 
-			this.player.seekTo(0);
+			if(this.playing == true) this.player.seekTo(0);
 		},
 		
 		_youtube_reset: function( )
@@ -904,6 +1048,7 @@ $.fn.avia_masonry = function(options)
 		applyMasonry: function(container, selector, callback)
 		{
 			var filters = selector ? {filter: '.'+selector} : {};
+			
 			container.isotope(filters, function()
 			{
 				$(window).trigger('av-height-change');
@@ -1099,9 +1244,12 @@ $.fn.avia_masonry = function(options)
 			}
 					
 			// update columnWidth on window resize
-			$(window).smartresize(function()
+			$(window).on( 'debouncedresize', function()
 			{
-			  	methods.applyMasonry(container);
+			  	methods.applyMasonry(container, false, function()
+				{
+					masonry.addClass('avia_sortable_active');
+				});
 			});
 		}
 	});
@@ -1391,7 +1539,7 @@ $.fn.avia_masonry = function(options)
 			
 			container.on("click", "a", methods.load_item);
 			controls.on("click", "a", methods.control_click);
-			if(jQuery.support.leadingWhitespace) { win.bind('smartresize', methods.resize_reset); }
+			if(jQuery.support.leadingWhitespace) { win.bind('debouncedresize', methods.resize_reset); }
 			
 		});
 	};
@@ -1415,7 +1563,7 @@ $.fn.avia_masonry = function(options)
 	    this.isMobile 	= $.avia_utilities.isMobile;
 	    this.property 	= {};
 	    this.scrollPos	= "0";
-	    this.transform3d= document.documentElement.className.indexOf('csstransforms3d') !== -1 ? true : false;
+	    this.transform3d= document.documentElement.className.indexOf('avia_transform3d') !== -1 ? true : false;
 	    
 	    if($.avia_utilities.supported.transition === undefined)
 		{
@@ -1580,9 +1728,9 @@ $.fn.aviaFullscreenSlider = function( options )
 	    this.$parent  	= this.$el.parent();
 	    this.property	= {};
 	    this.isMobile 	= $.avia_utilities.isMobile;
-	    this.ratio		= this.$el.data('avia-parallax-ratio') || 0.5;
-	    this.transform  = document.documentElement.className.indexOf('csstransforms') !== -1 ? true : false;
-	    this.transform3d= document.documentElement.className.indexOf('csstransforms3d') !== -1 ? true : false;
+	    this.ratio		= this.$el.data('avia-parallax-ratio') || 0.5;
+	    this.transform  = document.documentElement.className.indexOf('avia_transform') !== -1 ? true : false;
+	    this.transform3d= document.documentElement.className.indexOf('avia_transform3d') !== -1 ? true : false;
 	    
 	    if($.avia_utilities.supported.transition === undefined)
 		{
@@ -1819,7 +1967,7 @@ $.fn.avia_sc_iconlist = function(options)
 $.fn.avia_sc_animation_delayed = function(options)
 {
 	var global_timer = 0,
-		delay = options.delay || 50;
+		delay = options.delay || 50;
 
 	return this.each(function()
 	{
@@ -1906,7 +2054,8 @@ $.fn.avia_browser_height = function()
 			setTimeout(function(){ win.trigger('av-height-change'); /*broadcast the height change*/ },100);
 		};
 	
-	win.smartresize(calc_height);
+	win.on( 'debouncedresize', calc_height);
+	
 	calc_height();
 }
 
@@ -1965,7 +2114,7 @@ $.fn.avia_video_section = function()
 	{
 		var self = $(this);
 		
-		win.smartresize(function(){ calc_height(self, i); });
+		win.on( 'debouncedresize', function(){ calc_height(self, i); });
 		calc_height(self, i);
 	});
 	
@@ -2007,22 +2156,26 @@ $.fn.avia_sc_gallery = function(options)
 				big_prev.height(big_prev.height());
 				big_prev.attr('href', _self.href)
 
-				var newImg = _self.getAttribute("data-prev-img"),
-					oldImg = big_prev.find('img').attr('src');
+				var newImg 		= _self.getAttribute("data-prev-img"),
+					oldImg 		= big_prev.find('img'),
+					oldImgSrc 	= oldImg.attr('src');
 
-				if(newImg != oldImg)
+				if(newImg != oldImgSrc)
 				{
 					var next_img = new Image();
 					next_img.src = newImg;
 					
+					var $next = $(next_img);
+					
 					if(big_prev.hasClass('avia-gallery-big-no-crop-thumb'))
 					{
-						$(next_img).css({'height':big_prev.height(),'width':'auto'});
+						$next.css({'height':big_prev.height(),'width':'auto'});
 					}
 					
 					big_prev.stop().animate({opacity:0}, function()
 					{
-						big_prev.html(next_img);
+						$next.insertAfter(oldImg);
+						oldImg.remove();
 						big_prev.animate({opacity:1});
 					});
 				}
@@ -2115,6 +2268,7 @@ $.fn.avia_sc_toggle = function(options)
 					content.slideUp(200, function()
 					{
 						content.removeClass('active_tc').attr({style:''});
+						win.trigger('av-height-change');
 					});
 					thisheading.removeClass('activeTitle');
 
@@ -2138,12 +2292,17 @@ $.fn.avia_sc_toggle = function(options)
                         {
                             scroll_to_viewport();
                         }
+                        
+                        win.trigger('av-height-change');
 					}
 					
 					);
 					thisheading.addClass('activeTitle');
 					location.replace(thisheading.data('fake-id'));
 				}
+				
+				
+				
 			});
 		});
 
@@ -2178,9 +2337,13 @@ $.fn.avia_sc_toggle = function(options)
 		trigger_default_open(false);
 		
 		$('a').on('click',function(){
-            		var hash = $(this).attr('href').replace(/^.*?#/,'');
-            		if(hash) trigger_default_open('#'+hash);
-        	});
+            var hash = $(this).attr('href');
+            if(typeof hash != "undefined" && hash)
+            {
+                hash = hash.replace(/^.*?#/,'');
+                trigger_default_open('#'+hash);
+            }
+        });
 
 	});
 };
@@ -2244,10 +2407,14 @@ $.fn.avia_sc_tabs= function(options)
 		trigger_default_open(false);
 		win.on("debouncedresize", set_size);
 		
-		$('a').on('click',function(){
-            		var hash = $(this).attr('href').replace(/^.*?#/,'');
-            		if(hash) trigger_default_open('#'+hash);
-        	});
+        $('a').on('click',function(){
+            var hash = $(this).attr('href');
+            if(typeof hash != "undefined" && hash)
+            {
+                hash = hash.replace(/^.*?#/,'');
+                trigger_default_open('#'+hash);
+            }
+        });
 
 		function set_size()
 		{
@@ -2305,6 +2472,70 @@ $.fn.avia_sc_tabs= function(options)
 
 
 
+// -------------------------------------------------------------------------------------------
+// Big Number animation shortcode javascript
+// -------------------------------------------------------------------------------------------
+
+(function($)
+{
+	$.fn.avia_sc_animated_number = function(options)
+	{
+		var skipStep = false,
+		start_count = function(element, countTo, increment, current, fakeCountTo)
+		{
+			//calculate the new number
+			var newCount = current + increment;
+			
+			//if the number is bigger than our final number set the number and finish
+			if(newCount >= fakeCountTo) 
+			{
+				element.text(countTo); //exit
+			}
+			else
+			{
+				var prepend = "", addZeros = countTo.toString().length - newCount.toString().length
+				
+				//if the number has less digits than the final number some zeros where omitted. add them to the front
+				for(var i = addZeros; i > 0; i--){ prepend += "0"; }
+				
+				element.text(prepend + newCount);
+				window.requestAnimationFrame(function(){ start_count(element, countTo, increment, newCount, fakeCountTo) });
+			}
+		};
+	
+		return this.each(function()
+		{
+			var number_container = $(this), elements = number_container.find('.avia-single-number'), countTimer = number_container.data('timer') || 3000;
+			
+			//prepare elements
+			elements.each(function(i)
+			{
+				var element = $(this), text = element.text();
+				element.text( text.replace(/./g, "0")); 
+			});
+			
+			//trigger number animation
+			number_container.addClass('number_prepared').on('avia_start_animation', function()
+			{
+				elements.each(function(i)
+				{
+					var element = $(this), countTo = element.data('number'), fakeCountTo = countTo, current = parseInt(element.text(),10), zeroOnly = /^0+$/.test(countTo), increment = 0;
+					
+					//fallback for decimals like 00 or 000
+					if(zeroOnly) fakeCountTo = countTo.replace(/0/g, '9');
+					
+					increment = Math.round( fakeCountTo * 32 / countTimer);
+					if(increment == 0 || increment % 10 == 0) increment += 1;
+					
+					setTimeout(function(){ start_count(element, countTo, increment, current, fakeCountTo);}, 300);
+				});
+			});
+		});
+	}
+})(jQuery);
+
+
+
 
 // -------------------------------------------------------------------------------------------
 // contact form ajax
@@ -2336,22 +2567,45 @@ $.fn.avia_sc_tabs= function(options)
 
 				responseContainer = form.next(options.responseContainer+":eq(0)");
 
-			send.button.bind('click', checkElements);
-
+				send.button.bind('click', checkElements);
+				
+				
+				//change type of email forms on mobile so the e-mail keyboard with @ sign is used
+				if($.avia_utilities.isMobile)
+				{
+					send.formElements.each(function(i)
+					{
+						var currentElement = $(this), is_email = currentElement.hasClass('is_email');
+						if(is_email) currentElement.attr('type','email');
+					});
+				}
+			
+			
+			
 			function send_ajax_form()
 			{
 				if(form_sent){ return false; }
 
 				form_sent = true;
-				send.button.fadeOut(300);
-
-				responseContainer.load(form.attr('action')+' '+options.responseContainer, send.dataObj, function()
+				send.button.addClass('av-sending-button');
+				send.button.val(send.button.data('sending-label'));
+				
+				var redirect_to = form.data('avia-redirect') || false,
+					action		= form.attr('action');
+				
+				responseContainer.load(action+' '+options.responseContainer, send.dataObj, function()
 				{
-					responseContainer.removeClass('hidden').css({display:"block"});
-					form.slideUp(400, function(){responseContainer.slideDown(400, function(){ $('body').trigger('av_resize_finished'); }); send.formElements.val('');});
+					if(redirect_to && action != redirect_to)
+					{
+						form.attr('action', redirect_to);
+						form.submit();
+					}
+					else
+					{
+						responseContainer.removeClass('hidden').css({display:"block"});
+						form.slideUp(400, function(){responseContainer.slideDown(400, function(){ $('body').trigger('av_resize_finished'); }); send.formElements.val('');});
+					}
 				});
-
-
 			}
 
 			function checkElements()
@@ -2392,7 +2646,7 @@ $.fn.avia_sc_tabs= function(options)
 
 						if(classes && classes.match(/is_email/))
 						{
-							if(!value.match(/^\w[\w|\.|\-]+@\w[\w|\.|\-]+\.[a-zA-Z]{2,4}$/))
+							if(!value.match(/^\w[\w|\.|\-]+@\w[\w|\.|\-]*\.[a-zA-Z]{2,4}$/))
 							{
 								surroundingElement.removeClass("valid error ajax_alert").addClass("error");
 								send.validationError = true;
@@ -2465,6 +2719,312 @@ $.fn.avia_sc_tabs= function(options)
 		});
 	};
 })(jQuery);
+
+
+
+
+
+
+
+
+
+
+
+
+// -------------------------------------------------------------------------------------------
+// Aviaccordion Slideshow 
+// 
+// accordion slider script
+// -------------------------------------------------------------------------------------------
+
+	$.AviaccordionSlider  =  function(options, slider)
+	{
+	    this.$slider  	= $( slider );
+	    this.$inner	  	= this.$slider.find('.aviaccordion-inner');
+	    this.$slides	= this.$inner.find('.aviaccordion-slide');
+	    this.$images	= this.$inner.find('.aviaccordion-image');
+	    this.$last		= this.$slides.filter(':last');
+	    this.$titles  	= this.$slider.find('.aviaccordion-preview');
+	    this.$titlePos  = this.$slider.find('.aviaccordion-preview-title-pos');
+	    this.$titleWrap = this.$slider.find('.aviaccordion-preview-title-wrap');
+	    this.$win	  	= $( window );
+	    
+	    if($.avia_utilities.supported.transition === undefined)
+		{
+			$.avia_utilities.supported.transition = $.avia_utilities.supports('transition');
+		}
+		
+		this.browserPrefix 	= $.avia_utilities.supported.transition;
+	    this.cssActive 		= this.browserPrefix !== false ? true : false;
+	    this.transform3d	= document.documentElement.className.indexOf('avia_transform3d') !== -1 ? true : false;
+		this.isMobile 		= $.avia_utilities.isMobile;
+		this.property		= this.browserPrefix + 'transform',
+		this.count			= this.$slides.length;
+		this.open			= false;
+		this.autoplay		= false;
+		this.increaseTitle  = this.$slider.is(".aviaccordion-title-on-hover");
+		// this.cssActive    = false; //testing no css3 browser
+		
+	    this._init( options );
+	}
+
+  	$.AviaccordionSlider.prototype =
+    {
+    	_init: function( options )
+    	{
+    		var _self = this;
+    		_self.options = $.extend({}, options, this.$slider.data());
+			 $.avia_utilities.preload({container: this.$slider , single_callback:  function(){ _self._kickOff(); }});
+    	},
+    	
+    	_kickOff: function()
+    	{
+    		var _self = this;
+    		
+    		_self._calcMovement();
+    		_self._bindEvents();
+    		_self._showImages();
+    		_self._autoplay();
+    	},
+    	
+    	_autoplay: function()
+    	{
+    		var _self = this;
+    		
+    		if(_self.options.autoplay)
+    		{
+    			_self.autoplay = setInterval(function()
+    			{
+    				_self.open = _self.open === false ? 0 : _self.open + 1;
+    				if(_self.open >= _self.count) _self.open = 0;
+    				_self._move({}, _self.open);
+    				
+    			}, _self.options.interval * 1000)
+    		}
+    	},
+    	
+    	_showImages: function()
+    	{
+    		var _self = this, counter = 0, delay = 300, title_delay = this.count * delay;
+    		
+    		if(this.cssActive)
+    		{
+    			setTimeout(function(){ _self.$slider.addClass('av-animation-active'); } , 10);
+    		}
+    		
+    		this.$images.each(function(i)
+    		{
+    			var current = $(this), timer = delay * (i + 1);
+    				
+    			setTimeout(function()
+    			{ 
+    				current.avia_animate({opacity:1}, 400, function()
+    				{
+    					current.css($.avia_utilities.supported.transition + "transform", "none");
+    				}); 
+    			},timer);
+    		});
+    		
+    		if(_self.increaseTitle) title_delay = 0;
+    		
+    		this.$titlePos.each(function(i)
+    		{
+    			var current = $(this), new_timer = title_delay + 100 * (i + 1);
+    					
+    			setTimeout(function()
+    			{ 
+    				current.avia_animate({opacity:1}, 200, function()
+    				{
+    					current.css($.avia_utilities.supported.transition + "transform", "none");
+    				}); 
+    			},new_timer);
+    		});
+    	},
+    	
+    	_bindEvents: function()
+    	{
+    		var trigger = this.isMobile ? "click" : "mouseenter";
+    	
+    		this.$slider.on(trigger,'.aviaccordion-slide', $.proxy( this._move, this));
+    		this.$slider.on('mouseleave','.aviaccordion-inner', $.proxy( this._move, this));
+    		this.$win.on('debouncedresize', $.proxy( this._calcMovement, this));
+    		this.$slider.on('av-prev av-next', $.proxy( this._moveTo, this));
+    		
+    		if(this.isMobile)
+    		{
+    			this.$slider.avia_swipe_trigger({next: this.$slider, prev: this.$slider, event:{prev: 'av-prev', next: 'av-next'}});
+    		}
+    		
+    	},
+    	
+    	_titleHeight: function()
+    	{
+    		var th = 0;
+    		
+    		this.$titleWrap.css({'height':'auto'}).each(function()
+    		{
+    			var new_h = $(this).outerHeight();
+    			if( new_h > th) th = new_h;
+    		
+    		}).css({'height':th + 2});
+    		
+    	},
+    	
+    	_calcMovement: function(event)
+    	{
+    		var _self			= this,
+    			containerWidth	= this.$slider.width(),
+    			defaultPos		= this.$last.data('av-left'),
+    			imgWidth		= this.$images.filter(':last').width() || containerWidth,
+    			imgWidthPercent = Math.floor((100 / containerWidth) * imgWidth),
+    			allImageWidth	= imgWidthPercent * _self.count,
+    			modifier		= 3, // 10 - _self.count,
+    			tempMinLeft		= 100 - imgWidthPercent,
+    			minLeft 		= tempMinLeft > defaultPos / modifier ? tempMinLeft : 0,
+    			oneLeft			= minLeft / (_self.count -1 ),
+    			titleWidth		= imgWidth;
+    		
+    		
+    		
+    		if(allImageWidth < 110)
+    		{
+    			//set height if necessary	
+    			var slideHeight = this.$slider.height(), 
+    				maxHeight 	= (slideHeight / allImageWidth) * 110 ;
+    				
+    			this.$slider.css({'max-height': maxHeight});
+    			_self._calcMovement(event);
+    			return;
+    		}
+    		
+    		//backup so the minimized slides dont get too small
+    		if(oneLeft < 2) minLeft = 0;
+    		
+			this.$slides.each(function(i)
+			{
+				var current = $(this), newLeft = 0, newRight = 0, defaultLeft = current.data('av-left');
+					
+				if( minLeft !== 0)
+				{
+					newLeft  = oneLeft * i;
+					newRight = imgWidthPercent + newLeft - oneLeft;
+				}
+				else
+				{
+					newLeft  = defaultLeft / Math.abs(modifier);
+					newRight = 100 - ((newLeft / i) * (_self.count - i));
+				}
+				
+				if(i == 1 && _self.increaseTitle) { titleWidth = newRight + 1; } 
+				
+				if(_self.cssActive)
+				{	
+					//if we are not animating based on the css left value but on css transform we need to subtract the left value
+					newLeft = newLeft - defaultLeft;
+					newRight = newRight - defaultLeft;
+					defaultLeft = 0;
+				}
+				
+				current.data('av-calc-default', defaultLeft);
+				current.data('av-calc-left', newLeft);
+				current.data('av-calc-right', newRight);
+				
+			});
+			
+			if(_self.increaseTitle) { _self.$titles.css({width: titleWidth + "%"});} 
+    	},
+    	
+    	_moveTo: function(event)
+    	{
+    		var direction 	= event.type == "av-next" ? 1 : -1,
+    			nextSlide 	= this.open === false ? 0 : this.open + direction;
+    			
+    		if(nextSlide >= 0 && nextSlide < this.$slides.length) this._move(event, nextSlide);
+    	},
+    	
+    	_move: function(event, direct_open)
+    	{
+    		var _self  = this,
+    			slide  = event.currentTarget,
+    			itemNo = typeof direct_open != "undefined" ? direct_open : this.$slides.index(slide);
+    			
+    		this.open = itemNo;
+    		
+    		if(_self.autoplay && typeof slide != "undefined") { clearInterval(_self.autoplay); _self.autoplay == false; }
+    		
+    		this.$slides.removeClass('aviaccordion-active-slide').each(function(i)
+    		{
+    			var current 	= $(this),
+    				dataSet 	= current.data(),
+    				trans_val	= i <= itemNo ? dataSet.avCalcLeft : dataSet.avCalcRight,
+					transition 	= {},
+					reset		= event.type == 'mouseleave' ? 1 : 0,
+					active 		= itemNo === i ? _self.$titleWrap.eq(i) : false;
+    			
+    			if(active) current.addClass('aviaccordion-active-slide');
+    				
+    			if(reset)
+    			{
+    				trans_val = dataSet.avCalcDefault; 
+    				this.open = false;
+    			}
+    				
+				if(_self.cssActive) //do a css3 animation
+				{
+					//move the slides
+					transition[_self.property]  = _self.transform3d ? "translate3d(" + trans_val  + "%, 0, 0)" : "translate(" + trans_val + "%,0)"; //3d or 2d transform?
+					current.css(transition);
+				}
+				else
+				{
+					transition.left =  trans_val + "%";
+					current.stop().animate(transition, 700, 'easeOutQuint');
+				}	
+    		});
+    	}
+    };
+
+
+$.fn.aviaccordion = function( options )
+{
+	return this.each(function()
+	{
+		var active = $.data( this, 'AviaccordionSlider' );
+
+		if(!active)
+		{
+			//make sure that the function doesnt get aplied a second time
+			$.data( this, 'AviaccordionSlider', 1 );
+			
+			//create the preparations for fullscreen slider
+			new $.AviaccordionSlider( options, this );
+		}
+	});
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2847,7 +3407,7 @@ $.extend( $.easing,
 
 		return function(prop, vendor_overwrite)
 		{
-			if ( div.style.prop !== undefined  ) { return ""; }
+			if ( div.style[prop] !== undefined  ) { return ""; }
 			if (vendor_overwrite !== undefined) { vendors = vendor_overwrite; }
 
 			prop = prop.replace(/^[a-z]/, function(val)
@@ -3002,6 +3562,10 @@ Avia Slideshow
 
 		//autorotation active or not
 		autoplay:false,
+		
+		//set if the loop will stop at the last/first slide or if the slides will loop infinite
+		//set to false for infinite loop, "last" to stop at the last slide or "first" to stop at the first slide
+		stopinfiniteloop: false,
 
 		//fade or slide animation
 		animation:'slide',
@@ -3051,6 +3615,9 @@ Avia Slideshow
 			// current image index
 			this.current = 0;
 
+			//loop count
+			this.loopCount = 0;
+
 			// control if the slicebox is animating
 			this.isAnimating = false;
 
@@ -3061,7 +3628,7 @@ Avia Slideshow
 			this.cssActive = this.browserPrefix !== false ? true : false;
 			
 			// css3D animation?
-			this.css3DActive = document.documentElement.className.indexOf('csstransforms3d') !== -1 ? true : false;
+			this.css3DActive = document.documentElement.className.indexOf('avia_transform3d') !== -1 ? true : false;
 			
 			//store the aviaVideoApi object for the current slide if available
 			this.video	= false;
@@ -3227,6 +3794,18 @@ Avia Slideshow
     			this.$slider.on('mouseleave', $.proxy( this.resume, this) );
     		}
 
+			if(this.options.stopinfiniteloop && this.options.autoplay)
+			{
+				if(this.options.stopinfiniteloop == 'last')
+				{
+					this.$slider.on('avia_slider_last_slide', $.proxy(this._stopSlideshow, this) );
+				}
+				else if(this.options.stopinfiniteloop == 'first')
+				{
+					this.$slider.on('avia_slider_first_slide', $.proxy(this._stopSlideshow, this) );
+				}
+			}
+
     		win.on( 'debouncedresize.aviaSlider',  $.proxy( this._setSize, this) );
 
     		//if its a desktop browser add arrow navigation, otherwise add touch nav
@@ -3332,6 +3911,20 @@ Avia Slideshow
 			{
 				//call the executing function. for example _slide, or _fade. since the function call is absed on a var we can easily extend the slider with new animations
 				this['_' + this.options.animation].call(this, dir);
+			}
+
+			if(this.current == 0)
+			{
+				this.loopCount++;
+				this.$slider.trigger('avia_slider_first_slide');
+			}
+			else if(this.current == this.itemsCount - 1)
+			{
+				this.$slider.trigger('avia_slider_last_slide');
+			}
+			else
+			{
+				this.$slider.trigger('avia_slider_navigate_slide');
 			}
 		},
 
@@ -3460,7 +4053,7 @@ Avia Slideshow
 				hideSlide		= this.$slides.eq(this.prev);
 				
 				hideSlide.trigger('pause');	
-				displaySlide.trigger('play');
+				if( !displaySlide.data('disableAutoplay') ) displaySlide.trigger('play');
 
 				displaySlide.css({visibility:'visible', zIndex:4, opacity:1, left:0, top:0});
 				displaySlide.css(reset);
@@ -3494,7 +4087,7 @@ Avia Slideshow
 				hideSlide		= this.$slides.eq(this.prev);
 			
 			hideSlide.trigger('pause');	
-			displaySlide.trigger('play');
+			if( !displaySlide.data('disableAutoplay') ) displaySlide.trigger('play');
 
 			displaySlide.css({visibility:'visible', zIndex:3, opacity:0}).avia_animate({opacity:1}, this.options.transitionSpeed/3, 'linear');
 			
@@ -3548,7 +4141,7 @@ Avia Slideshow
 				if(event.data.iteration === 0) 
 				{	
 					event.data.wrap.css('opacity',0);
-					if(!event.data.self.isMobile) event.data.slide.trigger('play');
+					if(!event.data.self.isMobile && !event.data.slide.data('disableAutoplay')) { event.data.slide.trigger('play'); } 
 					setTimeout(function(){ event.data.wrap.avia_animate({opacity:1}, 400); }, 50);
 				}
 				else if ($html.is('.avia-msie') && !event.data.slide.is('.av-video-service-html5'))
@@ -3557,16 +4150,18 @@ Avia Slideshow
 					* Internet Explorer fires the ready event for external videos once they become visible 
 					* as oposed to other browsers which always fire immediately. 
 					*/
-					event.data.slide.trigger('play');
+					if( !event.data.slide.data('disableAutoplay') ) event.data.slide.trigger('play');
 				}
 				
 			}
 			
 			
+			
+			
 			function onFinish( event )
 			{ 	
 				//if the video is not looped resume the slideshow
-				if(!event.data.slide.is('.av-loop-video')) 
+				if(!event.data.slide.is('.av-single-slide') && !event.data.slide.is('.av-loop-video'))
 				{
 					event.data.slide.trigger('reset');
 					self._navigate( 'next' );  
@@ -3825,7 +4420,11 @@ Avia Slideshow
 		defaults	=
 		{
 			prev: '.prev-slide',
-			next: '.next-slide'
+			next: '.next-slide',
+			event: {
+				prev: 'click',
+				next: 'click'
+			}
 		},
 
 		methods = {
@@ -3875,11 +4474,11 @@ Avia Slideshow
 
 									if(typeof slider.options[i] === 'string')
 									{
-										slider.find(slider.options[i]).trigger('click', ['swipe']);
+										slider.find(slider.options[i]).trigger(slider.options.event[i], ['swipe']);
 									}
 									else
 									{
-										slider.options[i].trigger('click', ['swipe']);
+										slider.options[i].trigger(slider.options.event[i], ['swipe']);
 									}
 
 									slider.hasMoved = true;
@@ -3919,7 +4518,6 @@ Avia Slideshow
 
 
 }(jQuery));
-
 
 
 

@@ -178,7 +178,7 @@ if ( !class_exists( 'avia_sc_notification' ) )
 				                                 'icon_select' => 'yes',
 				                                 'icon' => '',
 				                                 'font' => '',
-				                                 ), $atts);
+				                                 ), $atts, $this->config['shortcode']);
 			
 				$display_char = av_icon($atts['icon'], $atts['font']);
 				

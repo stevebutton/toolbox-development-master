@@ -74,8 +74,8 @@ if ( !class_exists( 'avia_sc_text' ) )
 			{
 				$custom_class = !empty($meta['custom_class']) ? $meta['custom_class'] : "";
                 $output = '';
-                $markup = avia_markup_helper(array('context' => 'entry','echo'=>false));
-                $markup_text = avia_markup_helper(array('context' => 'entry_content','echo'=>false));
+                $markup = avia_markup_helper(array('context' => 'entry','echo'=>false, 'custom_markup'=>$meta['custom_markup']));
+                $markup_text = avia_markup_helper(array('context' => 'entry_content','echo'=>false, 'custom_markup'=>$meta['custom_markup']));
 
                 $output .= '<section class="av_textblock_section" '.$markup.'>';
                 $output .= "<div class='avia_textblock {$custom_class}' $markup_text>".ShortcodeHelper::avia_apply_autop(ShortcodeHelper::avia_remove_autop($content) )."</div>";

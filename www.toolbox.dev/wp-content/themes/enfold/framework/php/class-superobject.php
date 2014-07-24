@@ -151,7 +151,7 @@ if( ! class_exists( 'avia_superobject' ) )
 			 */
 			$this->options = apply_filters( 'avia_filter_global_options', $database_option );
 		
-
+			
 		}
 		
 		public function reset_options()

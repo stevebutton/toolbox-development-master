@@ -150,6 +150,14 @@ if ( !class_exists( 'avia_sc_slider' ) )
 									"type" 	=> "checkbox"),
 									
 									array(	
+									"name" 	=> __("Disable Autoplay", 'avia_framework' ),
+									"desc" 	=> __("Check if you want to disable video autoplay when this slide shows", 'avia_framework' ) ,
+									"id" 	=> "video_autoplay",
+									"required"=> array('slide_type','equals','video'),
+									"std" 	=> "",
+									"type" 	=> "checkbox"),
+									
+									array(	
 									"name" 	=> __("Caption Title", 'avia_framework' ),
 									"desc" 	=> __("Enter a caption title for the slide here", 'avia_framework' ) ,
 									"id" 	=> "title",
@@ -310,8 +318,9 @@ if ( !class_exists( 'avia_sc_slider' ) )
 				'interval'		=> 5,
 				'handle'		=> $shortcodename,
 				'content'		=> ShortcodeHelper::shortcode2array($content, 1),
-				'class'			=> $meta['el_class']
-				), $atts);
+				'class'			=> $meta['el_class'],
+				'custom_markup' => $meta['custom_markup']
+				), $atts, $this->config['shortcode']);
 
 				$slider = new avia_slideshow($atts);
 				return $slider->html();
@@ -354,7 +363,8 @@ if ( !class_exists( 'avia_slideshow' ) )
 				'class'			=> "",
 				'css_id'		=> "",
 				'scroll_down'	=> "",
-				'content'		=> array()
+				'content'		=> array(),
+				'custom_markup' => ''
 				), $config);
 
 			$this->config = apply_filters('avf_slideshow_config', $this->config);
@@ -456,7 +466,7 @@ if ( !class_exists( 'avia_slideshow' ) )
 				$extraClass .= "av-slider-scroll-down-active";
 			}
 			
-            $markup = avia_markup_helper(array('context' => 'image','echo'=>false));
+            $markup = avia_markup_helper(array('context' => 'image','echo'=>false, 'custom_markup'=>$this->config['custom_markup']));
 
 			$data = AviaHelper::create_data_string($this->config);
 
@@ -491,7 +501,7 @@ if ( !class_exists( 'avia_slideshow' ) )
 			$html = "";
 			$counter = 0;
 
-            $markup_url = avia_markup_helper(array('context' => 'image_url','echo'=>false));
+            $markup_url = avia_markup_helper(array('context' => 'image_url','echo'=>false, 'custom_markup'=>$this->config['custom_markup']));
 
 			foreach($this->id_array as $id)
 			{
@@ -507,10 +517,11 @@ if ( !class_exists( 'avia_slideshow' ) )
                     $imgalt = get_post_meta($slide->ID, '_wp_attachment_image_alt', true);
                     $imgalt = !empty($imgalt) ? esc_attr($imgalt) : '';
                     $imgtitle = trim($slide->post_title) ? esc_attr($slide->post_title) : "";
+                  	if($imgtitle == "-") $imgtitle = "";
                     $imgdescription = trim($slide->post_content) ? esc_attr($slide->post_content) : "";
 
 					$tags = apply_filters('avf_slideshow_link_tags', array("a href='".$link[0]."' title='".$imgdescription."'",'a')); // can be filtered and for example be replaced by array('div','div')
-
+					
 					$html .= "<li class='slide-{$counter} slide-id-".$slide->ID."'>";
 					$html .= "<".$tags[0]." >{$caption}<img src='".$img[0]."' width='".$img[1]."' height='".$img[2]."' title='".$imgtitle."' alt='".$imgalt."' $markup_url /></ ".$tags[1]." >";
 					$html .= "</li>";
@@ -530,8 +541,6 @@ if ( !class_exists( 'avia_slideshow' ) )
 			$html = "";
 			$counter = 0;
 			$this->ie8_fallback = "";
-
-            $markup_url = avia_markup_helper(array('context' => 'image_url','echo'=>false));
 
 			foreach($this->id_array as $key => $id)
 			{
@@ -559,25 +568,25 @@ if ( !class_exists( 'avia_slideshow' ) )
 											'video_mute'	=>'',
 											'video_loop'	=>'',
 											'video_format'	=>'',
+											'video_autoplay'=>'',
 											'video_ratio'	=>'16:9',
 											'video_mobile_disabled'=>'',
 											'video_mobile'	=>'mobile-fallback-image',
 											'mobile_image'	=> '',
-											'slide_type'	=>''
+											'slide_type'	=>'',
+											'custom_markup' => ''
 
 
 										), $this->subslides[$key]['attr']);
 				
 				extract($meta);
 				
-				
-				
 				if(isset($this->slides[$id]) || $slide_type == 'video')
 				{
 					$img			= array('');
 					$slide			= "";
 					$attachment_id	= isset($this->slides[$id]) ? $id : false;
-					$link			= aviaHelper::get_url($link, $attachment_id); 
+					$link			= AviaHelper::get_url($link, $attachment_id); 
 					$extra_class 	= "";
 					$linkdescription= "";
 					$linkalt 		= "";
@@ -586,6 +595,8 @@ if ( !class_exists( 'avia_slideshow' ) )
 					$stretch_height	= false;
 					$final_ratio	= "";
 					$viewport		= 16/9;
+
+            		$markup_url = avia_markup_helper(array('context' => 'image_url','echo'=>false, 'id'=>$attachment_id, 'custom_markup'=>$custom_markup));
 					
 					if($slide_type == 'video')
 					{
@@ -597,7 +608,7 @@ if ( !class_exists( 'avia_slideshow' ) )
 						$video_class	 .= !empty( $video_mobile ) ? " av-".$video_mobile : "";
 						
 						$extra_class 	.= " av-video-slide ".$video_cover." av-video-service-".$this->service." ".$video_class;
-						$slider_data 	.= " data-controls='{$video_controls}' data-mute='{$video_mute}' data-loop='{$video_loop}' ";	
+						$slider_data 	.= " data-controls='{$video_controls}' data-mute='{$video_mute}' data-loop='{$video_loop}' data-disable-autoplay='{$video_autoplay}' ";	
 						
 						if($mobile_image){
 							$fallback_img = wp_get_attachment_image_src($mobile_image, $this->config['size']);
@@ -651,6 +662,7 @@ if ( !class_exists( 'avia_slideshow' ) )
 					{
 						$slide 			 = $this->slides[$id];
 						$linktitle 		 = trim($slide->post_title) ? esc_attr($slide->post_title) : "";
+						if($linktitle == "-") $linktitle = "";
                     	$linkdescription = (trim($slide->post_content) && empty($link)) ? "title='".esc_attr($slide->post_content)."'" : "";
                     	$linkalt 		 = get_post_meta($slide->ID, '_wp_attachment_image_alt', true);
                     	$linkalt 		 = !empty($linkalt) ? esc_attr($linkalt) : '';
@@ -684,8 +696,8 @@ if ( !class_exists( 'avia_slideshow' ) )
 					}
 
 					//check if we got a caption
-                    $markup_description = avia_markup_helper(array('context' => 'description','echo'=>false));
-                    $markup_name = avia_markup_helper(array('context' => 'name','echo'=>false));
+                    $markup_description = avia_markup_helper(array('context' => 'description','echo'=>false, 'id'=>$attachment_id, 'custom_markup'=>$custom_markup));
+                    $markup_name = avia_markup_helper(array('context' => 'name','echo'=>false, 'id'=>$attachment_id, 'custom_markup'=>$custom_markup));
 					if(trim($title) != "")   $title 	= "<h2 class='avia-caption-title' $markup_name>".trim(apply_filters('avf_slideshow_title', $title))."</h2>";
 					
 					if(is_array($content)) $content = implode(' ',$content); //temp fix for trim() expects string warning until I can actually reproduce the problem
@@ -775,6 +787,8 @@ if ( !class_exists( 'avia_slideshow' ) )
 			$button_html = "";
 			$blank = (strpos($link_target, '_blank') !== false || $link_target == 'yes') ? ' target="_blank" ' : "";
 			$blank .= strpos($link_target, 'nofollow') !== false ? ' rel="nofollow" ' : "";
+			
+			$link = AviaHelper::get_url($link); 
 			
 			$button_html .= "<a href='{$link}' {$blank} class='avia-slideshow-button avia-button avia-color-{$button_color} {$button_count}' data-duration='800' data-easing='easeInOutQuad'>";
 			$button_html .= $button_label;
@@ -877,6 +891,7 @@ if ( !class_exists( 'avia_slideshow_video_helper' ) )
 					}
 					
 					$video_data = apply_filters( 'avf_youtube_video_data', array(
+							'autoplay' 		=> 0,
 							'videoid'		=> $video_id,
 							'hd'			=> 1,
 							'rel'			=> 0,

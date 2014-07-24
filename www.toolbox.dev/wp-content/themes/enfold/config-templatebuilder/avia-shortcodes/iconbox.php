@@ -147,7 +147,7 @@ if ( !class_exists( 'avia_sc_icon_box' ) )
 			 */
 			function shortcode_handler($atts, $content = "", $shortcodename = "", $meta = "")
 			{
-				extract(shortcode_atts(array('title' => 'Title', 'icon' => '1', 'position' => 'left', 'link' =>'', 'linktarget' => 'no', 'linkelement' =>'', 'font' =>''), $atts));
+				extract(shortcode_atts(array('title' => 'Title', 'icon' => '1', 'position' => 'left', 'link' =>'', 'linktarget' => 'no', 'linkelement' =>'', 'font' =>''), $atts, $this->config['shortcode']));
 
 				
 				$display_char = av_icon($icon, $font);
@@ -191,16 +191,16 @@ if ( !class_exists( 'avia_sc_icon_box' ) )
 
 
                 // add blockquotes to the content
-                $markup = avia_markup_helper(array('context' => 'entry','echo'=>false));
+                $markup = avia_markup_helper(array('context' => 'entry','echo'=>false, 'custom_markup'=>$meta['custom_markup']));
         		$output  = '<article class="iconbox iconbox_'.$position.' '.$meta['el_class'].'" '.$markup.'>';
         		$output .= '        <div class="iconbox_content">';
                 $output .= '        <header class="entry-content-header">';
         		$output .= '            <'.$display_char_wrapper['start'].' class="iconbox_icon heading-color" '.$display_char.'></'.$display_char_wrapper['end'].'>';
-                $markup = avia_markup_helper(array('context' => 'entry_title','echo'=>false));
+                $markup = avia_markup_helper(array('context' => 'entry_title','echo'=>false, 'custom_markup'=>$meta['custom_markup']));
         		$output .= "            <h3 class='iconbox_content_title' $markup>".$title."</h3>";
                 $output .= '        </header>';
 
-                $markup = avia_markup_helper(array('context' => 'entry_content','echo'=>false));
+                $markup = avia_markup_helper(array('context' => 'entry_content','echo'=>false, 'custom_markup'=>$meta['custom_markup']));
                 $output .= "        <div class='iconbox_content_container' $markup>";
                 $output .=              ShortcodeHelper::avia_apply_autop(ShortcodeHelper::avia_remove_autop($content));
                 $output .= '        </div>';

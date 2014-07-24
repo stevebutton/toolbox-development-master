@@ -619,8 +619,8 @@ if( !function_exists( 'avia_fallback_menu' ) )
 		if (is_front_page()){$current = "class='current-menu-item'";}
 		if ($exclude) $exclude ="&exclude=".$exclude;
 
-		echo "<div class='fallback_menu'>";
-		echo "<ul class='avia_mega menu'>";
+		echo "<div class='fallback_menu av-main-nav-wrap'>";
+		echo "<ul class='avia_mega menu av-main-nav'>";
 		echo "<li $current><a href='".get_bloginfo('url')."'>".__('Home','avia_framework')."</a></li>";
 		wp_list_pages('title_li=&sort_column=menu_order'.$exclude);
 		echo apply_filters('avf_fallback_menu_items', "", 'fallback_menu');

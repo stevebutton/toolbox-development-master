@@ -102,6 +102,8 @@ if (have_posts()) :
         </div>
 
         <footer class="entry-footer"></footer>
+        
+        <?php do_action('ava_after_content', $the_id, 'loop-search'); ?>
 	</article><!--end post-entry-->
 
 	<?php

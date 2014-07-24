@@ -97,6 +97,10 @@ class avia_font_manager{
 	{ 	
 		@ini_set( 'memory_limit', apply_filters( 'admin_memory_limit', WP_MAX_MEMORY_LIMIT ) );
 		
+		//if a temp dir already exists remove it and create a new one
+		if(is_dir($this->paths['tempdir'])) $this->delete_folder($this->paths['tempdir']);
+		
+		//create a new
 		$tempdir = avia_backend_create_folder($this->paths['tempdir'], false);
 		if(!$tempdir) exit('Wasn\'t able to create temp folder');
 		
@@ -164,12 +168,15 @@ class avia_font_manager{
 			exit('Found no SVG file with font information in your folder. Was not able to create the necessary config files');
 		}
 		
+		//fetch the svg files content
+		$response = file_get_contents(trailingslashit($this->paths['tempdir']).$this->svg_file );
 		
-		//$response 	= wp_remote_get( $this->paths['tempurl'].$this->svg_file );
-		$response   	= wp_remote_fopen(trailingslashit($this->paths['tempurl']).$this->svg_file );
+		//if we werent able to get the content try to fetch it by using wordpress
+		if(empty($response) || trim($response) == "" || strpos($response, "<svg") === false) $response = wp_remote_fopen(trailingslashit($this->paths['tempurl']).$this->svg_file );  
 		
-		//if wordpress wasnt able to get the file which is unlikely try to fetch it old school
-		if(empty($response)) $response = file_get_contents(trailingslashit($this->paths['tempdir']).$this->svg_file );
+		//filter the response
+		$response = apply_filters('avf_icon_font_uploader_response', $response, $this->svg_file, $this->paths);
+
 		
 		if (!is_wp_error($response) && !empty($response))
 		{
@@ -615,6 +622,9 @@ function av_icon_char($char)
 function av_icon_string($char)
 {
 	global $avia_config;
+	
+	if(!isset($avia_config['font_icons'][$char]['icon'])) $char = 'standard';
+	
 	return avia_font_manager::frontend_icon($avia_config['font_icons'][$char]['icon'], $avia_config['font_icons'][$char]['font']);
 }
 

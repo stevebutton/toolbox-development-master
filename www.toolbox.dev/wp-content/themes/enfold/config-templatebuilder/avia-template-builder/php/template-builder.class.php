@@ -10,7 +10,7 @@ if ( !class_exists( 'AviaBuilder' ) ) {
 
 	class AviaBuilder
 	{
-		const VERSION = '0.6';
+		const VERSION = '0.7';
 		public static $mode = "";
 		public static $path = array();
 		public static $resources_to_load = array();
@@ -42,7 +42,7 @@ if ( !class_exists( 'AviaBuilder' ) ) {
 			AviaBuilder::$path = $this->paths;
 			AviaBuilder::$default_iconfont = apply_filters('avf_default_iconfont', array( 'entypo-fontello' => 
 																						array(
-																						'append'	=> '?v=2',
+																						'append'	=> '?v=3',
 																						'include' 	=> $this->paths['assetsPath'].'fonts',
 																						'folder'  	=> $this->paths['assetsURL'].'fonts',
 																						'config'	=> 'charmap.php',
@@ -171,7 +171,7 @@ if ( !class_exists( 'AviaBuilder' ) ) {
 			
 			//default wordpress hooking
 			add_action('wp_head', array($this,'load_shortcode_assets'), 2000);
-			add_action( 'template_redirect',array($this, 'template_redirect' ));
+			add_action( 'template_redirect',array($this, 'template_redirect'), 1000);
 		}
 		
 		/**
@@ -271,11 +271,19 @@ if ( !class_exists( 'AviaBuilder' ) ) {
 			//create tiny mce button
 			$tiny = array(
 				'id'			 => 'avia_builder_button',
-				'title'			 => __('Insert Shortcode','avia_framework' ),
+				'title'			 => __('Insert Theme Shortcode','avia_framework' ),
 				'image'			 => $this->paths['imagesURL'].'tiny-button.png',
 				'js_plugin_file' => $this->paths['assetsURL'].'js/avia-tinymce-buttons.js',
 				'shortcodes'	 => array_map(array($this, 'fetch_configs'), $this->shortcode_class)
 			);
+			
+			//if we are using tinymce 4 or higher change the javascript file
+			global $tinymce_version;
+			
+			if(version_compare($tinymce_version[0], 4, ">="))
+			{
+				$tiny['js_plugin_file'] = $this->paths['assetsURL'].'js/avia-tinymce-buttons-4.js';
+			}
 
 			new avia_tinyMCE_button($tiny);
 			
@@ -542,7 +550,10 @@ if ( !class_exists( 'AviaBuilder' ) ) {
 					
 					foreach ($tab as $shortcode)
 					{
-						$output .= $this->create_shortcode_button($shortcode);
+						if(empty($shortcode['invisible']))
+						{
+							$output .= $this->create_shortcode_button($shortcode);
+						}
 					}
 					
 					$output .= "</div>";

@@ -117,7 +117,7 @@ if ( !class_exists( 'avia_sc_postcontent' ) && current_theme_supports('experimen
 			 */
 			function shortcode_handler($atts, $content = "", $shortcodename = "", $meta = "")
 			{
-				extract(shortcode_atts(array('link' => ''), $atts));
+				extract(shortcode_atts(array('link' => ''), $atts, $this->config['shortcode']));
 
 				$output  = "";
 				$post_id = function_exists('avia_get_the_id') ? avia_get_the_id() : get_the_ID();
@@ -127,13 +127,13 @@ if ( !class_exists( 'avia_sc_postcontent' ) && current_theme_supports('experimen
 				{
 					if($entry->ID == $post_id)
 					{
-						$output .= '<article class="entry-content" '.avia_markup_helper(array('context' => 'entry','echo'=>false)).'>';
+						$output .= '<article class="entry-content" '.avia_markup_helper(array('context' => 'entry','echo'=>false, 'id'=>$post_id, 'custom_markup'=>$meta['custom_markup'])).'>';
 						$output .= "You added a Post/Page Content Element to this entry that tries to display itself. This would result in an infinite loop. Please select a different entry or remove the element";
 						$output .= '</article>';
 					}
 					else
 					{
-						$output .= '<article class="entry-content" '.avia_markup_helper(array('context' => 'entry','echo'=>false)).'>';
+						$output .= '<article class="entry-content" '.avia_markup_helper(array('context' => 'entry','echo'=>false, 'id'=>$post_id, 'custom_markup'=>$meta['custom_markup'])).'>';
 						$output .= apply_filters( 'the_content', $entry->post_content );
 						$output .= '</article>';
 					}

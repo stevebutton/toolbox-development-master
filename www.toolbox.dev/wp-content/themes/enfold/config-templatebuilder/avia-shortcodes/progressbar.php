@@ -151,7 +151,7 @@ if ( !class_exists( 'avia_sc_progressbar' ) )
 			 */
 			function shortcode_handler($atts, $content = "", $shortcodename = "", $meta = "")
 			{
-				extract(shortcode_atts(array('position'=>'left'), $atts));
+				extract(shortcode_atts(array('position'=>'left'), $atts, $this->config['shortcode']));
 
 				$bars = ShortcodeHelper::shortcode2array($content);
 				$output		= "";

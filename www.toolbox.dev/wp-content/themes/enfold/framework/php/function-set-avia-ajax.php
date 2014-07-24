@@ -249,30 +249,22 @@ if(!function_exists('avia_ajax_save_options_create_array'))
 			}
 			
 			//escape and convert the value
-			$set[1] = htmlentities(urldecode($set[1]), ENT_QUOTES, $charset);
 			$set[1] = stripslashes($set[1]);
-			
+			$set[1] = htmlentities(urldecode($set[1]), ENT_QUOTES, $charset);
 			
 			/*
 			 *  check if the element is a group element. 
 			 *  If so create an array by exploding the string and then iterating over the results and using them as array keys
 			 */
 			 
-			if($set[0] != "") //values with two colons are resered for js controlling and saving is not needed 
+			if($set[0] != "") //values with two colons are reserved for js controlling and saving is not needed 
 			{
 				if(strpos($set[0], '-__-') !== false)
 				{
 					$set[0] = explode('-__-',$set[0]);
 					
-					$arrayString = '$result';
-					
-					foreach($set[0] as $arraykey)
-					{
-						$arrayString.= "['".$arraykey."']";
-					}
-					
-					$arrayString .= '="'.$set[1].'";' ;
-					eval($arrayString);
+					//http://stackoverflow.com/questions/20259773/nested-numbering-to-array-keys
+					avia_ajax_helper_set_nested_value($result, $set[0], $set[1]);
 				}
 				else
 				{
@@ -280,12 +272,24 @@ if(!function_exists('avia_ajax_save_options_create_array'))
 				}
 			}
 		}
-		
+
 	return $result;
 	}
 }
-	
 
+
+
+	
+function avia_ajax_helper_set_nested_value(array &$array, $index, $value)
+{
+    $node = &$array;
+
+    foreach ($index as $path) {
+        $node = &$node[$path];
+    }
+
+    $node = $value;
+}
 
 
 /**

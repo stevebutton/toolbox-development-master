@@ -48,6 +48,9 @@ if (have_posts()) :
 
 				?>
 			</div>
+			
+			<?php do_action('ava_after_content', get_the_ID(), 'single-portfolio'); ?>
+			
 		</article><!--end post-entry-->
 
 

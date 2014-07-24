@@ -10,15 +10,20 @@
  */
 ?>
 
-<?php if ( post_password_required() ) : ?>
-				<p><?php _e( 'This post is password protected. Enter the password to view any comments.', 'avia_framework' ); ?></p>
-<?php
+<?php if ( post_password_required() ) : 
+
+ if (comments_open() ) :
+	?>
+		<p><?php _e( 'This post is password protected. Enter the password to view any comments.', 'avia_framework' ); ?></p>
+	<?php
+endif;
 		/* Stop the rest of comments.php from being processed,
 		 * but don't kill the script entirely -- we still have
 		 * to fully load the template.
 		 */
 		return;
-	endif;
+	
+endif;
 ?>
 
 <?php
